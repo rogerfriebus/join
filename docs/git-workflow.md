@@ -1,73 +1,140 @@
-# Git-Workflow für Join
+
+# Git-Workflow für das Join-Projekt
+
+Diese Anleitung beschreibt, wie wir im Team mit GitHub und VS Code arbeiten.
+
+Ziel ist: Wir vermeiden Chaos, überschreiben uns nicht gegenseitig und übernehmen Änderungen kontrolliert in die gemeinsame Projektversion.
 
 ## Grundregel
 
-`main` ist die stabile gemeinsame Version. Auf `main` wird nicht direkt gearbeitet.
+Wir arbeiten nicht direkt auf `main`.
 
-## Branches
+`main` ist unsere stabile gemeinsame Version. Neue Änderungen werden zuerst in einem eigenen Branch vorbereitet und danach per Pull Request in `main` übernommen.
 
-Branch-Namen beschreiben Aufgabe oder Bereich, nicht die Person.
+## Standardablauf in VS Code
 
-Gute Beispiele:
+### 1. Auf `main` starten
 
-```txt
-feature/project-setup
+Unten links in VS Code muss `main` stehen.
+
+Falls dort ein anderer Branch steht, zuerst auf `main` wechseln.
+
+Danach `main` synchronisieren, damit der aktuelle Stand von GitHub lokal vorhanden ist.
+
+### 2. Neuen Branch erstellen
+
+Für jede Aufgabe wird ein eigener Branch erstellt.
+
+Beispiele:
+
+```text
 feature/login
 feature/summary
 feature/board
 feature/add-task
 feature/contacts
-feature/responsive-layout
+docs/update-git-workflow
 ```
 
-Schlechte Beispiele:
+Branch-Namen beschreiben die Aufgabe, nicht die Person.
 
-```txt
-feature/roger
+Gut:
+
+```text
+feature/contacts
+```
+
+Nicht gut:
+
+```text
 feature/contacts-marko
-feature/kevin-board
 ```
 
-## Täglicher Ablauf
+### 3. Dateien ändern
 
-```bash
-git checkout main
-git pull origin main
-git checkout -b feature/board
+Danach werden die passenden Dateien bearbeitet.
+
+Beispiele:
+
+```text
+board.html
+css/board.css
+js/board.js
 ```
 
-Nach Änderungen:
+oder:
 
-```bash
-git status
-git add .
-git commit -m "Add board layout"
-git push -u origin feature/board
+```text
+contacts.html
+css/contacts.css
+js/contacts.js
 ```
 
-Danach auf GitHub einen Pull Request nach `main` erstellen.
+Wichtig: Gemeinsame Dateien werden nur nach Absprache geändert.
 
-## Vor jeder Arbeit
+### 4. Änderung committen
 
-```bash
-git checkout main
-git pull origin main
+In VS Code links auf „Quellcodeverwaltung“ gehen.
+
+Dort sieht man die geänderten Dateien.
+
+Eine kurze Commit-Nachricht eintragen, zum Beispiel:
+
+```text
+Update login button text
 ```
 
-## Wenn ein Feature fertig ist
+Dann auf `Commit` klicken.
 
-1. Push auf GitHub.
-2. Pull Request öffnen.
-3. Team prüft kurz.
-4. Merge nach `main`.
-5. Feature-Branch löschen.
+### 5. Branch veröffentlichen
 
-## Konfliktarme Regel
+Nach dem Commit auf `Branch veröffentlichen` oder `Sync Changes` klicken.
 
-Gemeinsame Dateien nur nach Absprache ändern:
+Damit wird der Branch zu GitHub hochgeladen.
 
-- `css/global.css`
-- `css/layout.css`
-- `js/storage.js`
-- `js/main.js`
-- `README.md`
+### 6. Pull Request erstellen
+
+In VS Code über „GitHub Pull Requests“ einen Pull Request erstellen.
+
+Die Richtung muss sein:
+
+```text
+feature/... → main
+```
+
+Also: Der Feature-Branch wird in `main` übernommen.
+
+### 7. Pull Request prüfen
+
+Vor dem Merge prüfen:
+
+* Stimmt die Richtung `feature/... → main`?
+* Sind nur die erwarteten Dateien geändert?
+* Gibt es keine Konflikte?
+* Ist die Änderung verständlich beschrieben?
+
+### 8. Pull Request mergen
+
+Wenn alles passt, wird der Pull Request gemerged.
+
+Danach ist die Änderung offiziell in `main`.
+
+### 9. Branch löschen
+
+Nach dem Merge kann der Branch gelöscht werden.
+
+Dabei können sowohl der lokale Branch als auch der Remote-Branch auf GitHub gelöscht werden.
+
+### 10. Zurück auf `main`
+
+Nach dem Merge wieder auf `main` wechseln und synchronisieren.
+
+Danach ist der eigene lokale Stand wieder sauber.
+
+## Merksatz
+
+```text
+main ist die stabile gemeinsame Version.
+feature/... ist ein Arbeitszweig für eine konkrete Aufgabe.
+Änderungen kommen über Pull Request zurück nach main.
+```
