@@ -254,4 +254,4 @@ Die fachliche Umsetzung von Login, Board, Contacts, Add Task, Storage, Drag & Dr
 
 Am Ende soll Join eine funktionierende Task-Management-App sein, in der Aufgaben erstellt, angezeigt, bearbeitet und organisiert werden können.
 
-Wichtig ist neben der technischen Umsetzung auch die saubere Zusammenarbeit im Team.
+Wichtig ist neben der technischen Umsetzung auch die saubere Zusammenarbeit im Team und weniger Konflikte.
