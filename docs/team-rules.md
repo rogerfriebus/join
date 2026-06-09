@@ -1,24 +1,130 @@
-# Teamregeln für Join
 
-## Arbeitsprinzip
+# Team-Regeln für das Join-Projekt
 
-Wir arbeiten nicht schnell-chaotisch, sondern ruhig, sichtbar und prüfbar.
+Diese Regeln helfen uns, im Team sauber zusammenzuarbeiten und Merge-Konflikte zu vermeiden.
 
-## Regeln
+## 1. Nicht direkt auf `main` arbeiten
 
-1. Änderungen an gemeinsamen Dateien vorher kurz abstimmen.
-2. Jeder arbeitet möglichst in seinem Aufgabenbereich.
-3. Kleine Commits statt riesiger Sammel-Commits.
-4. Vor dem Push testen, ob die eigene Seite im Browser lädt.
-5. Pull Requests erst mergen, wenn keine offensichtlichen Fehler sichtbar sind.
-6. Figma-Vorgabe nicht eigenmächtig verändern.
-7. Wenn ein Konflikt entsteht: nicht blind klicken, sondern gemeinsam lösen.
+`main` ist unsere stabile gemeinsame Projektversion.
 
-## Kurze Abstimmung vor Arbeitsbeginn
+Neue Änderungen werden immer zuerst in einem eigenen Branch vorbereitet.
 
-Jeder beantwortet kurz:
+## 2. Branch-Namen beschreiben Aufgaben
 
-- Woran arbeite ich heute?
-- Welche Dateien werde ich voraussichtlich ändern?
-- Brauche ich eine gemeinsame Datei?
-- Gibt es Blocker?
+Branch-Namen enthalten keine Personennamen.
+
+Gut:
+
+```text
+feature/board
+feature/contacts
+feature/login
+docs/update-readme
+```
+
+Nicht gut:
+
+```text
+feature/board-kevin
+feature/contacts-marko
+feature/login-roger
+```
+
+Wer an welcher Aufgabe arbeitet, klären wir über Absprache oder Aufgabenliste, nicht über den Branch-Namen.
+
+## 3. Möglichst getrennte Dateien bearbeiten
+
+Jeder Aufgabenbereich hat eigene Dateien.
+
+Beispiele:
+
+```text
+Board:
+board.html
+css/board.css
+js/board.js
+
+Contacts:
+contacts.html
+css/contacts.css
+js/contacts.js
+
+Summary:
+summary.html
+css/summary.css
+js/summary.js
+
+Add Task:
+add-task.html
+css/add-task.css
+js/add-task.js
+
+Login / Registrierung:
+index.html
+css/auth.css
+js/auth.js
+```
+
+So vermeiden wir, dass mehrere Personen gleichzeitig dieselbe Datei ändern.
+
+## 4. Gemeinsame Dateien nur nach Absprache ändern
+
+Diese Dateien betreffen mehrere Bereiche und werden nur koordiniert geändert:
+
+```text
+css/global.css
+css/layout.css
+css/responsive.css
+js/main.js
+js/storage.js
+js/validation.js
+README.md
+docs/team-rules.md
+docs/git-workflow.md
+```
+
+Wenn eine dieser Dateien geändert werden muss, sprechen wir das vorher kurz ab.
+
+## 5. Kleine Pull Requests statt große Sammeländerungen
+
+Lieber kleine, verständliche Änderungen als riesige Pull Requests.
+
+Gut:
+
+```text
+Login-Button korrigieren
+Board-Grundlayout erstellen
+Contacts-Seite vorbereiten
+README ergänzen
+```
+
+Nicht gut:
+
+```text
+Alles auf einmal ändern
+```
+
+## 6. Vor dem Merge kurz prüfen
+
+Vor dem Merge prüfen wir:
+
+```text
+Sind die richtigen Dateien geändert?
+Gibt es Konflikte?
+Funktioniert die Seite noch?
+Ist die Änderung verständlich?
+```
+
+## 7. Nach dem Merge Branch löschen
+
+Wenn ein Pull Request gemerged wurde, wird der zugehörige Branch gelöscht.
+
+Danach wieder auf `main` wechseln und synchronisieren.
+
+## Merksatz
+
+```text
+Erst abstimmen, dann ändern.
+Erst Branch, dann Commit.
+Erst Pull Request, dann Merge.
+```
