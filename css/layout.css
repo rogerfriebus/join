@@ -1,0 +1,42 @@
+.page {
+  min-height: 100vh;
+  padding: var(--spacing-page);
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 32px;
+  background: var(--color-surface);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.logo {
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+.app-header nav {
+  display: flex;
+  gap: 16px;
+}
+
+.card {
+  background: var(--color-surface);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
+}
+
+@media (max-width: 768px) {
+  .app-header {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 16px;
+  }
+
+  .app-header nav {
+    flex-wrap: wrap;
+  }
+}

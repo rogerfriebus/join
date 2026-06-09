@@ -1,0 +1,20 @@
+# Betriebssystem
+.DS_Store
+Thumbs.db
+
+# Editor
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+
+# Logs
+*.log
+
+# Temporäre Dateien
+tmp/
+temp/
+
+# Build / Dependencies, falls später Tools genutzt werden
+node_modules/
+dist/
+build/
