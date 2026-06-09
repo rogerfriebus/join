@@ -3,9 +3,20 @@
 
 Join ist ein gemeinsames Teamprojekt der Developer Akademie.
 
-Ziel ist die Entwicklung einer webbasierten Kanban-/Task-Management-App mit HTML, CSS und JavaScript.
+Ziel ist die Entwicklung einer webbasierten Kanban-/Task-Management-App nach Figma-Vorgabe mit klassischem HTML, CSS und JavaScript.
 
 Das Projekt wird im Team umgesetzt und dient dazu, die Zusammenarbeit mit Git, GitHub, VS Code, Figma und agilen Arbeitsweisen praktisch zu üben.
+
+## Projektziel
+
+Wir bauen gemeinsam eine Web-App mit folgenden Bereichen:
+
+* Login / Registrierung
+* Summary
+* Board
+* Add Task
+* Contacts
+* Legal Notice / Privacy Policy
 
 ## Team
 
@@ -13,19 +24,75 @@ Das Projekt wird im Team umgesetzt und dient dazu, die Zusammenarbeit mit Git, G
 * Kevin
 * Marko
 
-## Technologie
+## Technische Grundlage
 
-Dieses Projekt wird aktuell mit klassischen Webtechnologien umgesetzt:
+Dieses Projekt wird zunächst ohne Framework umgesetzt:
+
+* HTML
+* CSS
+* JavaScript
+
+Später ggf. Firebase / Remote Storage nach Kursvorgabe.
+
+Kein Angular, kein React und kein npm-Setup, solange die Join-Vorgaben nichts anderes verlangen.
+
+## Empfohlene Arbeitsweise
+
+1. Nicht direkt auf `main` arbeiten.
+2. Für jede größere Aufgabe einen Feature-Branch erstellen.
+3. Möglichst getrennte Dateien pro Funktionsbereich nutzen.
+4. Gemeinsame Dateien nur nach Absprache ändern.
+5. Vor Arbeitsbeginn immer den aktuellen Stand holen.
+6. Kleine, verständliche Commits schreiben.
+7. Fertige Arbeit per Pull Request zusammenführen.
+
+## Branch-Namensschema
+
+Branch-Namen beschreiben die Aufgabe, nicht die Person.
+
+Gut:
 
 ```text
-HTML
-CSS
-JavaScript
+feature/project-setup
+feature/login
+feature/signup
+feature/summary
+feature/board
+feature/add-task
+feature/contacts
+feature/responsive-layout
+docs/update-git-workflow
+docs/update-team-rules
+docs/update-readme
 ```
 
-Es wird in diesem Projekt zunächst kein Angular verwendet.
+Nicht gut:
 
-## Projektstruktur
+```text
+feature/login-roger
+feature/board-kevin
+feature/contacts-marko
+```
+
+Keine Personennamen in Branches. Verantwortlichkeiten stehen in `docs/task-split.md` oder werden im Team abgestimmt.
+
+## Lokaler Start
+
+Das Projekt kann direkt im Browser geöffnet werden.
+
+Einstiegsdatei:
+
+```text
+index.html
+```
+
+Empfohlen für die lokale Vorschau in VS Code:
+
+```text
+Live Server
+```
+
+## Ordnerstruktur
 
 ```text
 join/
@@ -45,7 +112,8 @@ join/
 ├── docs/
 │   ├── git-workflow.md
 │   ├── team-rules.md
-│   └── task-split.md
+│   ├── task-split.md
+│   └── setup-checklist.md
 ├── js/
 │   ├── main.js
 │   ├── storage.js
@@ -115,29 +183,7 @@ Vor der ersten Aufgabe bitte lesen:
 * [Git-Workflow mit VS Code](https://chatgpt.com/g/g-p-6925716879608191892716bb862aa7ff-developer-akademie/c/docs/git-workflow.md)
 * [Team-Regeln](https://chatgpt.com/g/g-p-6925716879608191892716bb862aa7ff-developer-akademie/c/docs/team-rules.md)
 * [Aufgabenaufteilung](https://chatgpt.com/g/g-p-6925716879608191892716bb862aa7ff-developer-akademie/c/docs/task-split.md)
-
-## Grundregel für Branches
-
-Branch-Namen beschreiben die Aufgabe, nicht die Person.
-
-Gut:
-
-```text
-feature/login
-feature/summary
-feature/board
-feature/add-task
-feature/contacts
-docs/update-git-workflow
-```
-
-Nicht gut:
-
-```text
-feature/login-roger
-feature/board-kevin
-feature/contacts-marko
-```
+* [Setup-Checkliste](https://chatgpt.com/g/g-p-6925716879608191892716bb862aa7ff-developer-akademie/c/docs/setup-checklist.md)
 
 ## Gemeinsame Dateien
 
@@ -157,17 +203,38 @@ docs/git-workflow.md
 
 Bereichsdateien wie `board.css`, `contacts.css`, `summary.css`, `add-task.css` oder `auth.css` können einfacher einer konkreten Aufgabe zugeordnet werden.
 
-## Projekt lokal öffnen
+## Wichtige Regel gegen Merge-Konflikte
 
-Das Projekt kann direkt im Browser geöffnet werden.
+Bitte möglichst nicht gleichzeitig dieselbe Datei bearbeiten.
 
-Einstiegsdatei:
+Beispiele für saubere Aufteilung:
 
 ```text
-index.html
-```
+Board:
+board.html
+css/board.css
+js/board.js
 
-In VS Code kann zum Testen zum Beispiel die Erweiterung „Live Server“ verwendet werden.
+Contacts:
+contacts.html
+css/contacts.css
+js/contacts.js
+
+Summary:
+summary.html
+css/summary.css
+js/summary.js
+
+Add Task:
+add-task.html
+css/add-task.css
+js/add-task.js
+
+Login / Registrierung:
+index.html
+css/auth.css
+js/auth.js
+```
 
 ## Aktueller Entwicklungsstand
 
