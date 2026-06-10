@@ -2,6 +2,8 @@
 # Git-Workflow für das Join-Projekt
 
 Diese Anleitung beschreibt, wie wir im Team mit GitHub und VS Code arbeiten.
+Join ist ein Angular-Projekt; der hier beschriebene VS-Code-Workflow bleibt
+unverändert gültig.
 
 Ziel ist: Wir vermeiden Chaos, überschreiben uns nicht gegenseitig und übernehmen Änderungen kontrolliert in die gemeinsame Projektversion.
 
@@ -57,20 +59,17 @@ Danach werden die passenden Dateien bearbeitet.
 Beispiele:
 
 ```text
-board.html
-css/board.css
-js/board.js
+src/app/pages/board/
 ```
 
 oder:
 
 ```text
-contacts.html
-css/contacts.css
-js/contacts.js
+src/app/pages/contacts/
 ```
 
-Wichtig: Gemeinsame Dateien werden nur nach Absprache geändert.
+Wichtig: Gemeinsame Dateien (z. B. `package.json`, `package-lock.json`,
+`angular.json`, `src/app/app.routes.ts`) werden nur nach Absprache geändert.
 
 ### 4. Änderung committen
 
