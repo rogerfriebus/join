@@ -3,6 +3,42 @@
 Join ist ein **Angular-Projekt** (SPA). Diese Regeln helfen uns, im Team sauber
 zusammenzuarbeiten und Merge-Konflikte zu vermeiden.
 
+## Angular und Branches
+
+Angular hilft uns, die Arbeit besser aufzuteilen, weil Funktionen in
+Komponenten, Seiten, Services und Layout-Bereiche getrennt werden können.
+
+Trotzdem arbeiten wir weiterhin mit Branches.
+
+Warum?
+
+- `main` bleibt unsere stabile gemeinsame Version.
+- Ein Feature-Branch schützt `main` vor unfertigen Änderungen.
+- Pull Requests machen Änderungen sichtbar und prüfbar.
+- Auch in Angular gibt es gemeinsame Dateien, die mehrere Teammitglieder
+  betreffen können.
+
+Kurz gesagt: **Angular trennt die Arbeit fachlich, Git-Branches schützen `main`
+organisatorisch.** Das eine ersetzt das andere nicht.
+
+Die Aussage „Wenn wir mit Angular arbeiten, brauchen wir keine Branches, weil
+jeder in seinem eigenen Bereich arbeitet" ist nur halb richtig: Die fachliche
+Aufteilung über Komponenten stimmt – sie macht Branches und Pull Requests aber
+nicht überflüssig.
+
+Beispiele für gemeinsame Dateien:
+
+```text
+package.json
+package-lock.json
+angular.json
+src/app/app.routes.ts
+src/styles.scss
+src/app/core/services/*
+src/app/shared/*
+src/app/layout/*
+```
+
 ## 1. Nicht direkt auf `main` arbeiten
 
 `main` ist unsere stabile gemeinsame Projektversion. Neue Änderungen werden
