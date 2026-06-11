@@ -13,6 +13,11 @@ Wir arbeiten nicht direkt auf `main`.
 
 `main` ist unsere stabile gemeinsame Version. Neue Änderungen werden zuerst in einem eigenen Branch vorbereitet und danach per Pull Request in `main` übernommen.
 
+Das gilt auch mit Angular. Angular trennt die Arbeit zwar fachlich über
+Komponenten, Seiten und Services – Branches schützen `main` aber zusätzlich
+organisatorisch. Die ausführliche Einordnung steht in
+`docs/team-rules.md` (Abschnitt „Angular und Branches").
+
 ## Standardablauf in VS Code
 
 ### 1. Auf `main` starten
