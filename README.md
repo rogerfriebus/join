@@ -4,7 +4,8 @@ Join ist ein gemeinsames Teamprojekt der Developer Akademie – eine webbasierte
 Kanban-/Task-Management-App nach Figma-Vorgabe.
 
 **Join ist ein Angular-Projekt.** Die frühere HTML/CSS/JS-Struktur wurde ersetzt
-und ist archiviert (siehe `docs/archive/html-css-js-starter/`).
+und ist nicht mehr Teil des aktuellen Projektstands. Sie bleibt nur über die
+Git-Historie nachvollziehbar.
 
 Die App ist als **Single Page Application (SPA)** umgesetzt, nicht als Multi Page
 Application.
@@ -71,8 +72,7 @@ join/
 │           ├── contacts/
 │           ├── legal-notice/
 │           └── privacy-policy/
-├── docs/
-│   └── archive/html-css-js-starter/   (alter HTML/CSS/JS-Starter, archiviert)
+├── docs/                              (Team-Doku: Regeln, Git-Workflow, Setup)
 ├── angular.json
 ├── package.json
 └── README.md
@@ -130,5 +130,5 @@ docs/supabase-setup.md
 ## Hinweis zur alten Struktur
 
 Die ursprüngliche HTML/CSS/JS-Variante wurde durch das Angular-Projekt ersetzt.
-Die alten Dateien bleiben über die Git-Historie und im Ordner
-`docs/archive/html-css-js-starter/` erhalten.
+Die alten Dateien sind nicht mehr Teil des aktuellen Projektstands und bleiben
+ausschließlich über die Git-Historie nachvollziehbar.
