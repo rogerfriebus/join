@@ -1,20 +1,59 @@
-# Betriebssystem
-.DS_Store
-Thumbs.db
+# Dependencies
+node_modules/
 
-# Editor
+# Angular build output
+dist/
+.angular/
+.cache/
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+
+# Coverage
+coverage/
+.nyc_output/
+
+# IDE / editor
 .vscode/*
 !.vscode/extensions.json
 !.vscode/settings.json
+.idea/
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
 
-# Logs
-*.log
+# OS files
+.DS_Store
+Thumbs.db
+desktop.ini
 
-# Temporäre Dateien
+# Environment / secrets
+.env
+.env.*
+*.env
+secrets/
+*.pem
+*.key
+*.crt
+
+# Supabase local files, if ever used locally
+supabase/.branches/
+supabase/.temp/
+
+# Temporary files
 tmp/
 temp/
-
-# Build / Dependencies, falls später Tools genutzt werden
-node_modules/
-dist/
-build/
+*.tmp
+*.bak
