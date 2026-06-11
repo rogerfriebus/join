@@ -1,0 +1,43 @@
+<!--
+  Contacts-Seite (Sprint-1-Basis).
+
+  TODO (Sprint 1):
+    - Alphabetische Gruppierung der Kontaktliste (A, B, C ...).
+    - Detailansicht für ausgewählten Kontakt.
+    - Add Contact (Dialog/Formular).
+    - Edit Contact (Dialog/Formular).
+    - Delete Contact.
+
+  Form-Validation-Anforderungen (umzusetzen, NICHT über HTML5-Standardvalidation
+  als sichtbare Fehlerlösung):
+    - Fehlermeldungen in roter Schrift UNTER dem jeweiligen Input.
+    - Name, Email und Phone sind Pflichtfelder.
+    - Name braucht Vor- und Nachnamen und darf keine Zahlen enthalten.
+    - Email per Regex prüfen.
+    - Phone nur Zahlen, optional führendes +.
+-->
+<section class="contacts">
+  <h1>Contacts</h1>
+
+  <div class="contacts__layout">
+    <!-- Platzhalter: Kontaktliste -->
+    <aside class="contacts__list">
+      <!-- TODO: alphabetische Gruppierung statt flacher Liste -->
+      <ul>
+        @for (contact of contacts; track contact.id) {
+          <li>{{ contact.name }}</li>
+        }
+      </ul>
+
+      <!-- TODO: Button "Add Contact" -->
+    </aside>
+
+    <!-- Platzhalter: Detailansicht -->
+    <article class="contacts__detail">
+      <p>Detailansicht folgt.</p>
+      <!-- TODO: Detailansicht des ausgewählten Kontakts inkl. Edit/Delete -->
+    </article>
+  </div>
+
+  <!-- TODO: Platzhalter für Add/Edit Contact (Dialog/Overlay mit validiertem Formular) -->
+</section>

@@ -1,257 +1,134 @@
-
 # Join
 
-Join ist ein gemeinsames Teamprojekt der Developer Akademie.
+Join ist ein gemeinsames Teamprojekt der Developer Akademie – eine webbasierte
+Kanban-/Task-Management-App nach Figma-Vorgabe.
 
-Ziel ist die Entwicklung einer webbasierten Kanban-/Task-Management-App nach Figma-Vorgabe mit klassischem HTML, CSS und JavaScript.
+**Join ist ein Angular-Projekt.** Die frühere HTML/CSS/JS-Struktur wurde ersetzt
+und ist archiviert (siehe `docs/archive/html-css-js-starter/`).
 
-Das Projekt wird im Team umgesetzt und dient dazu, die Zusammenarbeit mit Git, GitHub, VS Code, Figma und agilen Arbeitsweisen praktisch zu üben.
-
-## Projektziel
-
-Wir bauen gemeinsam eine Web-App mit folgenden Bereichen:
-
-* Login / Registrierung
-* Summary
-* Board
-* Add Task
-* Contacts
-* Legal Notice / Privacy Policy
+Die App ist als **Single Page Application (SPA)** umgesetzt, nicht als Multi Page
+Application.
 
 ## Team
 
-* Roger
-* Kevin
-* Marko
+- Roger
+- Kevin
+- Marko
 
 ## Technische Grundlage
 
-Dieses Projekt wird zunächst ohne Framework umgesetzt:
+Empfohlene Versionen (Teamstand):
 
-* HTML
-* CSS
-* JavaScript
+- Angular CLI `21.2.x`
+- Node.js `24.x`
+- npm `11.x`
 
-Später ggf. Firebase / Remote Storage nach Kursvorgabe.
+Stylesheets: SCSS. Kein zusätzliches UI-Framework. Kein SSR.
 
-Kein Angular, kein React und kein npm-Setup, solange die Join-Vorgaben nichts anderes verlangen.
+## Setup
 
-## Empfohlene Arbeitsweise
+Abhängigkeiten installieren:
 
-1. Nicht direkt auf `main` arbeiten.
-2. Für jede größere Aufgabe einen Feature-Branch erstellen.
-3. Möglichst getrennte Dateien pro Funktionsbereich nutzen.
-4. Gemeinsame Dateien nur nach Absprache ändern.
-5. Vor Arbeitsbeginn immer den aktuellen Stand holen.
-6. Kleine, verständliche Commits schreiben.
-7. Fertige Arbeit per Pull Request zusammenführen.
-
-## Branch-Namensschema
-
-Branch-Namen beschreiben die Aufgabe, nicht die Person.
-
-Gut:
-
-```text
-feature/project-setup
-feature/login
-feature/signup
-feature/summary
-feature/board
-feature/add-task
-feature/contacts
-feature/responsive-layout
-docs/update-git-workflow
-docs/update-team-rules
-docs/update-readme
+```bash
+npm install
 ```
 
-Nicht gut:
+Entwicklungsserver starten:
 
-```text
-feature/login-roger
-feature/board-kevin
-feature/contacts-marko
+```bash
+ng serve
 ```
-
-Keine Personennamen in Branches. Verantwortlichkeiten stehen in `docs/task-split.md` oder werden im Team abgestimmt.
 
 ## Lokaler Start
 
-Das Projekt kann direkt im Browser geöffnet werden.
-
-Einstiegsdatei:
+Nach `ng serve` läuft die App lokal unter:
 
 ```text
-index.html
+http://localhost:4200
 ```
 
-Empfohlen für die lokale Vorschau in VS Code:
-
-```text
-Live Server
-```
-
-## Ordnerstruktur
+## Projektstruktur (Auszug)
 
 ```text
 join/
-├── assets/
-│   ├── fonts/
-│   ├── icons/
-│   └── img/
-├── css/
-│   ├── global.css
-│   ├── layout.css
-│   ├── auth.css
-│   ├── summary.css
-│   ├── board.css
-│   ├── add-task.css
-│   ├── contacts.css
-│   └── responsive.css
+├── src/
+│   └── app/
+│       ├── core/
+│       │   ├── services/
+│       │   └── models/
+│       ├── shared/
+│       │   └── components/
+│       ├── layout/
+│       │   ├── header/
+│       │   ├── navbar/
+│       │   ├── footer/
+│       │   └── shell/
+│       └── pages/
+│           ├── login/
+│           ├── summary/
+│           ├── board/
+│           ├── add-task/
+│           ├── contacts/
+│           ├── legal-notice/
+│           └── privacy-policy/
 ├── docs/
-│   ├── git-workflow.md
-│   ├── team-rules.md
-│   ├── task-split.md
-│   └── setup-checklist.md
-├── js/
-│   ├── main.js
-│   ├── storage.js
-│   ├── validation.js
-│   ├── auth.js
-│   ├── summary.js
-│   ├── board.js
-│   ├── add-task.js
-│   └── contacts.js
-├── index.html
-├── summary.html
-├── board.html
-├── add-task.html
-├── contacts.html
-├── privacy-policy.html
-├── legal-notice.html
-├── .gitignore
+│   └── archive/html-css-js-starter/   (alter HTML/CSS/JS-Starter, archiviert)
+├── angular.json
+├── package.json
 └── README.md
 ```
 
-## Seiten
+## Routing
 
-| Datei                   | Zweck                                   |
-| ----------------------- | --------------------------------------- |
-| `index.html`          | Login / Einstieg                        |
-| `summary.html`        | Zusammenfassung / Startseite nach Login |
-| `board.html`          | Kanban-Board                            |
-| `add-task.html`       | Neue Aufgabe erstellen                  |
-| `contacts.html`       | Kontakte                                |
-| `privacy-policy.html` | Datenschutzerklärung                   |
-| `legal-notice.html`   | Impressum                               |
+Login ist eine Angular-Route/Komponente (keine Root-`index.html`-Seite).
+`src/index.html` ist nur noch der App-Einstieg.
 
-## CSS-Dateien
+- `/login`
+- `/summary`
+- `/board`
+- `/add-task`
+- `/contacts`
+- `/legal-notice`
+- `/privacy-policy`
+- Default-Route → `/login`
+- Wildcard-Route → `/login`
 
-| Datei                  | Zweck                                   |
-| ---------------------- | --------------------------------------- |
-| `css/global.css`     | Globale Farben, Schrift, Grundregeln    |
-| `css/layout.css`     | Allgemeines Layout, Navigation, Sidebar |
-| `css/auth.css`       | Login / Registrierung                   |
-| `css/summary.css`    | Summary-Seite                           |
-| `css/board.css`      | Board-Seite                             |
-| `css/add-task.css`   | Add-Task-Seite                          |
-| `css/contacts.css`   | Contacts-Seite                          |
-| `css/responsive.css` | Übergreifende responsive Anpassungen   |
+## Supabase Cloud
 
-## JavaScript-Dateien
-
-| Datei                | Zweck                                                      |
-| -------------------- | ---------------------------------------------------------- |
-| `js/main.js`       | Allgemeine App-Logik                                       |
-| `js/storage.js`    | Datenhaltung / Local Storage / später ggf. Remote Storage |
-| `js/validation.js` | Gemeinsame Formularprüfungen                              |
-| `js/auth.js`       | Login / Registrierung                                      |
-| `js/summary.js`    | Logik für Summary                                         |
-| `js/board.js`      | Logik für Board                                           |
-| `js/add-task.js`   | Logik für Add Task                                        |
-| `js/contacts.js`   | Logik für Contacts                                        |
-
-## Zusammenarbeit im Team
-
-Bitte arbeitet nicht direkt auf `main`.
-
-`main` ist unsere stabile gemeinsame Projektversion. Änderungen werden zuerst in einem eigenen Branch vorbereitet und danach per Pull Request übernommen.
-
-Vor der ersten Aufgabe bitte lesen:
-
-* [Git-Workflow mit VS Code](https://chatgpt.com/g/g-p-6925716879608191892716bb862aa7ff-developer-akademie/c/docs/git-workflow.md)
-* [Team-Regeln](https://chatgpt.com/g/g-p-6925716879608191892716bb862aa7ff-developer-akademie/c/docs/team-rules.md)
-* [Aufgabenaufteilung](https://chatgpt.com/g/g-p-6925716879608191892716bb862aa7ff-developer-akademie/c/docs/task-split.md)
-* [Setup-Checkliste](https://chatgpt.com/g/g-p-6925716879608191892716bb862aa7ff-developer-akademie/c/docs/setup-checklist.md)
-
-## Gemeinsame Dateien
-
-Einige Dateien betreffen das gesamte Projekt und dürfen nur nach Absprache geändert werden:
+Join nutzt **Supabase Cloud**. In diesem Schritt ist Supabase nur strukturell
+vorbereitet. Es werden **keine Secrets / keine echten Keys** ins Repository
+geschrieben. Details:
 
 ```text
-css/global.css
-css/layout.css
-css/responsive.css
-js/main.js
-js/storage.js
-js/validation.js
-README.md
-docs/team-rules.md
+docs/supabase-setup.md
+```
+
+## Sprint 1 – Ziel
+
+- Projektstruktur (Angular SPA)
+- Git-Repository / Teamworkflow
+- Supabase Cloud vorbereiten
+- Dummy-Daten-Konzept
+- Header / Navbar / Footer
+- Contacts-Seite
+- Contacts User Stories 1–4
+
+Die Aufgabenverteilung wird zusätzlich im Trello Board des Teams gepflegt.
+
+## Teamworkflow (VS Code / GitHub)
+
+Wir arbeiten **nicht direkt auf `main`**. Änderungen laufen über Feature-Branches
+und Pull Requests. Der genaue Ablauf und die Regeln stehen hier:
+
+```text
 docs/git-workflow.md
+docs/team-rules.md
+docs/task-split.md
+docs/supabase-setup.md
 ```
 
-Bereichsdateien wie `board.css`, `contacts.css`, `summary.css`, `add-task.css` oder `auth.css` können einfacher einer konkreten Aufgabe zugeordnet werden.
+## Hinweis zur alten Struktur
 
-## Wichtige Regel gegen Merge-Konflikte
-
-Bitte möglichst nicht gleichzeitig dieselbe Datei bearbeiten.
-
-Beispiele für saubere Aufteilung:
-
-```text
-Board:
-board.html
-css/board.css
-js/board.js
-
-Contacts:
-contacts.html
-css/contacts.css
-js/contacts.js
-
-Summary:
-summary.html
-css/summary.css
-js/summary.js
-
-Add Task:
-add-task.html
-css/add-task.css
-js/add-task.js
-
-Login / Registrierung:
-index.html
-css/auth.css
-js/auth.js
-```
-
-## Aktueller Entwicklungsstand
-
-Die Grundstruktur des Projekts ist vorbereitet.
-
-Vorhanden sind:
-
-* HTML-Startseiten
-* getrennte CSS-Dateien pro Bereich
-* getrennte JavaScript-Dateien pro Bereich
-* Dokumentationsordner
-* GitHub-/VS-Code-Workflow für Zusammenarbeit
-
-Die fachliche Umsetzung von Login, Board, Contacts, Add Task, Storage, Drag & Drop und Validierung erfolgt schrittweise im Team.
-
-## Ziel
-
-Am Ende soll Join eine funktionierende Task-Management-App sein, in der Aufgaben erstellt, angezeigt, bearbeitet und organisiert werden können.
-
-Wichtig ist neben der technischen Umsetzung auch die saubere Zusammenarbeit im Team und weniger Konflikte.
+Die ursprüngliche HTML/CSS/JS-Variante wurde durch das Angular-Projekt ersetzt.
+Die alten Dateien bleiben über die Git-Historie und im Ordner
+`docs/archive/html-css-js-starter/` erhalten.

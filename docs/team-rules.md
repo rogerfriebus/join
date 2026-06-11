@@ -1,124 +1,91 @@
-
 # Team-Regeln für das Join-Projekt
 
-Diese Regeln helfen uns, im Team sauber zusammenzuarbeiten und Merge-Konflikte zu vermeiden.
+Join ist ein **Angular-Projekt** (SPA). Diese Regeln helfen uns, im Team sauber
+zusammenzuarbeiten und Merge-Konflikte zu vermeiden.
 
 ## 1. Nicht direkt auf `main` arbeiten
 
-`main` ist unsere stabile gemeinsame Projektversion.
-
-Neue Änderungen werden immer zuerst in einem eigenen Branch vorbereitet.
+`main` ist unsere stabile gemeinsame Projektversion. Neue Änderungen werden
+immer zuerst in einem eigenen Feature-Branch vorbereitet.
 
 ## 2. Branch-Namen beschreiben Aufgaben
 
-Branch-Namen enthalten keine Personennamen.
+Branch-Namen enthalten **keine Personennamen**.
 
 Gut:
 
 ```text
-feature/board
 feature/contacts
-feature/login
+feature/contacts-detail
+feature/layout-shell
+chore/angular-project-setup
 docs/update-readme
 ```
 
 Nicht gut:
 
 ```text
-feature/board-kevin
 feature/contacts-marko
+feature/board-kevin
 feature/login-roger
 ```
 
-Wer an welcher Aufgabe arbeitet, klären wir über Absprache oder Aufgabenliste, nicht über den Branch-Namen.
+Wer an welcher Aufgabe arbeitet, klären wir über Absprache oder
+`docs/task-split.md`, nicht über den Branch-Namen.
 
-## 3. Möglichst getrennte Dateien bearbeiten
+## 3. Feature-Branches und getrennte Bereiche
 
-Jeder Aufgabenbereich hat eigene Dateien.
+Jeder Aufgabenbereich hat eigene Komponenten/Ordner unter `src/app/`.
 
 Beispiele:
 
 ```text
-Board:
-board.html
-css/board.css
-js/board.js
-
-Contacts:
-contacts.html
-css/contacts.css
-js/contacts.js
-
-Summary:
-summary.html
-css/summary.css
-js/summary.js
-
-Add Task:
-add-task.html
-css/add-task.css
-js/add-task.js
-
-Login / Registrierung:
-index.html
-css/auth.css
-js/auth.js
+Contacts:   src/app/pages/contacts/
+Board:      src/app/pages/board/
+Add Task:   src/app/pages/add-task/
+Summary:    src/app/pages/summary/
+Layout:     src/app/layout/ (header, navbar, footer, shell)
 ```
 
 So vermeiden wir, dass mehrere Personen gleichzeitig dieselbe Datei ändern.
 
 ## 4. Gemeinsame Dateien nur nach Absprache ändern
 
-Diese Dateien betreffen mehrere Bereiche und werden nur koordiniert geändert:
+Diese Dateien betreffen das ganze Projekt und werden nur **koordiniert**
+geändert:
 
 ```text
-css/global.css
-css/layout.css
-css/responsive.css
-js/main.js
-js/storage.js
-js/validation.js
+package.json
+package-lock.json
+angular.json
+tsconfig*.json
+src/app/app.routes.ts
+src/app/app.config.ts
+src/styles.scss
 README.md
 docs/team-rules.md
 docs/git-workflow.md
 ```
 
-Wenn eine dieser Dateien geändert werden muss, sprechen wir das vorher kurz ab.
+Besonders `package.json`, `package-lock.json` und `angular.json` bitte nur nach
+Absprache anfassen – sonst gibt es schnell Konflikte bei Dependencies und Build.
 
-## 5. Kleine Pull Requests statt große Sammeländerungen
+## 5. Kleine Pull Requests statt großer Sammeländerungen
 
 Lieber kleine, verständliche Änderungen als riesige Pull Requests.
 
-Gut:
-
-```text
-Login-Button korrigieren
-Board-Grundlayout erstellen
-Contacts-Seite vorbereiten
-README ergänzen
-```
-
-Nicht gut:
-
-```text
-Alles auf einmal ändern
-```
-
 ## 6. Vor dem Merge kurz prüfen
-
-Vor dem Merge prüfen wir:
 
 ```text
 Sind die richtigen Dateien geändert?
+Läuft der Build (npm run build)?
 Gibt es Konflikte?
-Funktioniert die Seite noch?
-Ist die Änderung verständlich?
+Ist die Änderung verständlich beschrieben?
 ```
 
 ## 7. Nach dem Merge Branch löschen
 
 Wenn ein Pull Request gemerged wurde, wird der zugehörige Branch gelöscht.
-
 Danach wieder auf `main` wechseln und synchronisieren.
 
 ## Merksatz

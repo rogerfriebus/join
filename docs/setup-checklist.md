@@ -14,7 +14,8 @@
 - [ ] Einladung auf GitHub annehmen
 - [ ] Repository per SSH klonen
 - [ ] Projekt in VS Code öffnen
-- [ ] `index.html` mit Live Server testen
+- [ ] `npm install` ausführen
+- [ ] App mit `ng serve` testen (`http://localhost:4200`)
 - [ ] Eigenen Feature-Branch erstellen
 
 ## Vor Abgabe

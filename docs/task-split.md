@@ -1,62 +1,45 @@
 # Aufgabenaufteilung Join
 
-Diese Datei ist ein Vorschlag und kann im Team angepasst werden.
+Diese Datei ist ein Vorschlag und kann im Team angepasst werden. Sie ergänzt das
+Trello Board, in dem die Aufgaben laufend gepflegt werden.
 
-## Setup / Infrastruktur
+Join ist ein **Angular-Projekt** (SPA).
 
-Verantwortlich: Roger
+## Sprint 1 – Vorschlag
 
-Dateien:
+### Roger
 
-- `README.md`
-- `.gitignore`
-- `docs/*`
-- Grundstruktur HTML/CSS/JS
+- Angular-Projekt-Setup
+- Supabase-Struktur (Vorbereitung, ohne Secrets)
+- Dokumentation (`README.md`, `docs/*`)
+- Code-Reviews / Pull Requests
 
-## Login / Registrierung
+### Kevin
 
-Dateien:
+- Layout-Shell (`src/app/layout/shell/`)
+- Header (`src/app/layout/header/`)
+- Navbar (`src/app/layout/navbar/`)
+- Footer (`src/app/layout/footer/`)
 
-- `index.html`
-- `css/auth.css`
-- `js/auth.js`
-- `js/validation.js`
+### Marko
 
-## Summary
+- Contacts UI (`src/app/pages/contacts/`)
+- Kontaktliste
+- Detailansicht
 
-Dateien:
+### Gemeinsame Integration
 
-- `summary.html`
-- `css/summary.css`
-- `js/summary.js`
-
-## Board
-
-Dateien:
-
-- `board.html`
-- `css/board.css`
-- `js/board.js`
-
-## Add Task
-
-Dateien:
-
-- `add-task.html`
-- `css/add-task.css`
-- `js/add-task.js`
-
-## Contacts
-
-Dateien:
-
-- `contacts.html`
-- `css/contacts.css`
-- `js/contacts.js`
+- Contact Form (Add / Edit)
+- Formular-Validierung
+- CRUD gegen Supabase
 
 ## Gemeinsame Dateien mit Abstimmung
 
-- `css/global.css`
-- `css/layout.css`
-- `js/storage.js`
-- `js/main.js`
+```text
+package.json
+package-lock.json
+angular.json
+src/app/app.routes.ts
+src/app/app.config.ts
+src/styles.scss
+```
