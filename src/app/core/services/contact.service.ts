@@ -45,18 +45,70 @@ export class ContactService {
     return this.mockContacts().find((contact) => contact.id === id);
   }
 
-  // TODO (Sprint 1+): Kontakt anlegen (Supabase INSERT).
-  addContact(_contact: Contact): void {
-    // TODO: Implementierung gegen Supabase.
+  /**
+   * Legt einen Kontakt im (Mock-)Bestand an und gibt den gespeicherten
+   * Kontakt zurück. Fehlt eine id, wird eine eindeutige id erzeugt.
+   *
+   * Später (Supabase): INSERT in die Tabelle `contacts`; die id kommt dann
+   * aus der Datenbank.
+   */
+  addContact(contact: Contact): Contact {
+    const id = contact.id ?? this.generateId();
+    const newContact: Contact = { ...contact, id };
+    this.mockContacts.update((contacts) => [...contacts, newContact]);
+    return newContact;
   }
 
-  // TODO (Sprint 1+): Kontakt aktualisieren (Supabase UPDATE).
-  updateContact(_contact: Contact): void {
-    // TODO: Implementierung gegen Supabase.
+  /**
+   * Aktualisiert einen bestehenden Kontakt anhand seiner id und gibt den
+   * aktualisierten Kontakt zurück. Liefert undefined, wenn keine id gesetzt
+   * ist oder kein Kontakt mit dieser id existiert.
+   *
+   * Später (Supabase): UPDATE der Zeile mit passender id.
+   */
+  updateContact(contact: Contact): Contact | undefined {
+    if (!contact.id) {
+      return undefined;
+    }
+    const index = this.mockContacts().findIndex((c) => c.id === contact.id);
+    if (index === -1) {
+      return undefined;
+    }
+    const updated: Contact = { ...contact };
+    this.mockContacts.update((contacts) => {
+      const next = [...contacts];
+      next[index] = updated;
+      return next;
+    });
+    return updated;
   }
 
-  // TODO (Sprint 1+): Kontakt löschen (Supabase DELETE).
-  deleteContact(_id: string): void {
-    // TODO: Implementierung gegen Supabase.
+  /**
+   * Entfernt einen Kontakt anhand seiner id. Gibt true zurück, wenn ein
+   * Kontakt entfernt wurde, sonst false.
+   *
+   * Später (Supabase): DELETE der Zeile mit passender id.
+   */
+  deleteContact(id: string): boolean {
+    const before = this.mockContacts().length;
+    this.mockContacts.update((contacts) => contacts.filter((c) => c.id !== id));
+    return this.mockContacts().length < before;
+  }
+
+  /**
+   * Erzeugt eine eindeutige id für neue Kontakte (Mock-Betrieb).
+   * Basiert auf der höchsten vorhandenen numerischen id + 1 und stellt
+   * sicher, dass die id noch nicht vergeben ist. Mit Supabase entfällt dies.
+   */
+  private generateId(): string {
+    const numericIds = this.mockContacts()
+      .map((contact) => Number(contact.id))
+      .filter((value) => Number.isFinite(value));
+    let next = (numericIds.length ? Math.max(...numericIds) : 0) + 1;
+    const existing = new Set(this.mockContacts().map((contact) => contact.id));
+    while (existing.has(String(next))) {
+      next++;
+    }
+    return String(next);
   }
 }
