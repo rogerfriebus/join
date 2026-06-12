@@ -1,14 +1,15 @@
-<!-- TODO (Sprint 1, Kevin): Layout-Feinschliff laut Figma (Sidebar/Topbar, Responsive) -->
+<!-- TODO (Sprint 1, Marco): Layout-Feinschliff laut Figma (Sidebar/Topbar, Responsive) -->
 <div class="shell">
-  <app-header />
-
-  <div class="shell__body">
+  <aside class="shell__sidebar">
     <app-navbar />
+    <app-footer />
+  </aside>
+
+  <div class="shell__workspace">
+    <app-header />
 
     <main class="shell__content">
       <router-outlet />
     </main>
   </div>
-
-  <app-footer />
 </div>
