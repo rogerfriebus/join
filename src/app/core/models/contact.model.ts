@@ -14,6 +14,10 @@ export interface Contact {
   email: string;
   /** Telefonnummer (nur Ziffern, optional führendes +). Pflichtfeld. */
   phone: string;
+  /** Avatar-Farbe (Hex), für die spätere Contacts-UI. Optional, ggf. ableitbar. */
+  color?: string;
+  /** Initialen (z. B. "AS"), für die spätere Contacts-UI. Optional, ggf. ableitbar. */
+  initials?: string;
   /** Erstellungszeitpunkt (ISO-String), wird von Supabase gesetzt. */
   createdAt?: string;
   /** Letzter Änderungszeitpunkt (ISO-String), wird von Supabase gesetzt. */
