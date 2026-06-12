@@ -12,3 +12,17 @@
   min-height: 100vh;
   background-color: #2a3647;
 }
+
+.shell__workspace {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.shell__content {
+  flex: 1;
+  min-width: 0;
+  padding: 96px;
+  overflow-x: hidden;
+}
