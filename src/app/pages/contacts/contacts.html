@@ -60,7 +60,7 @@ TODO: Platzhalter für Add/Edit Contact (Dialog/Overlay mit validiertem Formular
           class="contact-item"
           *ngFor="let contact of group.contacts"
         >
-          <div class="avatar">{{ getInitials(contact.name) }}</div>
+          <div class="avatar" [style.background-color]="contact.color">{{ contact.initials }}</div>
           <div class="contact-info">
             <p class="contact-name">{{ contact.name }}</p>
             <p class="contact-email">{{ contact.email }}</p>
