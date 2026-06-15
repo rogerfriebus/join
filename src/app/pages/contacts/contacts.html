@@ -1,52 +1,7 @@
-<!--
-  Contacts-Seite (Sprint-1-Basis).
-
-  TODO (Sprint 1):
-    - Alphabetische Gruppierung der Kontaktliste (A, B, C ...).
-    - Detailansicht für ausgewählten Kontakt.
-    - Add Contact (Dialog/Formular).
-    - Edit Contact (Dialog/Formular).
-    - Delete Contact.
-
-  Form-Validation-Anforderungen (umzusetzen, NICHT über HTML5-Standardvalidation
-  als sichtbare Fehlerlösung):
-    - Fehlermeldungen in roter Schrift UNTER dem jeweiligen Input.
-    - Name, Email und Phone sind Pflichtfelder.
-    - Name braucht Vor- und Nachnamen und darf keine Zahlen enthalten.
-    - Email per Regex prüfen.
-    - Phone nur Zahlen, optional führendes +.
--->
-<!-- <section class="contacts">
-  <h1>Contacts</h1>
-
-  <div class="contacts__layout">
-   
-    <aside class="contacts__list">
-      
-      <ul>
-        @for (contact of contacts; track contact.id) {
-          <li>{{ contact.name }}</li>
-        }
-      </ul>
-
-     
-    </aside>
-
-   
-    <article class="contacts__detail">
-      <p>Detailansicht folgt.</p>
-     
-    </article>
-  </div>
-
-TODO: Platzhalter für Add/Edit Contact (Dialog/Overlay mit validiertem Formular) 
-</section>-->
-
-
 <div class="contacts-layout">
 
   <aside class="contacts-sidebar">
-    <button class="add-btn">
+    <button class="add-btn" (click)="showAddDialog = true">
       <span class="material-icons">person_add</span>
       Add new contact
     </button>
@@ -112,3 +67,8 @@ TODO: Platzhalter für Add/Edit Contact (Dialog/Overlay mit validiertem Formular
   </main>
 
 </div>
+
+<app-add-contact-dialog
+  *ngIf="showAddDialog"
+  (closed)="showAddDialog = false"
+/>

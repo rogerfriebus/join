@@ -1,44 +1,14 @@
-/*import { Component, inject } from '@angular/core';
-import { ContactService } from '../../core/services/contact.service';
-import { Contact } from '../../core/models/contact.model';
-
-/**
- * Contacts-Seite (Sprint-1-Basis).
- *
- * Zeigt vorerst nur die Mock-Kontakte aus dem ContactService. Die eigentliche
- * Fachlogik wird schrittweise ergänzt.
- *
- * TODO (Sprint 1, Marko + gemeinsam):
- *  - Kontakte alphabetisch nach Anfangsbuchstabe gruppieren (A, B, C ...).
- *  - Detailansicht für einen ausgewählten Kontakt.
- *  - Add Contact (Dialog/Formular).
- *  - Edit Contact (Dialog/Formular).
- *  - Delete Contact.
- *  - Formular-Validierung (siehe contacts.html / docs).
- *
-@Component({
-  selector: 'app-contacts',
-  imports: [],
-  templateUrl: './contacts.html',
-  styleUrl: './contacts.scss',
-})
-export class Contacts {
-  private readonly contactService = inject(ContactService);
-
-  //Vorerst die Mock-Kontakte; später aus Supabase.
-  readonly contacts: Contact[] = this.contactService.getContacts();
-}*/
-
 import { Component, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ContactService } from '../../core/services/contact.service';
 import { Contact, ContactGroup } from '../../core/models/contact.model';
+import { AddContactDialog} from './dialogs/add-contact-dialog/add-contact-dialog';
 
 
 @Component({
   selector: 'app-contacts',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule,  AddContactDialog],
   templateUrl: './contacts.html',
   styleUrls: ['./contacts.scss'],
 })
@@ -46,8 +16,10 @@ export class Contacts {
   private contactService = inject(ContactService);
 
   readonly contacts: Contact[] = this.contactService.getContacts();
-  
+
   selectedContact: Contact | null = null;
+
+  showAddDialog = false;
 
   readonly groupedContacts: ContactGroup[] = computed(() => {
     const sorted = [...this.contacts].sort((a, b) =>
