@@ -16,28 +16,67 @@
     - Email per Regex prüfen.
     - Phone nur Zahlen, optional führendes +.
 -->
-<section class="contacts">
+  <!-- <section class="contacts">
   <h1>Contacts</h1>
 
   <div class="contacts__layout">
-    <!-- Platzhalter: Kontaktliste -->
+   
     <aside class="contacts__list">
-      <!-- TODO: alphabetische Gruppierung statt flacher Liste -->
+      
       <ul>
         @for (contact of contacts; track contact.id) {
           <li>{{ contact.name }}</li>
         }
       </ul>
 
-      <!-- TODO: Button "Add Contact" -->
+     
     </aside>
 
-    <!-- Platzhalter: Detailansicht -->
+   
     <article class="contacts__detail">
       <p>Detailansicht folgt.</p>
-      <!-- TODO: Detailansicht des ausgewählten Kontakts inkl. Edit/Delete -->
+     
     </article>
   </div>
 
-  <!-- TODO: Platzhalter für Add/Edit Contact (Dialog/Overlay mit validiertem Formular) -->
-</section>
+TODO: Platzhalter für Add/Edit Contact (Dialog/Overlay mit validiertem Formular) 
+</section>-->
+
+
+<div class="contacts-layout">
+
+  <aside class="contacts-sidebar">
+    <button class="add-btn">
+      <span class="material-icons">person_add</span>
+      Add new contact
+    </button>
+
+    <div class="contact-list">
+      <ng-container *ngFor="let group of groupedContacts">
+        
+        <div class="separator">{{ group.letter }}</div>
+
+        <div
+          class="contact-item"
+          *ngFor="let contact of group.contacts"
+        >
+          <div class="avatar">{{ getInitials(contact.name) }}</div>
+          <div class="contact-info">
+            <p class="contact-name">{{ contact.name }}</p>
+            <p class="contact-email">{{ contact.email }}</p>
+          </div>
+        </div>
+
+      </ng-container>
+    </div>
+  </aside>
+
+  <main class="contacts-main">
+    <div class="main-header">
+      <h1>Contacts</h1>
+      <span class="divider"></span>
+      <p class="subtitle">Better with a team</p>
+    </div>
+  </main>
+
+</div>
