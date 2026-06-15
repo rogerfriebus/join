@@ -1,11 +1,12 @@
 .header {
+  box-sizing: border-box;
   display: flex;
   align-items: center;
   justify-content: space-between;
   height: 96px;
-  padding: 0 40px 0 116px;
+  padding: 20px 40px 20px 96px;
   background-color: #ffffff;
-  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 4px 4px rgba(0, 0, 0, 0.1);
 }
 
 .header__title {
@@ -39,8 +40,8 @@
 
 .header__help-icon {
   display: block;
-  width: 32px;
-  height: 32px;
+  width: 20px;
+  height: 20px;
   background-color: #a8a8a8;
 
   mask-image: url('/assets/icons/help.svg');

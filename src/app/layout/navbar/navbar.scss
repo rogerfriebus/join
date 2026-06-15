@@ -19,15 +19,18 @@
 .navbar__links {
   display: flex;
   flex-direction: column;
-  margin-top: 110px;
+  gap: 15px;
+  margin-top: 103px;
 }
 
 .navbar__link {
+  box-sizing: border-box;
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 8px;
+  width: 232px;
   height: 46px;
-  padding: 0 56px;
+  padding: 8px 56px;
   color: #cdcdcd;
   text-decoration: none;
   transition:
