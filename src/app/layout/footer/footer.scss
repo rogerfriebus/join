@@ -1,0 +1,18 @@
+.footer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0 0 64px 52px;
+}
+
+.footer__link {
+  color: #a8a8a8;
+  font-size: 16px;
+  line-height: 19px;
+  text-decoration: none;
+  transition: color 100ms ease;
+}
+
+.footer__link:hover {
+  color: #29abe2;
+}
