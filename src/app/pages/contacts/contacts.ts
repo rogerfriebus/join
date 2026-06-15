@@ -46,6 +46,8 @@ export class Contacts {
   private contactService = inject(ContactService);
 
   readonly contacts: Contact[] = this.contactService.getContacts();
+  
+  selectedContact: Contact | null = null;
 
   readonly groupedContacts: ContactGroup[] = computed(() => {
     const sorted = [...this.contacts].sort((a, b) =>
@@ -67,6 +69,10 @@ export class Contacts {
       contacts,
     }));
   })();
+
+  selectContact(contact: Contact): void {
+    this.selectedContact = contact;
+  }
 
   getInitials(name: string): string {
     return name

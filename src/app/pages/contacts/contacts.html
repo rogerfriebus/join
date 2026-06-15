@@ -16,7 +16,7 @@
     - Email per Regex prüfen.
     - Phone nur Zahlen, optional führendes +.
 -->
-  <!-- <section class="contacts">
+<!-- <section class="contacts">
   <h1>Contacts</h1>
 
   <div class="contacts__layout">
@@ -53,14 +53,14 @@ TODO: Platzhalter für Add/Edit Contact (Dialog/Overlay mit validiertem Formular
 
     <div class="contact-list">
       <ng-container *ngFor="let group of groupedContacts">
-        
+
         <div class="separator">{{ group.letter }}</div>
 
-        <div
-          class="contact-item"
-          *ngFor="let contact of group.contacts"
-        >
-          <div class="avatar" [style.background-color]="contact.color">{{ contact.initials }}</div>
+        <div class="contact-item" *ngFor="let contact of group.contacts"
+          [class.active]="selectedContact?.id === contact.id" (click)="selectContact(contact)">
+          <div class="avatar" [style.background-color]="contact.color">
+            {{ contact.initials ?? getInitials(contact.name) }}
+          </div>
           <div class="contact-info">
             <p class="contact-name">{{ contact.name }}</p>
             <p class="contact-email">{{ contact.email }}</p>
@@ -77,6 +77,38 @@ TODO: Platzhalter für Add/Edit Contact (Dialog/Overlay mit validiertem Formular
       <span class="divider"></span>
       <p class="subtitle">Better with a team</p>
     </div>
+
+    <div class="contact-detail" *ngIf="selectedContact">
+      <div class="detail-header">
+        <div class="detail-avatar" [style.background-color]="selectedContact.color">
+          {{ selectedContact.initials ?? getInitials(selectedContact.name) }}
+        </div>
+        <div class="detail-name-block">
+          <h2>{{ selectedContact.name }}</h2>
+          <div class="detail-actions">
+            <button class="action-btn">
+              <span class="material-icons">edit</span> Edit
+            </button>
+            <button class="action-btn danger">
+              <span class="material-icons">delete</span> Delete
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="detail-section">
+        <p class="section-title">Contact Information</p>
+        <div class="detail-field">
+          <span class="field-label">Email</span>
+          <span class="field-value link">{{ selectedContact.email }}</span>
+        </div>
+        <div class="detail-field">
+          <span class="field-label">Phone</span>
+          <span class="field-value">{{ selectedContact.phone }}</span>
+        </div>
+      </div>
+    </div>
+
   </main>
 
 </div>
