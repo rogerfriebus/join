@@ -41,7 +41,7 @@
         <div class="detail-name-block">
           <h2>{{ selectedContact.name }}</h2>
           <div class="detail-actions">
-            <button class="action-btn">
+            <button class="action-btn" (click)="showEditDialog = true">
               <span class="material-icons">edit</span> Edit
             </button>
             <button class="action-btn danger">
@@ -68,7 +68,6 @@
 
 </div>
 
-<app-add-contact-dialog
-  *ngIf="showAddDialog"
-  (closed)="showAddDialog = false"
-/>
+<app-add-contact-dialog *ngIf="showAddDialog" (closed)="showAddDialog = false" />
+<app-edit-contact-dialog *ngIf="showEditDialog && selectedContact" [contact]="selectedContact!"
+  (closed)="showEditDialog = false" />

@@ -3,12 +3,13 @@ import { CommonModule } from '@angular/common';
 import { ContactService } from '../../core/services/contact.service';
 import { Contact, ContactGroup } from '../../core/models/contact.model';
 import { AddContactDialog} from './dialogs/add-contact-dialog/add-contact-dialog';
+import { EditContactDialog} from './dialogs/edit-contact-dialog/edit-contact-dialog';
 
 
 @Component({
   selector: 'app-contacts',
   standalone: true,
-  imports: [CommonModule,  AddContactDialog],
+  imports: [CommonModule,  AddContactDialog, EditContactDialog],
   templateUrl: './contacts.html',
   styleUrls: ['./contacts.scss'],
 })
@@ -20,6 +21,7 @@ export class Contacts {
   selectedContact: Contact | null = null;
 
   showAddDialog = false;
+  showEditDialog = false;
 
   readonly groupedContacts: ContactGroup[] = computed(() => {
     const sorted = [...this.contacts].sort((a, b) =>

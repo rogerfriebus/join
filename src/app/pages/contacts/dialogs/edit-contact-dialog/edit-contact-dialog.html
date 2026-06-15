@@ -1,1 +1,49 @@
-<p>edit-contact-dialog works!</p>
+<div class="overlay" (click)="cancel()">
+    <div class="dialog" (click)="$event.stopPropagation()">
+
+        <div class="dialog-left">
+            <div class="logo">
+                <img src="assets/logo.svg" alt="Logo" />
+            </div>
+            <div class="dialog-left-text">
+                <h2>Edit contact</h2>
+                <span class="accent-line"></span>
+            </div>
+        </div>
+
+        <div class="dialog-right">
+            <button class="close-btn" (click)="cancel()">✕</button>
+
+            <div class="avatar" [style.background-color]="contact.color">
+                {{ contact.initials ?? getInitials(contact.name) }}
+            </div>
+
+            <div class="form-fields">
+                <div class="input-wrapper">
+                    <input type="text" placeholder="Name" [(ngModel)]="form.name" />
+                    <span class="material-icons input-icon">person</span>
+                </div>
+
+                <div class="input-wrapper">
+                    <input type="email" placeholder="Email" [(ngModel)]="form.email" />
+                    <span class="material-icons input-icon">mail</span>
+                </div>
+
+                <div class="input-wrapper">
+                    <input type="tel" placeholder="Phone" [(ngModel)]="form.phone" />
+                    <span class="material-icons input-icon">phone</span>
+                </div>
+            </div>
+
+            <div class="dialog-actions">
+                <button class="btn-delete" (click)="delete()">
+                    Delete
+                </button>
+                <button class="btn-save" (click)="save()">
+                    Save ✓
+                </button>
+            </div>
+        </div>
+
+    </div>
+</div>
