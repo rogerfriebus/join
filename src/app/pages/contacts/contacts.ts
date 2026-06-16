@@ -48,6 +48,10 @@ export class Contacts {
     this.selectedContact = contact;
   }
 
+  addContact(contact: Contact): void {
+    this.contactService.addContact(contact);
+  }
+  
   saveContact(updated: Contact): void {
     this.contactService.updateContact(updated);
     this.selectedContact = updated;

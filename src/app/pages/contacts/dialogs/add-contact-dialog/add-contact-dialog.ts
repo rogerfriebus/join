@@ -2,7 +2,6 @@ import { Component, EventEmitter, Output, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Contact } from '../../../../core/models/contact.model';
-import { ContactService } from '../../../../core/services/contact.service';
 
 @Component({
   selector: 'app-add-contact-dialog',
@@ -12,8 +11,6 @@ import { ContactService } from '../../../../core/services/contact.service';
   styleUrl: './add-contact-dialog.scss',
 })
 export class AddContactDialog {
-  private contactService = inject(ContactService);
-
   @Output() closed = new EventEmitter<void>();
   @Output() contactCreated = new EventEmitter<Omit<Contact, 'id'>>();
 
@@ -39,7 +36,6 @@ export class AddContactDialog {
       initials: this.generateInitials(this.form.name.trim()),
     };
 
-    this.contactService.addContact(contact);
     this.contactCreated.emit(contact);
     this.resetForm();
     this.closed.emit();

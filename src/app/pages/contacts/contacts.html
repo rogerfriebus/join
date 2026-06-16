@@ -68,6 +68,6 @@
 
 </div>
 
-<app-add-contact-dialog *ngIf="showAddDialog" (closed)="showAddDialog = false" />
+<app-add-contact-dialog *ngIf="showAddDialog" (closed)="showAddDialog = false" (contactCreated)="addContact($event)" />
 <app-edit-contact-dialog *ngIf="showEditDialog && selectedContact" [contact]="selectedContact!"
   (closed)="showEditDialog = false" (deleted)="deleteContact($event)" (saved)="saveContact($event)" />
