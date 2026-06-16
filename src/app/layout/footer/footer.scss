@@ -21,3 +21,9 @@
 .footer__link:hover {
   color: #29abe2;
 }
+
+@media (max-width: 792px) {
+  .footer {
+    display: none;
+  }
+}
