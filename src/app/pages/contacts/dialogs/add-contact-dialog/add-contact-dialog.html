@@ -52,7 +52,7 @@
         <button class="btn-cancel" (click)="cancel()">
           Cancel ✕
         </button>
-        <button class="btn-create" (click)="submit()">
+        <button class="btn-create" (click)="submit()" [disabled]="!form.name || !form.email || !form.phone">
           Create contact ✓
         </button>
       </div>
