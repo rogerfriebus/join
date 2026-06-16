@@ -178,4 +178,10 @@
     &:hover {
         background: #1a2535;
     }
+
+    &:disabled {
+        background: #a0a8b0;
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
 }

@@ -35,11 +35,24 @@ export class EditContactDialog implements OnInit {
   }
 
   save(): void {
-    // Logik folgt später
+    if (!this.form.name || !this.form.email || !this.form.phone) return;
+
+    const updated: Contact = {
+      ...this.contact,
+      name: this.form.name.trim(),
+      email: this.form.email.trim(),
+      phone: this.form.phone.trim(),
+      initials: this.getInitials(this.form.name.trim()),
+    };
+
+    this.saved.emit(updated);
+    this.closed.emit();
   }
 
   delete(): void {
-    // Logik folgt später
+    if (!this.contact.id) return;
+    this.deleted.emit(this.contact);
+    this.closed.emit();
   }
 
   getInitials(name: string): string {

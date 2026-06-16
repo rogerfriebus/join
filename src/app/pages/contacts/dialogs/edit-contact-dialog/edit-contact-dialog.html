@@ -39,7 +39,7 @@
                 <button class="btn-delete" (click)="delete()">
                     Delete
                 </button>
-                <button class="btn-save" (click)="save()">
+                <button class="btn-save" (click)="save()" [disabled]="!form.name || !form.email || !form.phone">
                     Save ✓
                 </button>
             </div>
