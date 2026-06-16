@@ -44,7 +44,7 @@
             <button class="action-btn" (click)="showEditDialog = true">
               <span class="material-icons">edit</span> Edit
             </button>
-            <button class="action-btn danger">
+            <button class="action-btn danger" (click)="deleteContact(selectedContact!)">
               <span class="material-icons">delete</span> Delete
             </button>
           </div>
@@ -70,4 +70,4 @@
 
 <app-add-contact-dialog *ngIf="showAddDialog" (closed)="showAddDialog = false" />
 <app-edit-contact-dialog *ngIf="showEditDialog && selectedContact" [contact]="selectedContact!"
-  (closed)="showEditDialog = false" />
+  (closed)="showEditDialog = false" (deleted)="deleteContact($event)" (saved)="saveContact($event)" />
