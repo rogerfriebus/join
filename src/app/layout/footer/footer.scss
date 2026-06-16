@@ -1,0 +1,29 @@
+.footer {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 0 0 64px 52px;
+}
+
+.footer__link {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  height: 35px;
+  padding: 8px;
+  color: #a8a8a8;
+  font-size: 16px;
+  line-height: 19px;
+  text-decoration: none;
+  transition: color 100ms ease;
+}
+
+.footer__link:hover {
+  color: #29abe2;
+}
+
+@media (max-width: 792px) {
+  .footer {
+    display: none;
+  }
+}

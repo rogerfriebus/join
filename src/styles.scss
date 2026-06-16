@@ -1,1 +1,24 @@
-/* You can add global styles to this file, and also import other style files */
+@import '@fontsource/inter/400.css';
+@import '@fontsource/inter/700.css';
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  min-height: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: 'Inter', Arial, sans-serif;
+  background-color: #f6f7f8;
+}
+
+button,
+input,
+textarea,
+select {
+  font: inherit;
+}

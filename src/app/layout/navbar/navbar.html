@@ -1,7 +1,28 @@
-<!-- TODO (Sprint 1, Kevin): Icons + aktives Styling laut Figma -->
-<nav class="navbar">
-  <a routerLink="/summary" routerLinkActive="navbar__link--active">Summary</a>
-  <a routerLink="/board" routerLinkActive="navbar__link--active">Board</a>
-  <a routerLink="/add-task" routerLinkActive="navbar__link--active">Add Task</a>
-  <a routerLink="/contacts" routerLinkActive="navbar__link--active">Contacts</a>
+<!-- TODO (Sprint 1, Marco): Feinschliff laut Figma -->
+<nav class="navbar" aria-label="Main navigation">
+  <a class="navbar__brand" routerLink="/summary" aria-label="Go to summary">
+    <img class="navbar__logo" src="/assets/img/join-logo.svg" alt="Join" />
+  </a>
+
+  <div class="navbar__links">
+    <a class="navbar__link" routerLink="/summary" routerLinkActive="navbar__link--active">
+      <span class="navbar__icon navbar__icon--summary" aria-hidden="true"></span>
+      <span class="navbar__text">Summary</span>
+    </a>
+
+    <a class="navbar__link" routerLink="/add-task" routerLinkActive="navbar__link--active">
+      <span class="navbar__icon navbar__icon--add-task" aria-hidden="true"></span>
+      <span class="navbar__text">Add Task</span>
+    </a>
+
+    <a class="navbar__link" routerLink="/board" routerLinkActive="navbar__link--active">
+      <span class="navbar__icon navbar__icon--board" aria-hidden="true"></span>
+      <span class="navbar__text">Board</span>
+    </a>
+
+    <a class="navbar__link" routerLink="/contacts" routerLinkActive="navbar__link--active">
+      <span class="navbar__icon navbar__icon--contacts" aria-hidden="true"></span>
+      <span class="navbar__text">Contacts</span>
+    </a>
+  </div>
 </nav>

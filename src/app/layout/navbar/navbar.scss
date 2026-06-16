@@ -1,0 +1,130 @@
+.navbar {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+.navbar__brand {
+  display: flex;
+  justify-content: center;
+  margin-top: 64px;
+  text-decoration: none;
+}
+
+.navbar__logo {
+  width: 100px;
+  height: auto;
+}
+
+.navbar__links {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-top: 103px;
+}
+
+.navbar__link {
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 232px;
+  height: 46px;
+  padding: 8px 56px;
+  color: #cdcdcd;
+  text-decoration: none;
+  transition:
+    background-color 100ms ease,
+    color 100ms ease;
+}
+
+.navbar__link:hover,
+.navbar__link--active {
+  background-color: #091931;
+  color: #ffffff;
+}
+
+.navbar__icon {
+  width: 30px;
+  height: 30px;
+  flex: 0 0 30px;
+  background-color: currentColor;
+
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: contain;
+
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  -webkit-mask-size: contain;
+}
+
+.navbar__icon--summary {
+  mask-image: url('/assets/icons/summary.svg');
+  -webkit-mask-image: url('/assets/icons/summary.svg');
+}
+
+.navbar__icon--add-task {
+  mask-image: url('/assets/icons/add-task.svg');
+  -webkit-mask-image: url('/assets/icons/add-task.svg');
+}
+
+.navbar__icon--board {
+  mask-image: url('/assets/icons/board.svg');
+  -webkit-mask-image: url('/assets/icons/board.svg');
+}
+
+.navbar__icon--contacts {
+  mask-image: url('/assets/icons/contacts.svg');
+  -webkit-mask-image: url('/assets/icons/contacts.svg');
+}
+
+.navbar__text {
+  font-size: 16px;
+  line-height: 19px;
+}
+
+@media (max-width: 792px) {
+  .navbar {
+    height: 100%;
+    min-height: unset;
+  }
+
+  .navbar__brand {
+    display: none;
+  }
+
+  .navbar__links {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    width: 100%;
+    height: 80px;
+    margin-top: 0;
+    padding: 0 16px;
+    background-color: #2a3647;
+  }
+
+  .navbar__link {
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 4px;
+    width: 80px;
+    height: 76px;
+    padding: 15px 0;
+    border-radius: 16px;
+  }
+
+  .navbar__icon {
+    width: 24px;
+    height: 24px;
+    flex: 0 0 24px;
+  }
+
+  .navbar__text {
+    font-size: 16px;
+    line-height: 19px;
+  }
+}
