@@ -23,3 +23,8 @@ export interface Contact {
   /** Letzter Änderungszeitpunkt (ISO-String), wird von Supabase gesetzt. */
   updatedAt?: string;
 }
+
+export interface ContactGroup {
+  letter: string;
+  contacts: Contact[];
+}

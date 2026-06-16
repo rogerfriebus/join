@@ -1,43 +1,73 @@
-<!--
-  Contacts-Seite (Sprint-1-Basis).
+<div class="contacts-layout">
 
-  TODO (Sprint 1):
-    - Alphabetische Gruppierung der Kontaktliste (A, B, C ...).
-    - Detailansicht für ausgewählten Kontakt.
-    - Add Contact (Dialog/Formular).
-    - Edit Contact (Dialog/Formular).
-    - Delete Contact.
+  <aside class="contacts-sidebar">
+    <button class="add-btn" (click)="showAddDialog = true">
+      <span class="material-icons">person_add</span>
+      Add new contact
+    </button>
 
-  Form-Validation-Anforderungen (umzusetzen, NICHT über HTML5-Standardvalidation
-  als sichtbare Fehlerlösung):
-    - Fehlermeldungen in roter Schrift UNTER dem jeweiligen Input.
-    - Name, Email und Phone sind Pflichtfelder.
-    - Name braucht Vor- und Nachnamen und darf keine Zahlen enthalten.
-    - Email per Regex prüfen.
-    - Phone nur Zahlen, optional führendes +.
--->
-<section class="contacts">
-  <h1>Contacts</h1>
+    <div class="contact-list">
+      <ng-container *ngFor="let group of groupedContacts">
 
-  <div class="contacts__layout">
-    <!-- Platzhalter: Kontaktliste -->
-    <aside class="contacts__list">
-      <!-- TODO: alphabetische Gruppierung statt flacher Liste -->
-      <ul>
-        @for (contact of contacts; track contact.id) {
-          <li>{{ contact.name }}</li>
-        }
-      </ul>
+        <div class="separator">{{ group.letter }}</div>
 
-      <!-- TODO: Button "Add Contact" -->
-    </aside>
+        <div class="contact-item" *ngFor="let contact of group.contacts"
+          [class.active]="selectedContact?.id === contact.id" (click)="selectContact(contact)">
+          <div class="avatar" [style.background-color]="contact.color">
+            {{ contact.initials ?? getInitials(contact.name) }}
+          </div>
+          <div class="contact-info">
+            <p class="contact-name">{{ contact.name }}</p>
+            <p class="contact-email">{{ contact.email }}</p>
+          </div>
+        </div>
 
-    <!-- Platzhalter: Detailansicht -->
-    <article class="contacts__detail">
-      <p>Detailansicht folgt.</p>
-      <!-- TODO: Detailansicht des ausgewählten Kontakts inkl. Edit/Delete -->
-    </article>
-  </div>
+      </ng-container>
+    </div>
+  </aside>
 
-  <!-- TODO: Platzhalter für Add/Edit Contact (Dialog/Overlay mit validiertem Formular) -->
-</section>
+  <main class="contacts-main">
+    <div class="main-header">
+      <h1>Contacts</h1>
+      <span class="divider"></span>
+      <p class="subtitle">Better with a team</p>
+    </div>
+
+    <div class="contact-detail" *ngIf="selectedContact">
+      <div class="detail-header">
+        <div class="detail-avatar" [style.background-color]="selectedContact.color">
+          {{ selectedContact.initials ?? getInitials(selectedContact.name) }}
+        </div>
+        <div class="detail-name-block">
+          <h2>{{ selectedContact.name }}</h2>
+          <div class="detail-actions">
+            <button class="action-btn" (click)="showEditDialog = true">
+              <span class="material-icons">edit</span> Edit
+            </button>
+            <button class="action-btn danger" (click)="deleteContact(selectedContact!)">
+              <span class="material-icons">delete</span> Delete
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="detail-section">
+        <p class="section-title">Contact Information</p>
+        <div class="detail-field">
+          <span class="field-label">Email</span>
+          <span class="field-value link">{{ selectedContact.email }}</span>
+        </div>
+        <div class="detail-field">
+          <span class="field-label">Phone</span>
+          <span class="field-value">{{ selectedContact.phone }}</span>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+</div>
+
+<app-add-contact-dialog *ngIf="showAddDialog" (closed)="showAddDialog = false" (contactCreated)="addContact($event)" />
+<app-edit-contact-dialog *ngIf="showEditDialog && selectedContact" [contact]="selectedContact!"
+  (closed)="showEditDialog = false" (deleted)="deleteContact($event)" (saved)="saveContact($event)" />
