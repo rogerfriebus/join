@@ -1,21 +1,77 @@
 import { Injectable, signal } from '@angular/core';
+import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { Contact } from '../models/contact.model';
+import { environment } from '../../../environments/environment';
+
+/** Name der Supabase-Tabelle für Kontakte. */
+const CONTACTS_TABLE = 'contacts';
 
 /**
- * Platzhalter-Service für Kontakte.
+ * Form einer Kontaktzeile in der Supabase-Tabelle `contacts` (snake_case).
+ * Siehe docs/supabase-setup.md.
+ */
+interface ContactRow {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  color: string | null;
+  initials: string | null;
+  created_at: string | null;
+  updated_at: string | null;
+}
+
+/** Felder, die beim Insert/Update an Supabase gesendet werden (ohne id/Timestamps). */
+type ContactRowPayload = Pick<ContactRow, 'name' | 'email' | 'phone' | 'color' | 'initials'>;
+
+/** Mappt eine Supabase-Zeile (snake_case) auf das Frontend-Modell (camelCase). */
+function mapRowToContact(row: ContactRow): Contact {
+  return {
+    id: row.id,
+    name: row.name,
+    email: row.email,
+    phone: row.phone,
+    color: row.color ?? undefined,
+    initials: row.initials ?? undefined,
+    createdAt: row.created_at ?? undefined,
+    updatedAt: row.updated_at ?? undefined,
+  };
+}
+
+/** Mappt das Frontend-Modell (camelCase) auf das Insert-/Update-Payload (snake_case). */
+function mapContactToRowPayload(contact: Contact): ContactRowPayload {
+  return {
+    name: contact.name,
+    email: contact.email,
+    phone: contact.phone,
+    color: contact.color ?? null,
+    initials: contact.initials ?? null,
+  };
+}
+
+/**
+ * Zentraler Service für Kontakte.
  *
- * Aktuell arbeitet der Service mit lokalen Mock-Daten, damit die UI ohne
- * Backend entwickelt werden kann. Es werden BEWUSST keine Supabase-Keys
- * hier hinterlegt.
+ * Der Service ist die zentrale Stelle für die Contacts-Datenlogik. Er hält
+ * weiterhin lokale Mock-Daten als Fallback (damit die UI ohne erreichbares
+ * Backend entwickelt werden kann) und bietet zusätzlich Supabase-Methoden,
+ * um Kontakte aus der Cloud zu laden bzw. zu schreiben.
  *
- * TODO (Sprint 1+, gemeinsam):
- *  - Supabase-Client über environment-Konfiguration einbinden (keine Secrets im Repo).
- *  - getContacts/addContact/updateContact/deleteContact gegen die Tabelle `contacts` umsetzen.
- *  - Methoden auf asynchrone Rückgaben (Promise/Observable) umstellen.
- *  - Gast-Login und User teilen sich laut Kursvorgabe denselben Datenbestand.
+ * Demo-Setup (Developer-Akademie):
+ *  - Supabase wird über Project URL + Publishable Key aus den environment-Dateien
+ *    angebunden. Es werden BEWUSST keine Secret/Service-Role-Keys verwendet.
+ *  - Die aktuelle Demo-RLS erlaubt anon-Zugriff auf `contacts`
+ *    (nicht produktionsreif).
  */
 @Injectable({ providedIn: 'root' })
 export class ContactService {
+  /**
+   * Supabase-Client, lazy erzeugt. Wird erst beim ersten Supabase-Zugriff
+   * instanziiert, damit die reinen Mock-Methoden (und Unit-Tests, die nur den
+   * Mock nutzen) ohne Client auskommen. `createClient` öffnet keine Verbindung
+   * und führt keinen Netzwerkaufruf aus, bevor eine Query gestartet wird.
+   */
+  private supabaseClient: SupabaseClient | null = null;
   /**
    * Mock-Datenbestand für die Entwicklung. Mindestens 10 seriöse Kontakte
    * für die Sprint-Abgabe. Wird später durch Supabase-Daten ersetzt.
@@ -110,5 +166,108 @@ export class ContactService {
       next++;
     }
     return String(next);
+  }
+
+  // ---------------------------------------------------------------------------
+  // Supabase-Zugriff
+  //
+  // Diese Methoden sprechen die Supabase-Tabelle `contacts` an. Die bestehenden
+  // Mock-Methoden bleiben unverändert als Fallback erhalten. Bei einem
+  // Fehlschlag werfen die Methoden, damit Aufrufer auf den Mock-Bestand
+  // zurückfallen können.
+  // ---------------------------------------------------------------------------
+
+  /**
+   * Liefert den lazy erzeugten Supabase-Client. Konfiguration kommt aus den
+   * Angular-environment-Dateien (Project URL + Publishable Key, kein Secret).
+   */
+  private getClient(): SupabaseClient {
+    if (!this.supabaseClient) {
+      this.supabaseClient = createClient(
+        environment.supabase.url,
+        environment.supabase.publishableKey,
+      );
+    }
+    return this.supabaseClient;
+  }
+
+  /**
+   * Lädt alle Kontakte aus Supabase und gibt sie als Frontend-Modelle zurück.
+   * Bei Erfolg wird zusätzlich der interne Signal-Bestand aktualisiert, damit
+   * die UI später dieselbe Datenquelle nutzen kann. Wirft bei einem Fehler.
+   */
+  async loadContactsFromSupabase(): Promise<Contact[]> {
+    const { data, error } = await this.getClient()
+      .from(CONTACTS_TABLE)
+      .select('*')
+      .order('name', { ascending: true });
+
+    if (error) {
+      throw new Error(`Kontakte konnten nicht aus Supabase geladen werden: ${error.message}`);
+    }
+
+    const contacts = ((data ?? []) as ContactRow[]).map(mapRowToContact);
+    this.mockContacts.set(contacts);
+    return contacts;
+  }
+
+  /**
+   * Legt einen Kontakt in Supabase an und gibt den gespeicherten Kontakt
+   * (inkl. von der DB erzeugter id/Timestamps) zurück. Wirft bei einem Fehler.
+   */
+  async addContactToSupabase(contact: Contact): Promise<Contact> {
+    const { data, error } = await this.getClient()
+      .from(CONTACTS_TABLE)
+      .insert(mapContactToRowPayload(contact))
+      .select()
+      .single();
+
+    if (error) {
+      throw new Error(`Kontakt konnte nicht in Supabase angelegt werden: ${error.message}`);
+    }
+
+    return mapRowToContact(data as ContactRow);
+  }
+
+  /**
+   * Aktualisiert einen Kontakt in Supabase anhand seiner id und gibt den
+   * aktualisierten Kontakt zurück. Liefert undefined, wenn keine id gesetzt
+   * ist oder kein passender Datensatz existiert. Wirft bei einem Fehler.
+   */
+  async updateContactInSupabase(contact: Contact): Promise<Contact | undefined> {
+    if (!contact.id) {
+      return undefined;
+    }
+
+    const { data, error } = await this.getClient()
+      .from(CONTACTS_TABLE)
+      .update(mapContactToRowPayload(contact))
+      .eq('id', contact.id)
+      .select()
+      .maybeSingle();
+
+    if (error) {
+      throw new Error(`Kontakt konnte nicht in Supabase aktualisiert werden: ${error.message}`);
+    }
+
+    return data ? mapRowToContact(data as ContactRow) : undefined;
+  }
+
+  /**
+   * Löscht einen Kontakt in Supabase anhand seiner id. Gibt true zurück, wenn
+   * ein Datensatz gelöscht wurde, sonst false. Wirft bei einem Fehler.
+   */
+  async deleteContactFromSupabase(id: string): Promise<boolean> {
+    const { data, error } = await this.getClient()
+      .from(CONTACTS_TABLE)
+      .delete()
+      .eq('id', id)
+      .select('id');
+
+    if (error) {
+      throw new Error(`Kontakt konnte nicht aus Supabase gelöscht werden: ${error.message}`);
+    }
+
+    return (data?.length ?? 0) > 0;
   }
 }
