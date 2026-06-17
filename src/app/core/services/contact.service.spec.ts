@@ -1,6 +1,50 @@
 import { ContactService } from './contact.service';
 import { Contact } from '../models/contact.model';
 
+/**
+ * Gemockter Supabase-Client. Alle Query-Methoden sind verkettbar und das
+ * Builder-Objekt ist "thenable", sodass `await` das konfigurierte Ergebnis
+ * liefert OHNE echten Netzwerkaufruf. So testen die Unit-Tests die
+ * Supabase-Methoden, ohne Supabase wirklich zu kontaktieren.
+ */
+const supabaseMock = vi.hoisted(() => {
+  const calls: { method: string; args: unknown[] }[] = [];
+  let result: { data: unknown; error: unknown } = { data: [], error: null };
+
+  const builder: Record<string, unknown> = {};
+  const chainable = ['from', 'select', 'order', 'insert', 'update', 'delete', 'eq'];
+  for (const method of chainable) {
+    builder[method] = (...args: unknown[]) => {
+      calls.push({ method, args });
+      return builder;
+    };
+  }
+  // Terminierende Methoden geben ebenfalls den (thenable) Builder zurück.
+  for (const method of ['single', 'maybeSingle']) {
+    builder[method] = (...args: unknown[]) => {
+      calls.push({ method, args });
+      return builder;
+    };
+  }
+  builder['then'] = (resolve: (value: unknown) => unknown) => resolve(result);
+
+  return {
+    calls,
+    createClient: () => builder,
+    reset: () => {
+      calls.length = 0;
+      result = { data: [], error: null };
+    },
+    setResult: (next: { data: unknown; error: unknown }) => {
+      result = next;
+    },
+  };
+});
+
+vi.mock('@supabase/supabase-js', () => ({
+  createClient: () => supabaseMock.createClient(),
+}));
+
 describe('ContactService', () => {
   let service: ContactService;
 
@@ -112,6 +156,110 @@ describe('ContactService', () => {
       const before = service.getContacts().length;
       expect(service.deleteContact('does-not-exist')).toBe(false);
       expect(service.getContacts().length).toBe(before);
+    });
+  });
+
+  // Diese Tests verwenden den gemockten Supabase-Client (siehe oben) und
+  // führen daher KEINE echten Netzwerkaufrufe aus.
+  describe('Supabase-Methoden', () => {
+    beforeEach(() => {
+      supabaseMock.reset();
+    });
+
+    it('loadContactsFromSupabase mappt snake_case auf camelCase und aktualisiert den Bestand', async () => {
+      supabaseMock.setResult({
+        data: [
+          {
+            id: 'u1',
+            name: 'Demo Person',
+            email: 'demo.person@example.com',
+            phone: '+49 100 0000000',
+            color: '#FF7A00',
+            initials: 'DP',
+            created_at: '2024-01-01T00:00:00Z',
+            updated_at: '2024-02-02T00:00:00Z',
+          },
+        ],
+        error: null,
+      });
+
+      const result = await service.loadContactsFromSupabase();
+
+      expect(result).toEqual([
+        {
+          id: 'u1',
+          name: 'Demo Person',
+          email: 'demo.person@example.com',
+          phone: '+49 100 0000000',
+          color: '#FF7A00',
+          initials: 'DP',
+          createdAt: '2024-01-01T00:00:00Z',
+          updatedAt: '2024-02-02T00:00:00Z',
+        },
+      ]);
+      // Interner Signal-Bestand wurde aktualisiert (gemeinsame Datenquelle).
+      expect(service.getContacts()).toEqual(result);
+    });
+
+    it('loadContactsFromSupabase wirft bei einem Supabase-Fehler', async () => {
+      supabaseMock.setResult({ data: null, error: { message: 'boom' } });
+      await expect(service.loadContactsFromSupabase()).rejects.toThrow(/boom/);
+    });
+
+    it('addContactToSupabase sendet ein snake_case-Payload und mappt das Ergebnis', async () => {
+      supabaseMock.setResult({
+        data: {
+          id: 'new-id',
+          name: 'Neuer Kontakt',
+          email: 'neu@example.com',
+          phone: '+49 100 1111111',
+          color: null,
+          initials: null,
+          created_at: null,
+          updated_at: null,
+        },
+        error: null,
+      });
+
+      const saved = await service.addContactToSupabase({
+        name: 'Neuer Kontakt',
+        email: 'neu@example.com',
+        phone: '+49 100 1111111',
+      });
+
+      expect(saved.id).toBe('new-id');
+      expect(saved.color).toBeUndefined();
+      expect(saved.initials).toBeUndefined();
+
+      const insertCall = supabaseMock.calls.find((call) => call.method === 'insert');
+      expect(insertCall?.args[0]).toEqual({
+        name: 'Neuer Kontakt',
+        email: 'neu@example.com',
+        phone: '+49 100 1111111',
+        color: null,
+        initials: null,
+      });
+    });
+
+    it('updateContactInSupabase gibt ohne id undefined zurück und ruft Supabase nicht auf', async () => {
+      const result = await service.updateContactInSupabase({
+        name: 'Ohne Id',
+        email: 'ohne.id@example.com',
+        phone: '+49 100 2222222',
+      });
+
+      expect(result).toBeUndefined();
+      expect(supabaseMock.calls.length).toBe(0);
+    });
+
+    it('deleteContactFromSupabase gibt true zurück, wenn eine Zeile gelöscht wurde', async () => {
+      supabaseMock.setResult({ data: [{ id: 'del-id' }], error: null });
+      expect(await service.deleteContactFromSupabase('del-id')).toBe(true);
+    });
+
+    it('deleteContactFromSupabase gibt false zurück, wenn keine Zeile gelöscht wurde', async () => {
+      supabaseMock.setResult({ data: [], error: null });
+      expect(await service.deleteContactFromSupabase('unbekannt')).toBe(false);
     });
   });
 });

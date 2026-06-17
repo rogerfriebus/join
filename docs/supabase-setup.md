@@ -49,9 +49,31 @@ create table if not exists contacts (
 
 ## Aktueller Stand
 
-Aktuell arbeitet die App mit Mock-/Dummy-Daten im `ContactService`. Die echte
-Supabase-Anbindung erfolgt erst in einer späteren Aufgabe:
-**Orange 4B – Supabase Cloud anbinden**.
+Mit **Orange 4B** ist Supabase für die Contacts-Demo angebunden:
+
+- Der `@supabase/supabase-js`-Client ist installiert.
+- Der `ContactService` bleibt die **zentrale Stelle** für die Contacts-Datenlogik
+  und bietet zusätzlich Supabase-Methoden
+  (`loadContactsFromSupabase`, `addContactToSupabase`, `updateContactInSupabase`,
+  `deleteContactFromSupabase`).
+- Die bisherigen Mock-Methoden (`getContacts`, `getContactById`, `addContact`,
+  `updateContact`, `deleteContact`) bleiben als **Fallback** erhalten.
+
+### Angular-Demo: URL + Publishable Key
+
+Für dieses Developer-Akademie-Demo-Projekt ist entschieden:
+
+- Die **Project URL** und der **Publishable Key** dürfen für die Demo in den
+  Angular-`environment`-Dateien (`src/environments/`) liegen.
+- Es wird **ausschließlich der Publishable Key** verwendet.
+- **Secret Key / Service Role Key niemals im Frontend** ablegen.
+- Die aktuelle Demo-**RLS-Policy** erlaubt **anon-Zugriff** auf `contacts`.
+  Das ist bewusst fürs Schulprojekt gesetzt und **nicht produktionsreif**.
+- Die in Supabase hinterlegten Kontakte sind **Demo-Daten** ohne echte
+  personenbezogene Informationen.
+
+> Diese Lösung ist demo-tauglich, aber nicht produktionsreif. Später sollten
+> **Auth und RLS gehärtet** werden (siehe „Nächste Schritte“).
 
 ## Dummy-Daten
 
