@@ -13,44 +13,39 @@
     border-radius: 16px;
     overflow: hidden;
     background: #fff;
-    width: 680px;
-    min-height: 320px;
+    width: 900px;
+    min-height: 400px;
     box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
 }
 
 // --- Left Panel ---
 
 .dialog-left {
-    width: 220px;
-    min-width: 220px;
+    width: 400px;
+    min-width: 400px;
     background: #2A3647;
     padding: 32px 28px;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: center;
+    gap: 16px;
 
     .logo img {
-        height: 36px;
+        height: 60px;
     }
 
     .dialog-left-text {
         h2 {
             color: #fff;
-            font-size: 26px;
+            font-size: 52px;
             font-weight: 700;
             margin: 0 0 8px;
-        }
-
-        p {
-            color: #a8c0d6;
-            font-size: 13px;
-            margin: 0 0 12px;
         }
     }
 
     .accent-line {
         display: block;
-        width: 48px;
+        width: 74px;
         height: 3px;
         background: #29b6f6;
         border-radius: 2px;
@@ -67,6 +62,14 @@
     align-items: center;
     gap: 20px;
     position: relative;
+}
+
+.dialog-right-wrapper {
+    display: flex;
+    flex: 1;
+    justify-content: center;
+    align-items: center;
+    gap: 24px
 }
 
 .close-btn {
@@ -86,19 +89,25 @@
 }
 
 .avatar {
-    width: 72px;
-    height: 72px;
+    width: 100px;
+    height: 100px;
     border-radius: 50%;
     color: #fff;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 24px;
-    font-weight: 600;
+    font-size: 40px;
+    font-weight: 500;
     flex-shrink: 0;
 }
 
 // --- Form ---
+
+.form-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
 
 .form-fields {
     width: 100%;
@@ -119,6 +128,12 @@
         color: #1a1a2e;
         outline: none;
         box-sizing: border-box;
+
+        background-image: var(--input-icon);
+        background-repeat: no-repeat;
+        background-position: right 12px center;
+        background-size: 24px;
+        padding-right: 40px;
 
         &::placeholder {
             color: #bbb;
@@ -145,7 +160,7 @@
 .dialog-actions {
     display: flex;
     gap: 12px;
-    justify-content: flex-end;
+    justify-content: flex-start;
     width: 100%;
 }
 
