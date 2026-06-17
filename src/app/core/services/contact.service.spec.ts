@@ -80,46 +80,88 @@ describe('ContactService', () => {
     });
   });
 
-  describe('addContact', () => {
+  // Die Fassaden-CRUD-Methoden gehen über den gemockten Supabase-Client und
+  // aktualisieren danach das Signal. KEINE echten Netzwerkaufrufe.
+  describe('addContact (Fassade)', () => {
     const draft: Contact = {
       name: 'Maximilian Vogel',
       email: 'maximilian.vogel@example.com',
       phone: '+49 155 9876543',
     };
 
-    it('fügt einen Kontakt hinzu', () => {
+    beforeEach(() => {
+      supabaseMock.reset();
+      supabaseMock.setResult({
+        data: {
+          id: 'db-id',
+          name: draft.name,
+          email: draft.email,
+          phone: draft.phone,
+          color: null,
+          initials: null,
+          created_at: null,
+          updated_at: null,
+        },
+        error: null,
+      });
+    });
+
+    it('speichert in Supabase und fügt den Kontakt dem Bestand hinzu', async () => {
       const before = service.getContacts().length;
-      service.addContact(draft);
+      await service.addContact(draft);
       expect(service.getContacts().length).toBe(before + 1);
     });
 
-    it('erzeugt eine ID, wenn keine ID vorhanden ist', () => {
-      const added = service.addContact(draft);
-      expect(added.id).toBeTruthy();
+    it('gibt den in Supabase gespeicherten Kontakt mit DB-id zurück', async () => {
+      const added = await service.addContact(draft);
+      expect(added.id).toBe('db-id');
     });
 
-    it('erzeugt keine doppelte ID', () => {
-      const added = service.addContact(draft);
-      const ids = service.getContacts().map((contact) => contact.id);
-      expect(ids.filter((id) => id === added.id).length).toBe(1);
-    });
-
-    it('macht den neuen Kontakt per getContactById auffindbar', () => {
-      const added = service.addContact(draft);
+    it('macht den neuen Kontakt per getContactById auffindbar', async () => {
+      const added = await service.addContact(draft);
       expect(service.getContactById(added.id as string)).toEqual(added);
     });
   });
 
-  describe('updateContact', () => {
-    it('aktualisiert einen bestehenden Kontakt', () => {
+  describe('updateContact (Fassade)', () => {
+    beforeEach(() => {
+      supabaseMock.reset();
+    });
+
+    it('aktualisiert einen bestehenden Kontakt in Bestand und Supabase', async () => {
       const first = service.getContacts()[0];
-      const updated = service.updateContact({ ...first, name: 'Geänderter Name' });
+      supabaseMock.setResult({
+        data: {
+          id: first.id,
+          name: 'Geänderter Name',
+          email: first.email,
+          phone: first.phone,
+          color: first.color ?? null,
+          initials: first.initials ?? null,
+          created_at: null,
+          updated_at: null,
+        },
+        error: null,
+      });
+
+      const updated = await service.updateContact({ ...first, name: 'Geänderter Name' });
       expect(updated?.name).toBe('Geänderter Name');
       expect(service.getContactById(first.id as string)?.name).toBe('Geänderter Name');
     });
 
-    it('gibt undefined bei unbekannter ID zurück', () => {
-      const result = service.updateContact({
+    it('gibt undefined zurück, wenn keine ID gesetzt ist (ohne Supabase-Aufruf)', async () => {
+      const result = await service.updateContact({
+        name: 'Ohne Id',
+        email: 'ohne.id@example.com',
+        phone: '+49 100 1111111',
+      });
+      expect(result).toBeUndefined();
+      expect(supabaseMock.calls.length).toBe(0);
+    });
+
+    it('gibt undefined bei unbekanntem Datensatz zurück', async () => {
+      supabaseMock.setResult({ data: null, error: null });
+      const result = await service.updateContact({
         id: 'does-not-exist',
         name: 'Niemand Nirgends',
         email: 'niemand@example.com',
@@ -127,34 +169,63 @@ describe('ContactService', () => {
       });
       expect(result).toBeUndefined();
     });
-
-    it('gibt undefined zurück, wenn keine ID gesetzt ist', () => {
-      const result = service.updateContact({
-        name: 'Ohne Id',
-        email: 'ohne.id@example.com',
-        phone: '+49 100 1111111',
-      });
-      expect(result).toBeUndefined();
-    });
   });
 
-  describe('deleteContact', () => {
-    it('löscht einen bestehenden Kontakt und gibt true zurück', () => {
-      const first = service.getContacts()[0];
-      const before = service.getContacts().length;
-      expect(service.deleteContact(first.id as string)).toBe(true);
-      expect(service.getContacts().length).toBe(before - 1);
+  describe('deleteContact (Fassade)', () => {
+    beforeEach(() => {
+      supabaseMock.reset();
     });
 
-    it('macht den Kontakt danach nicht mehr auffindbar', () => {
+    it('löscht einen bestehenden Kontakt und gibt true zurück', async () => {
       const first = service.getContacts()[0];
-      service.deleteContact(first.id as string);
+      const before = service.getContacts().length;
+      supabaseMock.setResult({ data: [{ id: first.id }], error: null });
+
+      expect(await service.deleteContact(first.id as string)).toBe(true);
+      expect(service.getContacts().length).toBe(before - 1);
       expect(service.getContactById(first.id as string)).toBeUndefined();
     });
 
-    it('gibt false bei unbekannter ID zurück', () => {
+    it('gibt false zurück, wenn keine Zeile gelöscht wurde', async () => {
       const before = service.getContacts().length;
-      expect(service.deleteContact('does-not-exist')).toBe(false);
+      supabaseMock.setResult({ data: [], error: null });
+
+      expect(await service.deleteContact('does-not-exist')).toBe(false);
+      expect(service.getContacts().length).toBe(before);
+    });
+  });
+
+  describe('loadContacts (Fassade)', () => {
+    beforeEach(() => {
+      supabaseMock.reset();
+    });
+
+    it('lädt aus Supabase und aktualisiert das öffentliche Signal', async () => {
+      supabaseMock.setResult({
+        data: [
+          {
+            id: 'sb1',
+            name: 'Cloud Kontakt',
+            email: 'cloud@example.com',
+            phone: '+49 100 3333333',
+            color: null,
+            initials: null,
+            created_at: null,
+            updated_at: null,
+          },
+        ],
+        error: null,
+      });
+
+      await service.loadContacts();
+      expect(service.contacts().map((c) => c.id)).toEqual(['sb1']);
+    });
+
+    it('behält den Mock-Fallback bei einem Supabase-Fehler und wirft nicht', async () => {
+      const before = service.getContacts().length;
+      supabaseMock.setResult({ data: null, error: { message: 'offline' } });
+
+      await expect(service.loadContacts()).resolves.toBeUndefined();
       expect(service.getContacts().length).toBe(before);
     });
   });
