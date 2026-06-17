@@ -91,7 +91,34 @@ export class ContactService {
     { id: '12', name: 'Lukas Brandt', email: 'lukas.brandt@example.com', phone: '+49 174 2345678', initials: 'LB', color: '#20D300' },
   ]);
 
-  /** Liefert den aktuellen Kontaktbestand (vorerst Mock-Daten). */
+  /**
+   * Öffentlicher, read-only Zugriff auf den aktuellen Kontaktbestand.
+   *
+   * Dies ist die zentrale Datenquelle der Fassade: UI-Komponenten lesen
+   * Kontakte ausschließlich hierüber (reaktiv) und greifen NICHT auf das
+   * private Signal oder die Supabase-Methoden zu.
+   */
+  readonly contacts = this.mockContacts.asReadonly();
+
+  /**
+   * Lädt den Kontaktbestand aus Supabase und aktualisiert das Signal.
+   *
+   * Fassaden-Methode für die UI. Schlägt das Laden fehl, bleibt der
+   * bestehende (Mock-)Bestand als Fallback erhalten und der Fehler wird
+   * geloggt – die Methode wirft also bewusst nicht.
+   */
+  async loadContacts(): Promise<void> {
+    try {
+      await this.loadContactsFromSupabase();
+    } catch (error) {
+      console.error(
+        'Kontakte konnten nicht aus Supabase geladen werden – Mock-Fallback bleibt aktiv.',
+        error,
+      );
+    }
+  }
+
+  /** Liefert den aktuellen Kontaktbestand (Snapshot). */
   getContacts(): Contact[] {
     return this.mockContacts();
   }
@@ -102,70 +129,48 @@ export class ContactService {
   }
 
   /**
-   * Legt einen Kontakt im (Mock-)Bestand an und gibt den gespeicherten
-   * Kontakt zurück. Fehlt eine id, wird eine eindeutige id erzeugt.
+   * Legt einen Kontakt an: speichert ihn in Supabase und aktualisiert danach
+   * den sichtbaren Bestand (Signal). Gibt den gespeicherten Kontakt inkl. der
+   * von der DB erzeugten id zurück.
    *
-   * Später (Supabase): INSERT in die Tabelle `contacts`; die id kommt dann
-   * aus der Datenbank.
+   * Fassaden-Methode für die UI.
    */
-  addContact(contact: Contact): Contact {
-    const id = contact.id ?? this.generateId();
-    const newContact: Contact = { ...contact, id };
-    this.mockContacts.update((contacts) => [...contacts, newContact]);
-    return newContact;
+  async addContact(contact: Contact): Promise<Contact> {
+    const saved = await this.addContactToSupabase(contact);
+    this.mockContacts.update((contacts) => [...contacts, saved]);
+    return saved;
   }
 
   /**
-   * Aktualisiert einen bestehenden Kontakt anhand seiner id und gibt den
-   * aktualisierten Kontakt zurück. Liefert undefined, wenn keine id gesetzt
-   * ist oder kein Kontakt mit dieser id existiert.
+   * Aktualisiert einen bestehenden Kontakt: speichert die Änderung in Supabase
+   * und aktualisiert danach den sichtbaren Bestand (Signal). Liefert undefined,
+   * wenn keine id gesetzt ist oder kein passender Datensatz existiert.
    *
-   * Später (Supabase): UPDATE der Zeile mit passender id.
+   * Fassaden-Methode für die UI.
    */
-  updateContact(contact: Contact): Contact | undefined {
-    if (!contact.id) {
-      return undefined;
+  async updateContact(contact: Contact): Promise<Contact | undefined> {
+    const updated = await this.updateContactInSupabase(contact);
+    if (updated) {
+      this.mockContacts.update((contacts) =>
+        contacts.map((c) => (c.id === updated.id ? updated : c)),
+      );
     }
-    const index = this.mockContacts().findIndex((c) => c.id === contact.id);
-    if (index === -1) {
-      return undefined;
-    }
-    const updated: Contact = { ...contact };
-    this.mockContacts.update((contacts) => {
-      const next = [...contacts];
-      next[index] = updated;
-      return next;
-    });
     return updated;
   }
 
   /**
-   * Entfernt einen Kontakt anhand seiner id. Gibt true zurück, wenn ein
-   * Kontakt entfernt wurde, sonst false.
+   * Entfernt einen Kontakt: löscht ihn in Supabase und aktualisiert danach den
+   * sichtbaren Bestand (Signal). Gibt true zurück, wenn ein Kontakt gelöscht
+   * wurde, sonst false.
    *
-   * Später (Supabase): DELETE der Zeile mit passender id.
+   * Fassaden-Methode für die UI.
    */
-  deleteContact(id: string): boolean {
-    const before = this.mockContacts().length;
-    this.mockContacts.update((contacts) => contacts.filter((c) => c.id !== id));
-    return this.mockContacts().length < before;
-  }
-
-  /**
-   * Erzeugt eine eindeutige id für neue Kontakte (Mock-Betrieb).
-   * Basiert auf der höchsten vorhandenen numerischen id + 1 und stellt
-   * sicher, dass die id noch nicht vergeben ist. Mit Supabase entfällt dies.
-   */
-  private generateId(): string {
-    const numericIds = this.mockContacts()
-      .map((contact) => Number(contact.id))
-      .filter((value) => Number.isFinite(value));
-    let next = (numericIds.length ? Math.max(...numericIds) : 0) + 1;
-    const existing = new Set(this.mockContacts().map((contact) => contact.id));
-    while (existing.has(String(next))) {
-      next++;
+  async deleteContact(id: string): Promise<boolean> {
+    const deleted = await this.deleteContactFromSupabase(id);
+    if (deleted) {
+      this.mockContacts.update((contacts) => contacts.filter((c) => c.id !== id));
     }
-    return String(next);
+    return deleted;
   }
 
   // ---------------------------------------------------------------------------

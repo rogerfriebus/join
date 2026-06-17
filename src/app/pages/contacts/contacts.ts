@@ -1,4 +1,4 @@
-import { Component, inject, computed } from '@angular/core';
+import { Component, inject, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ContactService } from '../../core/services/contact.service';
 import { Contact, ContactGroup } from '../../core/models/contact.model';
@@ -13,18 +13,20 @@ import { EditContactDialog } from './dialogs/edit-contact-dialog/edit-contact-di
   templateUrl: './contacts.html',
   styleUrls: ['./contacts.scss'],
 })
-export class Contacts {
+export class Contacts implements OnInit {
   private contactService = inject(ContactService);
 
-  readonly contacts: Contact[] = this.contactService.getContacts();
+  /** Read-only Kontakt-Signal aus der ContactService-Fassade. */
+  readonly contacts = this.contactService.contacts;
 
   selectedContact: Contact | null = null;
 
   showAddDialog = false;
   showEditDialog = false;
 
-  readonly groupedContacts: ContactGroup[] = computed(() => {
-    const sorted = [...this.contacts].sort((a, b) =>
+  /** Reaktiv nach Anfangsbuchstaben gruppierte, alphabetisch sortierte Kontakte. */
+  readonly groupedContacts = computed<ContactGroup[]>(() => {
+    const sorted = [...this.contacts()].sort((a, b) =>
       a.name.localeCompare(b.name)
     );
 
@@ -42,25 +44,42 @@ export class Contacts {
       letter,
       contacts,
     }));
-  })();
+  });
+
+  /** Lädt die Kontakte beim Öffnen der Seite über die Fassade aus Supabase. */
+  async ngOnInit(): Promise<void> {
+    await this.contactService.loadContacts();
+  }
 
   selectContact(contact: Contact): void {
     this.selectedContact = contact;
   }
 
-  addContact(contact: Contact): void {
-    this.contactService.addContact(contact);
-  }
-  
-  saveContact(updated: Contact): void {
-    this.contactService.updateContact(updated);
-    this.selectedContact = updated;
+  async addContact(contact: Contact): Promise<void> {
+    try {
+      await this.contactService.addContact(contact);
+    } catch (error) {
+      console.error('Kontakt konnte nicht gespeichert werden.', error);
+    }
   }
 
-  deleteContact(contact: Contact): void {
+  async saveContact(updated: Contact): Promise<void> {
+    try {
+      const result = await this.contactService.updateContact(updated);
+      this.selectedContact = result ?? updated;
+    } catch (error) {
+      console.error('Kontakt konnte nicht aktualisiert werden.', error);
+    }
+  }
+
+  async deleteContact(contact: Contact): Promise<void> {
     if (!contact.id) return;
-    this.contactService.deleteContact(contact.id);
-    this.selectedContact = null;
+    try {
+      await this.contactService.deleteContact(contact.id);
+      this.selectedContact = null;
+    } catch (error) {
+      console.error('Kontakt konnte nicht gelöscht werden.', error);
+    }
   }
 
   getInitials(name: string): string {
