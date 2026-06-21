@@ -1,5 +1,45 @@
-<!-- TODO (Sprint 1+): Kanban-Board mit Spalten und Drag & Drop laut Figma -->
 <section class="board">
-  <h1>Board</h1>
-  <p>Board folgt.</p>
+  <header class="board-header">
+    <h1>Board</h1>
+  </header>
+
+  <div class="board-columns">
+    <div class="board-column" *ngFor="let column of board()">
+      <div class="column-header">
+        <h2>{{ column.title }}</h2>
+        <span class="column-count">{{ column.tasks.length }}</span>
+      </div>
+
+      <div class="column-body">
+        <p class="column-empty" *ngIf="column.tasks.length === 0">{{ column.emptyText }}</p>
+
+        <article class="task-card" *ngFor="let task of column.tasks">
+          <span class="task-category" [class.user-story]="task.category === 'User Story'">
+            {{ task.category }}
+          </span>
+
+          <h3 class="task-title">{{ task.title }}</h3>
+
+          <p class="task-description" *ngIf="task.description">
+            {{ descriptionPreview(task.description) }}
+          </p>
+
+          <p class="task-subtasks" *ngIf="task.subtasks.length > 0">
+            {{ doneSubtasks(task) }}/{{ task.subtasks.length }} Subtasks
+          </p>
+
+          <div class="task-footer">
+            <div class="task-assignees" *ngIf="task.assignedContactIds.length > 0">
+              <span class="assignee" *ngFor="let contactId of task.assignedContactIds">
+                {{ contactId }}
+              </span>
+            </div>
+            <span class="task-priority" [attr.data-priority]="task.priority">
+              {{ task.priority }}
+            </span>
+          </div>
+        </article>
+      </div>
+    </div>
+  </div>
 </section>

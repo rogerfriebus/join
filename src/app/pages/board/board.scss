@@ -1,0 +1,144 @@
+.board {
+  padding: 1.5rem;
+
+  .board-header {
+    margin-bottom: 1.5rem;
+
+    h1 {
+      margin: 0;
+    }
+  }
+}
+
+.board-columns {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1rem;
+  align-items: start;
+}
+
+.board-column {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  min-width: 0;
+}
+
+.column-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+
+  h2 {
+    margin: 0;
+    font-size: 1.05rem;
+  }
+
+  .column-count {
+    font-size: 0.85rem;
+    color: #6b7280;
+  }
+}
+
+.column-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.column-empty {
+  margin: 0;
+  padding: 1rem;
+  border: 1px dashed #c7ccd6;
+  border-radius: 10px;
+  color: #6b7280;
+  font-size: 0.85rem;
+  text-align: center;
+  background: #f6f7f8;
+}
+
+.task-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.task-category {
+  align-self: flex-start;
+  padding: 0.2rem 0.6rem;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  color: #ffffff;
+  background: #1fd7c1;
+
+  &.user-story {
+    background: #0038ff;
+  }
+}
+
+.task-title {
+  margin: 0;
+  font-size: 1rem;
+}
+
+.task-description {
+  margin: 0;
+  font-size: 0.85rem;
+  color: #6b7280;
+}
+
+.task-subtasks {
+  margin: 0;
+  font-size: 0.8rem;
+  color: #6b7280;
+}
+
+.task-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.task-assignees {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.assignee {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 1.75rem;
+  height: 1.75rem;
+  padding: 0 0.4rem;
+  border-radius: 50%;
+  font-size: 0.75rem;
+  color: #ffffff;
+  background: #2a3647;
+}
+
+.task-priority {
+  font-size: 0.8rem;
+  text-transform: capitalize;
+  color: #2a3647;
+
+  &[data-priority='urgent'] {
+    color: #ff3d00;
+  }
+
+  &[data-priority='low'] {
+    color: #7ae229;
+  }
+}
+
+@media (max-width: 900px) {
+  .board-columns {
+    grid-template-columns: 1fr;
+  }
+}
