@@ -27,7 +27,11 @@ export class Board implements OnInit {
   readonly columns: readonly BoardColumn[] = [
     { title: 'ToDo', status: 'todo', emptyText: 'No tasks ToDo' },
     { title: 'In Progress', status: 'inProgress', emptyText: 'No tasks In Progress' },
-    { title: 'Awaiting Feedback', status: 'awaitFeedback', emptyText: 'No tasks Awaiting Feedback' },
+    {
+      title: 'Awaiting Feedback',
+      status: 'awaitFeedback',
+      emptyText: 'No tasks Awaiting Feedback',
+    },
     { title: 'Done', status: 'done', emptyText: 'No tasks Done' },
   ];
 
@@ -56,5 +60,10 @@ export class Board implements OnInit {
   /** Anzahl erledigter Subtasks eines Tasks. */
   doneSubtasks(task: Task): number {
     return task.subtasks.filter((subtask) => subtask.done).length;
+  }
+
+  /** Kurze Anzeige für Assigned Contacts, solange noch keine echten Kontakt-Initialen angebunden sind. */
+  assigneePreview(contactId: string): string {
+    return contactId.trim().slice(0, 2).toUpperCase();
   }
 }
