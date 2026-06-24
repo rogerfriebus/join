@@ -14,29 +14,47 @@
         <p class="column-empty" *ngIf="column.tasks.length === 0">{{ column.emptyText }}</p>
 
         <article class="task-card" *ngFor="let task of column.tasks">
-          <span class="task-category" [class.user-story]="task.category === 'User Story'">
+          <span
+            class="task-card__category"
+            [class.task-card__category--user-story]="task.category === 'User Story'"
+            [class.task-card__category--technical]="task.category === 'Technical Task'"
+          >
             {{ task.category }}
           </span>
 
-          <h3 class="task-title">{{ task.title }}</h3>
+          <h3 class="task-card__title">{{ task.title }}</h3>
 
-          <p class="task-description" *ngIf="task.description">
+          <p class="task-card__description" *ngIf="task.description">
             {{ descriptionPreview(task.description) }}
           </p>
 
-          <p class="task-subtasks" *ngIf="task.subtasks.length > 0">
-            {{ doneSubtasks(task) }}/{{ task.subtasks.length }} Subtasks
-          </p>
+          <div class="task-card__subtasks" *ngIf="task.subtasks.length > 0">
+            <div class="task-card__progress">
+              <span
+                class="task-card__progress-value"
+                [style.width.%]="(doneSubtasks(task) / task.subtasks.length) * 100"
+              ></span>
+            </div>
 
-          <div class="task-footer">
-            <div class="task-assignees" *ngIf="task.assignedContactIds.length > 0">
-              <span class="assignee" *ngFor="let contactId of task.assignedContactIds">
-                {{ contactId }}
+            <span class="task-card__subtasks-text">
+              {{ doneSubtasks(task) }}/{{ task.subtasks.length }} Subtasks
+            </span>
+          </div>
+
+          <div class="task-card__footer">
+            <div class="task-card__assignees" *ngIf="task.assignedContactIds.length > 0">
+              <span class="task-card__assignee" *ngFor="let contactId of task.assignedContactIds">
+                {{ assigneePreview(contactId) }}
               </span>
             </div>
-            <span class="task-priority" [attr.data-priority]="task.priority">
-              {{ task.priority }}
-            </span>
+
+            <span
+              class="task-card__priority"
+              [class.task-card__priority--urgent]="task.priority === 'urgent'"
+              [class.task-card__priority--medium]="task.priority === 'medium'"
+              [class.task-card__priority--low]="task.priority === 'low'"
+              [attr.aria-label]="task.priority"
+            ></span>
           </div>
         </article>
       </div>
