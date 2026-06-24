@@ -1,4 +1,4 @@
-import { Component, computed, inject, OnInit } from '@angular/core';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TaskService } from '../../core/services/task.service';
 import { Task, TaskStatus } from '../../core/models/task.model';
@@ -22,6 +22,9 @@ export class Board implements OnInit {
 
   /** Read-only Task-Signal aus der TaskService-Fassade (keine direkte Supabase-Logik hier). */
   readonly tasks = this.taskService.tasks;
+
+  /** Aktuell ausgewählter Task für die Detailansicht. */
+  readonly selectedTask = signal<Task | null>(null);
 
   /** Die vier Kanban-Spalten in fester Reihenfolge. */
   readonly columns: readonly BoardColumn[] = [
@@ -65,5 +68,29 @@ export class Board implements OnInit {
   /** Kurze Anzeige für Assigned Contacts, solange noch keine echten Kontakt-Initialen angebunden sind. */
   assigneePreview(contactId: string): string {
     return contactId.trim().slice(0, 2).toUpperCase();
+  }
+
+  /** Lesbares Label für die Priority-Anzeige. */
+  priorityLabel(priority: Task['priority']): string {
+    switch (priority) {
+      case 'urgent':
+        return 'Urgent';
+      case 'medium':
+        return 'Medium';
+      case 'low':
+        return 'Low';
+      default:
+        return priority;
+    }
+  }
+
+  /** Öffnet die Detailansicht für einen Task. */
+  openTaskDetail(task: Task): void {
+    this.selectedTask.set(task);
+  }
+
+  /** Schließt die Detailansicht. */
+  closeTaskDetail(): void {
+    this.selectedTask.set(null);
   }
 }
