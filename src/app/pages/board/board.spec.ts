@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { signal } from '@angular/core';
+import { provideRouter } from '@angular/router';
 
 import { Board } from './board';
 import { TaskService } from '../../core/services/task.service';
@@ -43,6 +44,7 @@ describe('Board', () => {
 
   beforeEach(async () => {
     loadTasksSpy = vi.fn().mockResolvedValue(undefined);
+
     // Stub statt echter TaskService: keine Supabase-/Netzwerkaufrufe im Test.
     const taskServiceStub = {
       tasks: signal<Task[]>(TEST_TASKS).asReadonly(),
@@ -51,7 +53,7 @@ describe('Board', () => {
 
     await TestBed.configureTestingModule({
       imports: [Board],
-      providers: [{ provide: TaskService, useValue: taskServiceStub }],
+      providers: [provideRouter([]), { provide: TaskService, useValue: taskServiceStub }],
     }).compileComponents();
 
     fixture = TestBed.createComponent(Board);
@@ -75,6 +77,7 @@ describe('Board', () => {
 
   it('gruppiert Tasks nach Status in die passenden Spalten', () => {
     const columns = fixture.nativeElement.querySelectorAll('.board-column');
+
     // Reihenfolge: ToDo, In Progress, Awaiting Feedback, Done
     expect(columns[0].textContent).toContain('Todo Task');
     expect(columns[1].textContent).toContain('Progress Task');
@@ -83,6 +86,7 @@ describe('Board', () => {
 
   it('zeigt einen Empty-State für leere Spalten', () => {
     const columns = fixture.nativeElement.querySelectorAll('.board-column');
+
     // Awaiting Feedback und Done sind leer
     expect(columns[2].textContent).toContain('No tasks Awaiting Feedback');
     expect(columns[3].textContent).toContain('No tasks Done');

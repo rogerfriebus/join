@@ -1,4 +1,5 @@
 import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { TaskService } from '../../core/services/task.service';
 import { Task, TaskStatus } from '../../core/models/task.model';
@@ -13,7 +14,7 @@ interface BoardColumn {
 @Component({
   selector: 'app-board',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, RouterLink],
   templateUrl: './board.html',
   styleUrl: './board.scss',
 })

@@ -1,17 +1,31 @@
 <section class="board">
   <header class="board-header">
     <h1>Board</h1>
+
+    <a class="board-header__add-task" routerLink="/add-task">
+      <span>Add task</span>
+      <span class="board-header__add-icon" aria-hidden="true"></span>
+    </a>
   </header>
 
   <div class="board-columns">
     <div class="board-column" *ngFor="let column of board()">
       <div class="column-header">
         <h2>{{ column.title }}</h2>
-        <span class="column-count">{{ column.tasks.length }}</span>
+
+        <a
+          class="column-add-task"
+          routerLink="/add-task"
+          [attr.aria-label]="'Add task to ' + column.title"
+        >
+          <span aria-hidden="true"></span>
+        </a>
       </div>
 
       <div class="column-body">
-        <p class="column-empty" *ngIf="column.tasks.length === 0">{{ column.emptyText }}</p>
+        <p class="column-empty" *ngIf="column.tasks.length === 0">
+          {{ column.emptyText }}
+        </p>
 
         <article
           class="task-card"
@@ -67,6 +81,7 @@
       </div>
     </div>
   </div>
+
   <ng-container *ngIf="selectedTask() as task">
     <div class="task-detail-backdrop" (click)="closeTaskDetail()">
       <article class="task-detail" (click)="$event.stopPropagation()">
