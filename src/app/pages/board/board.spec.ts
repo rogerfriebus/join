@@ -41,14 +41,17 @@ describe('Board', () => {
   let component: Board;
   let fixture: ComponentFixture<Board>;
   let loadTasksSpy: ReturnType<typeof vi.fn>;
+  let updateTaskStatusSpy: ReturnType<typeof vi.fn>;
 
   beforeEach(async () => {
     loadTasksSpy = vi.fn().mockResolvedValue(undefined);
+    updateTaskStatusSpy = vi.fn().mockResolvedValue(undefined);
 
     // Stub statt echter TaskService: keine Supabase-/Netzwerkaufrufe im Test.
     const taskServiceStub = {
       tasks: signal<Task[]>(TEST_TASKS).asReadonly(),
       loadTasks: loadTasksSpy,
+      updateTaskStatus: updateTaskStatusSpy,
     };
 
     await TestBed.configureTestingModule({
@@ -95,5 +98,20 @@ describe('Board', () => {
   it('zeigt Subtask-Fortschritt auf der Karte', () => {
     const columns = fixture.nativeElement.querySelectorAll('.board-column');
     expect(columns[0].textContent).toContain('1/2 Subtasks');
+  });
+
+  it('aktualisiert den Task-Status beim Drop in eine andere Spalte', async () => {
+    const dragEvent = {
+      dataTransfer: {
+        setData: vi.fn(),
+        effectAllowed: 'none',
+      },
+    } as unknown as DragEvent;
+
+    component.startTaskDrag(TEST_TASKS[0], dragEvent);
+
+    await component.dropTask('done');
+
+    expect(updateTaskStatusSpy).toHaveBeenCalledWith('a', 'done');
   });
 });

@@ -27,6 +27,12 @@ export class Board implements OnInit {
   /** Aktuell ausgewählter Task für die Detailansicht. */
   readonly selectedTask = signal<Task | null>(null);
 
+  /** Task, der gerade per Drag & Drop bewegt wird. */
+  readonly draggedTask = signal<Task | null>(null);
+
+  /** Status der Spalte, über der gerade gedroppt werden kann. */
+  readonly dragTargetStatus = signal<TaskStatus | null>(null);
+
   /** Die vier Kanban-Spalten in fester Reihenfolge. */
   readonly columns: readonly BoardColumn[] = [
     { title: 'ToDo', status: 'todo', emptyText: 'No tasks ToDo' },
@@ -93,5 +99,52 @@ export class Board implements OnInit {
   /** Schließt die Detailansicht. */
   closeTaskDetail(): void {
     this.selectedTask.set(null);
+  }
+
+  /** Startet den Drag-Vorgang für eine Task Card. */
+  startTaskDrag(task: Task, event: DragEvent): void {
+    this.draggedTask.set(task);
+
+    event.dataTransfer?.setData('text/plain', task.id);
+
+    if (event.dataTransfer) {
+      event.dataTransfer.effectAllowed = 'move';
+    }
+  }
+
+  /** Markiert eine Spalte als aktuelles Drop-Ziel. */
+  setDragTarget(status: TaskStatus): void {
+    if (!this.draggedTask()) {
+      return;
+    }
+
+    this.dragTargetStatus.set(status);
+  }
+
+  /** Entfernt die optische Drop-Markierung. */
+  clearDragTarget(): void {
+    this.dragTargetStatus.set(null);
+  }
+
+  /** Beendet den Drag-Vorgang ohne Statusänderung. */
+  endTaskDrag(): void {
+    this.draggedTask.set(null);
+    this.dragTargetStatus.set(null);
+  }
+
+  /** Verschiebt eine Task in eine andere Board-Spalte. */
+  async dropTask(status: TaskStatus): Promise<void> {
+    const task = this.draggedTask();
+
+    if (!task || task.status === status) {
+      this.endTaskDrag();
+      return;
+    }
+
+    try {
+      await this.taskService.updateTaskStatus(task.id, status);
+    } finally {
+      this.endTaskDrag();
+    }
   }
 }
