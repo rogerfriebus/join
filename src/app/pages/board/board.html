@@ -9,7 +9,13 @@
   </header>
 
   <div class="board-columns">
-    <div class="board-column" *ngFor="let column of board()">
+    <div
+      class="board-column"
+      *ngFor="let column of board()"
+      [class.board-column--drag-over]="dragTargetStatus() === column.status"
+      (dragover)="$event.preventDefault(); setDragTarget(column.status)"
+      (drop)="$event.preventDefault(); dropTask(column.status)"
+    >
       <div class="column-header">
         <h2>{{ column.title }}</h2>
 
@@ -32,6 +38,10 @@
           *ngFor="let task of column.tasks"
           role="button"
           tabindex="0"
+          draggable="true"
+          [class.task-card--dragging]="draggedTask()?.id === task.id"
+          (dragstart)="startTaskDrag(task, $event)"
+          (dragend)="endTaskDrag()"
           (click)="openTaskDetail(task)"
           (keydown.enter)="openTaskDetail(task)"
         >
