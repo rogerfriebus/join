@@ -114,4 +114,33 @@ describe('Board', () => {
 
     expect(updateTaskStatusSpy).toHaveBeenCalledWith('a', 'done');
   });
+
+  it('filtert Tasks anhand der Suche', () => {
+    component.updateSearchQuery({
+      target: { value: 'progress' },
+    } as unknown as Event);
+
+    expect(component.board()[0].tasks.length).toBe(0);
+    expect(component.board()[1].tasks.length).toBe(1);
+    expect(component.board()[1].tasks[0].title).toBe('Progress Task');
+  });
+
+  it('erkennt, wenn eine Suche keine Treffer liefert', () => {
+    component.updateSearchQuery({
+      target: { value: 'xyz' },
+    } as unknown as Event);
+
+    expect(component.hasSearchQuery()).toBe(true);
+    expect(component.hasSearchResults()).toBe(false);
+  });
+
+  it('zeigt bei Suche einen passenden Empty-State-Text pro leerer Spalte', () => {
+    component.updateSearchQuery({
+      target: { value: 'progress' },
+    } as unknown as Event);
+
+    const firstColumn = component.board()[0];
+
+    expect(component.columnEmptyText(firstColumn)).toBe('No matching tasks');
+  });
 });

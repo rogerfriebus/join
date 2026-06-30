@@ -11,6 +11,11 @@ interface BoardColumn {
   emptyText: string;
 }
 
+/** Board-Spalte inklusive gefilterter Tasks. */
+interface BoardColumnView extends BoardColumn {
+  tasks: Task[];
+}
+
 @Component({
   selector: 'app-board',
   standalone: true,
@@ -33,6 +38,15 @@ export class Board implements OnInit {
   /** Status der Spalte, über der gerade gedroppt werden kann. */
   readonly dragTargetStatus = signal<TaskStatus | null>(null);
 
+  /** Aktuelle Suchanfrage für das Board. */
+  readonly searchQuery = signal('');
+
+  /** Normalisierte Suchanfrage für Vergleiche. */
+  readonly normalizedSearchQuery = computed(() => this.searchQuery().trim().toLowerCase());
+
+  /** Gibt an, ob aktuell gesucht wird. */
+  readonly hasSearchQuery = computed(() => this.normalizedSearchQuery().length > 0);
+
   /** Die vier Kanban-Spalten in fester Reihenfolge. */
   readonly columns: readonly BoardColumn[] = [
     { title: 'ToDo', status: 'todo', emptyText: 'No tasks ToDo' },
@@ -45,12 +59,28 @@ export class Board implements OnInit {
     { title: 'Done', status: 'done', emptyText: 'No tasks Done' },
   ];
 
-  /** Reaktive Gruppierung der Tasks nach Status pro Spalte. */
-  readonly board = computed(() =>
+  /** Gefilterte Tasks anhand der aktuellen Suche. */
+  readonly filteredTasks = computed(() => {
+    const query = this.normalizedSearchQuery();
+
+    if (!query) {
+      return this.tasks();
+    }
+
+    return this.tasks().filter((task) => this.taskMatchesQuery(task, query));
+  });
+
+  /** Reaktive Gruppierung der gefilterten Tasks nach Status pro Spalte. */
+  readonly board = computed<BoardColumnView[]>(() =>
     this.columns.map((column) => ({
       ...column,
-      tasks: this.tasks().filter((task) => task.status === column.status),
+      tasks: this.filteredTasks().filter((task) => task.status === column.status),
     })),
+  );
+
+  /** Gibt an, ob es für die aktuelle Suche überhaupt Treffer gibt. */
+  readonly hasSearchResults = computed(() =>
+    this.board().some((column) => column.tasks.length > 0),
   );
 
   /** Lädt die Tasks beim Öffnen des Boards über die Fassade (Supabase mit Fallback). */
@@ -58,11 +88,47 @@ export class Board implements OnInit {
     await this.taskService.loadTasks();
   }
 
+  /** Aktualisiert die Suche beim Tippen im Suchfeld. */
+  updateSearchQuery(event: Event): void {
+    const input = event.target as HTMLInputElement;
+    this.searchQuery.set(input.value);
+  }
+
+  /** Entfernt die aktuelle Suche. */
+  clearSearchQuery(): void {
+    this.searchQuery.set('');
+  }
+
+  /** Prüft, ob eine Task zur aktuellen Suche passt. */
+  private taskMatchesQuery(task: Task, query: string): boolean {
+    const searchableText = [
+      task.title,
+      task.description ?? '',
+      task.category,
+      task.priority,
+      task.dueDate,
+    ]
+      .join(' ')
+      .toLowerCase();
+
+    return searchableText.includes(query);
+  }
+
+  /** Empty-State-Text je Spalte. */
+  columnEmptyText(column: BoardColumnView): string {
+    if (this.hasSearchQuery()) {
+      return 'No matching tasks';
+    }
+
+    return column.emptyText;
+  }
+
   /** Kurze Beschreibungsvorschau für die Karte. */
   descriptionPreview(description: string | undefined): string {
     if (!description) {
       return '';
     }
+
     const max = 80;
     return description.length > max ? `${description.slice(0, max).trimEnd()}…` : description;
   }
