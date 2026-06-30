@@ -361,28 +361,11 @@
   color: #ffffff;
   font-size: 12px;
   line-height: 14px;
-  background-color: #ff7a00;
   overflow: hidden;
   text-transform: uppercase;
 
   &:first-child {
     margin-left: 0;
-  }
-
-  &:nth-child(2) {
-    background-color: #1fd7c1;
-  }
-
-  &:nth-child(3) {
-    background-color: #462f8a;
-  }
-
-  &:nth-child(4) {
-    background-color: #9327ff;
-  }
-
-  &:nth-child(5) {
-    background-color: #ff5eb3;
   }
 }
 
@@ -706,19 +689,7 @@
     color: #ffffff;
     font-size: 16px;
     line-height: 120%;
-    background-color: #1fd7c1;
-  }
-
-  &:nth-child(2)::before {
-    background-color: #462f8a;
-  }
-
-  &:nth-child(3)::before {
-    background-color: #0038ff;
-  }
-
-  &:nth-child(4)::before {
-    background-color: #ff7a00;
+    background-color: var(--assignee-color, #1fd7c1);
   }
 }
 

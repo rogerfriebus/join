@@ -89,8 +89,13 @@
 
           <div class="task-card__footer">
             <div class="task-card__assignees" *ngIf="task.assignedContactIds.length > 0">
-              <span class="task-card__assignee" *ngFor="let contactId of task.assignedContactIds">
-                {{ assigneePreview(contactId) }}
+              <span
+                class="task-card__assignee"
+                *ngFor="let contactId of task.assignedContactIds"
+                [style.background-color]="assigneeColor(contactId)"
+                [attr.title]="assigneeName(contactId)"
+              >
+                {{ assigneeInitials(contactId) }}
               </span>
             </div>
 
@@ -168,9 +173,10 @@
               <span
                 class="task-detail__assignee"
                 *ngFor="let contactId of task.assignedContactIds"
-                [attr.data-initials]="assigneePreview(contactId)"
+                [attr.data-initials]="assigneeInitials(contactId)"
+                [style.--assignee-color]="assigneeColor(contactId)"
               >
-                Contact {{ assigneePreview(contactId) }}
+                {{ assigneeName(contactId) }}
               </span>
             </div>
           </section>

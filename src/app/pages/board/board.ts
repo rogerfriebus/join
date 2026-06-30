@@ -2,7 +2,9 @@ import { Component, computed, inject, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { TaskService } from '../../core/services/task.service';
+import { ContactService } from '../../core/services/contact.service';
 import { Task, TaskStatus } from '../../core/models/task.model';
+import { Contact } from '../../core/models/contact.model';
 
 /** Konfiguration einer Board-Spalte. */
 interface BoardColumn {
@@ -25,9 +27,13 @@ interface BoardColumnView extends BoardColumn {
 })
 export class Board implements OnInit {
   private taskService = inject(TaskService);
+  private contactService = inject(ContactService);
 
   /** Read-only Task-Signal aus der TaskService-Fassade (keine direkte Supabase-Logik hier). */
   readonly tasks = this.taskService.tasks;
+
+  /** Read-only Contact-Signal aus der ContactService-Fassade. */
+  readonly contacts = this.contactService.contacts;
 
   /** Aktuell ausgewählter Task für die Detailansicht. */
   readonly selectedTask = signal<Task | null>(null);
@@ -46,6 +52,19 @@ export class Board implements OnInit {
 
   /** Gibt an, ob aktuell gesucht wird. */
   readonly hasSearchQuery = computed(() => this.normalizedSearchQuery().length > 0);
+
+  /** Kontakte nach ID gemappt, damit assignedContactIds sauber aufgelöst werden können. */
+  readonly contactsById = computed(() => {
+    const map = new Map<string, Contact>();
+
+    for (const contact of this.contacts()) {
+      if (contact.id) {
+        map.set(contact.id, contact);
+      }
+    }
+
+    return map;
+  });
 
   /** Die vier Kanban-Spalten in fester Reihenfolge. */
   readonly columns: readonly BoardColumn[] = [
@@ -83,9 +102,9 @@ export class Board implements OnInit {
     this.board().some((column) => column.tasks.length > 0),
   );
 
-  /** Lädt die Tasks beim Öffnen des Boards über die Fassade (Supabase mit Fallback). */
+  /** Lädt Tasks und Kontakte beim Öffnen des Boards über die jeweiligen Fassaden. */
   async ngOnInit(): Promise<void> {
-    await this.taskService.loadTasks();
+    await Promise.all([this.taskService.loadTasks(), this.contactService.loadContacts()]);
   }
 
   /** Aktualisiert die Suche beim Tippen im Suchfeld. */
@@ -138,9 +157,35 @@ export class Board implements OnInit {
     return task.subtasks.filter((subtask) => subtask.done).length;
   }
 
-  /** Kurze Anzeige für Assigned Contacts, solange noch keine echten Kontakt-Initialen angebunden sind. */
-  assigneePreview(contactId: string): string {
-    return contactId.trim().slice(0, 2).toUpperCase();
+  /** Liefert die Initialen eines zugewiesenen Kontakts. */
+  assigneeInitials(contactId: string): string {
+    const contact = this.contactsById().get(contactId);
+
+    if (contact?.initials) {
+      return contact.initials;
+    }
+
+    if (contact?.name) {
+      return contact.name
+        .split(' ')
+        .filter(Boolean)
+        .map((part) => part[0])
+        .join('')
+        .slice(0, 2)
+        .toUpperCase();
+    }
+
+    return '?';
+  }
+
+  /** Liefert den Namen eines zugewiesenen Kontakts. */
+  assigneeName(contactId: string): string {
+    return this.contactsById().get(contactId)?.name ?? 'Unknown contact';
+  }
+
+  /** Liefert die Avatar-Farbe eines zugewiesenen Kontakts. */
+  assigneeColor(contactId: string): string {
+    return this.contactsById().get(contactId)?.color ?? '#ff7a00';
   }
 
   /** Lesbares Label für die Priority-Anzeige. */
