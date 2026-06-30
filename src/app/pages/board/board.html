@@ -2,18 +2,33 @@
   <header class="board-header">
     <h1>Board</h1>
 
-    <a class="board-header__add-task" routerLink="/add-task">
-      <span>Add task</span>
-      <span class="board-header__add-icon" aria-hidden="true"></span>
-    </a>
+    <div class="board-header__actions">
+      <label class="board-search">
+        <input
+          type="search"
+          placeholder="Find Task"
+          aria-label="Search tasks"
+          [value]="searchQuery()"
+          (input)="updateSearchQuery($event)"
+        />
+
+        <span class="board-search__icon" aria-hidden="true"></span>
+      </label>
+
+      <a class="board-header__add-task" routerLink="/add-task">
+        <span>Add task</span>
+        <span class="board-header__add-icon" aria-hidden="true"></span>
+      </a>
+    </div>
   </header>
 
-  <div class="board-columns">
+  <div class="board-columns" *ngIf="!hasSearchQuery() || hasSearchResults(); else noSearchResults">
     <div
       class="board-column"
       *ngFor="let column of board()"
       [class.board-column--drag-over]="dragTargetStatus() === column.status"
       (dragover)="$event.preventDefault(); setDragTarget(column.status)"
+      (dragleave)="clearDragTarget()"
       (drop)="$event.preventDefault(); dropTask(column.status)"
     >
       <div class="column-header">
@@ -30,7 +45,7 @@
 
       <div class="column-body">
         <p class="column-empty" *ngIf="column.tasks.length === 0">
-          {{ column.emptyText }}
+          {{ columnEmptyText(column) }}
         </p>
 
         <article
@@ -91,6 +106,10 @@
       </div>
     </div>
   </div>
+
+  <ng-template #noSearchResults>
+    <p class="board-search-empty">No tasks found for "{{ searchQuery() }}".</p>
+  </ng-template>
 
   <ng-container *ngIf="selectedTask() as task">
     <div class="task-detail-backdrop" (click)="closeTaskDetail()">
