@@ -1,5 +1,5 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
+import { Component, computed, HostListener, inject, OnInit, signal } from '@angular/core';
+import { RouterLink, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { TaskService } from '../../core/services/task.service';
 import { ContactService } from '../../core/services/contact.service';
@@ -11,6 +11,7 @@ import {
   TaskStatus,
 } from '../../core/models/task.model';
 import { Contact } from '../../core/models/contact.model';
+import { AddTaskModal } from '../add-task-modal/add-task-modal';
 
 /** Konfiguration einer Board-Spalte. */
 interface BoardColumn {
@@ -52,7 +53,7 @@ function createEmptyEditDraft(): EditTaskDraft {
 @Component({
   selector: 'app-board',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, AddTaskModal],
   templateUrl: './board.html',
   styleUrl: './board.scss',
 })
@@ -486,6 +487,28 @@ export class Board implements OnInit {
       await this.taskService.updateTaskStatus(task.id, status);
     } finally {
       this.endTaskDrag();
+    }
+  }
+
+  showAddTaskModal = false;
+
+  onTaskCreated(task: Task): void {
+    this.showAddTaskModal = false;
+  }
+
+  private router = inject(Router);
+  isMobile = window.innerWidth < 1060;
+
+  @HostListener('window:resize')
+  onResize(): void {
+    this.isMobile = window.innerWidth < 1060;
+  }
+
+  openAddTask(): void {
+    if (this.isMobile) {
+      this.router.navigate(['/add-task']);
+    } else {
+      this.showAddTaskModal = true;
     }
   }
 }
