@@ -1,5 +1,5 @@
-import { Component, computed, HostListener, inject, OnInit, signal } from '@angular/core';
-import { RouterLink, Router } from '@angular/router';
+import { Component, computed, inject, OnInit, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { TaskService } from '../../core/services/task.service';
 import { ContactService } from '../../core/services/contact.service';
@@ -11,7 +11,6 @@ import {
   TaskStatus,
 } from '../../core/models/task.model';
 import { Contact } from '../../core/models/contact.model';
-import { AddTaskModal } from '../add-task-modal/add-task-modal';
 
 /** Konfiguration einer Board-Spalte. */
 interface BoardColumn {
@@ -23,6 +22,13 @@ interface BoardColumn {
 /** Board-Spalte inklusive gefilterter Tasks. */
 interface BoardColumnView extends BoardColumn {
   tasks: Task[];
+}
+
+/** Option für das mobile Move-to-Menü. */
+interface MobileMoveOption {
+  status: TaskStatus;
+  label: string;
+  direction: 'up' | 'down';
 }
 
 /** Lokaler Formularzustand für das Edit-Overlay. */
@@ -53,7 +59,7 @@ function createEmptyEditDraft(): EditTaskDraft {
 @Component({
   selector: 'app-board',
   standalone: true,
-  imports: [CommonModule, RouterLink, AddTaskModal],
+  imports: [CommonModule, RouterLink],
   templateUrl: './board.html',
   styleUrl: './board.scss',
 })
@@ -85,6 +91,9 @@ export class Board implements OnInit {
   /** Status der Spalte, über der gerade gedroppt werden kann. */
   readonly dragTargetStatus = signal<TaskStatus | null>(null);
 
+  /** Geöffnetes mobiles Move-Menü. */
+  readonly openedMobileMoveMenuTaskId = signal<string | null>(null);
+
   /** Aktuelle Suchanfrage für das Board. */
   readonly searchQuery = signal('');
 
@@ -93,6 +102,19 @@ export class Board implements OnInit {
 
   /** Gibt an, ob aktuell gesucht wird. */
   readonly hasSearchQuery = computed(() => this.normalizedSearchQuery().length > 0);
+
+  /** Kontakte nach ID gemappt, damit assignedContactIds sauber aufgelöst werden können. */
+  readonly contactsById = computed(() => {
+    const map = new Map<string, Contact>();
+
+    for (const contact of this.contacts()) {
+      if (contact.id) {
+        map.set(contact.id, contact);
+      }
+    }
+
+    return map;
+  });
 
   /** Gibt an, ob das Edit-Formular aktuell valide ist. */
   readonly editFormIsValid = computed(() => {
@@ -103,12 +125,12 @@ export class Board implements OnInit {
 
   /** Die vier Kanban-Spalten in fester Reihenfolge. */
   readonly columns: readonly BoardColumn[] = [
-    { title: 'ToDo', status: 'todo', emptyText: 'No tasks ToDo' },
-    { title: 'In Progress', status: 'inProgress', emptyText: 'No tasks In Progress' },
+    { title: 'To do', status: 'todo', emptyText: 'No tasks To do' },
+    { title: 'In progress', status: 'inProgress', emptyText: 'No tasks In progress' },
     {
-      title: 'Awaiting Feedback',
+      title: 'Await feedback',
       status: 'awaitFeedback',
-      emptyText: 'No tasks Awaiting Feedback',
+      emptyText: 'No tasks Await feedback',
     },
     { title: 'Done', status: 'done', emptyText: 'No tasks Done' },
   ];
@@ -191,9 +213,19 @@ export class Board implements OnInit {
     return task.subtasks.filter((subtask) => subtask.done).length;
   }
 
+  /** Liefert die auf der Card sichtbaren Assignee-IDs. */
+  visibleAssigneeIds(task: Task, maxVisible = 6): string[] {
+    return task.assignedContactIds.slice(0, maxVisible);
+  }
+
+  /** Liefert die Anzahl weiterer, versteckter Assignees. */
+  hiddenAssigneeCount(task: Task, maxVisible = 6): number {
+    return Math.max(task.assignedContactIds.length - maxVisible, 0);
+  }
+
   /** Liefert die Initialen eines zugewiesenen Kontakts. */
   assigneeInitials(contactId: string): string {
-    const contact = this.contactService.resolveContact(contactId);
+    const contact = this.contactsById().get(contactId);
 
     if (contact?.initials) {
       return contact.initials;
@@ -208,12 +240,12 @@ export class Board implements OnInit {
 
   /** Liefert den Namen eines zugewiesenen Kontakts. */
   assigneeName(contactId: string): string {
-    return this.contactService.resolveContact(contactId)?.name ?? 'Unknown contact';
+    return this.contactsById().get(contactId)?.name ?? 'Unknown contact';
   }
 
   /** Liefert die Avatar-Farbe eines zugewiesenen Kontakts. */
   assigneeColor(contactId: string): string {
-    return this.contactService.resolveContact(contactId)?.color ?? '#ff7a00';
+    return this.contactsById().get(contactId)?.color ?? '#ff7a00';
   }
 
   /** Liefert Initialen für einen Kontakt im Edit-Overlay. */
@@ -248,12 +280,87 @@ export class Board implements OnInit {
 
   /** Öffnet die Detailansicht für einen Task. */
   openTaskDetail(task: Task): void {
+    this.closeMobileMoveMenu();
     this.selectedTask.set(task);
   }
 
   /** Schließt die Detailansicht. */
   closeTaskDetail(): void {
     this.selectedTask.set(null);
+  }
+
+  /** Öffnet oder schließt das mobile Move-to-Menü einer Task. */
+  toggleMobileMoveMenu(taskId: string, event: MouseEvent): void {
+    event.stopPropagation();
+
+    this.openedMobileMoveMenuTaskId.update((openedTaskId) =>
+      openedTaskId === taskId ? null : taskId,
+    );
+  }
+
+  /** Schließt das mobile Move-to-Menü. */
+  closeMobileMoveMenu(): void {
+    this.openedMobileMoveMenuTaskId.set(null);
+  }
+
+  /** Liefert die möglichen Mobile-Move-Ziele für eine Task. */
+  mobileMoveOptions(task: Task): MobileMoveOption[] {
+    const currentIndex = this.columns.findIndex((column) => column.status === task.status);
+    const options: MobileMoveOption[] = [];
+
+    if (currentIndex === -1) {
+      return options;
+    }
+
+    const previousColumn = this.columns[currentIndex - 1];
+    const nextColumn = this.columns[currentIndex + 1];
+
+    if (previousColumn) {
+      options.push({
+        status: previousColumn.status,
+        label: this.mobileMoveLabel(previousColumn.status),
+        direction: 'up',
+      });
+    }
+
+    if (nextColumn) {
+      options.push({
+        status: nextColumn.status,
+        label: this.mobileMoveLabel(nextColumn.status),
+        direction: 'down',
+      });
+    }
+
+    return options;
+  }
+
+  /** Lesbare Labels für das Mobile-Move-Menü. */
+  private mobileMoveLabel(status: TaskStatus): string {
+    switch (status) {
+      case 'todo':
+        return 'To-do';
+      case 'inProgress':
+        return 'In progress';
+      case 'awaitFeedback':
+        return 'Review';
+      case 'done':
+        return 'Done';
+      default:
+        return status;
+    }
+  }
+
+  /** Verschiebt eine Task über das mobile Move-Menü in einen anderen Status. */
+  async moveTaskToStatus(task: Task, status: TaskStatus, event: MouseEvent): Promise<void> {
+    event.stopPropagation();
+
+    this.closeMobileMoveMenu();
+
+    if (task.status === status) {
+      return;
+    }
+
+    await this.taskService.updateTaskStatus(task.id, status);
   }
 
   /** Öffnet das Edit-Overlay für einen Task. */
@@ -487,28 +594,6 @@ export class Board implements OnInit {
       await this.taskService.updateTaskStatus(task.id, status);
     } finally {
       this.endTaskDrag();
-    }
-  }
-
-  showAddTaskModal = false;
-
-  onTaskCreated(task: Task): void {
-    this.showAddTaskModal = false;
-  }
-
-  private router = inject(Router);
-  isMobile = window.innerWidth < 1060;
-
-  @HostListener('window:resize')
-  onResize(): void {
-    this.isMobile = window.innerWidth < 1060;
-  }
-
-  openAddTask(): void {
-    if (this.isMobile) {
-      this.router.navigate(['/add-task']);
-    } else {
-      this.showAddTaskModal = true;
     }
   }
 }
