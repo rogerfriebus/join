@@ -115,8 +115,8 @@ describe('Board', () => {
   it('zeigt einen Empty-State für leere Spalten', () => {
     const columns = fixture.nativeElement.querySelectorAll('.board-column');
 
-    // Awaiting Feedback und Done sind leer
-    expect(columns[2].textContent).toContain('No tasks Awaiting Feedback');
+    // Await feedback und Done sind leer
+    expect(columns[2].textContent).toContain('No tasks Await feedback');
     expect(columns[3].textContent).toContain('No tasks Done');
   });
 
