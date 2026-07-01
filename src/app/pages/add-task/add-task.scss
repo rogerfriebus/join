@@ -13,7 +13,7 @@
     display: flex;
     gap: 64px;
 
-    @media (max-width: 792px) {
+    @media (max-width: 1060px) {
         flex-direction: column;
         gap: 24px;
     }
@@ -31,6 +31,10 @@
     height: 400px;
     background: #D1D1D1;
     flex-shrink: 0;
+
+    @media (max-width: 1060px) {
+        display: none !important;
+    }
 }
 
 .form-group {
@@ -348,7 +352,7 @@
     align-items: center;
     margin-top: 48px;
 
-    @media (max-width: 792px) {
+    @media (max-width: 1060px) {
         flex-direction: column;
         align-items: flex-start;
         gap: 16px;

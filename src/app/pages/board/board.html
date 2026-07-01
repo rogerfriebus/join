@@ -4,13 +4,8 @@
 
     <div class="board-header__actions">
       <label class="board-search">
-        <input
-          type="search"
-          placeholder="Find Task"
-          aria-label="Search tasks"
-          [value]="searchQuery()"
-          (input)="updateSearchQuery($event)"
-        />
+        <input type="search" placeholder="Find Task" aria-label="Search tasks" [value]="searchQuery()"
+          (input)="updateSearchQuery($event)" />
 
         <span class="board-search__icon" aria-hidden="true"></span>
       </label>
@@ -23,22 +18,14 @@
   </header>
 
   <div class="board-columns" *ngIf="!hasSearchQuery() || hasSearchResults(); else noSearchResults">
-    <div
-      class="board-column"
-      *ngFor="let column of board()"
+    <div class="board-column" *ngFor="let column of board()"
       [class.board-column--drag-over]="dragTargetStatus() === column.status"
-      (dragover)="$event.preventDefault(); setDragTarget(column.status)"
-      (dragleave)="clearDragTarget()"
-      (drop)="$event.preventDefault(); dropTask(column.status)"
-    >
+      (dragover)="$event.preventDefault(); setDragTarget(column.status)" (dragleave)="clearDragTarget()"
+      (drop)="$event.preventDefault(); dropTask(column.status)">
       <div class="column-header">
         <h2>{{ column.title }}</h2>
 
-        <a
-          class="column-add-task"
-          routerLink="/add-task"
-          [attr.aria-label]="'Add task to ' + column.title"
-        >
+        <a class="column-add-task" [attr.aria-label]="'Add task to ' + column.title" (click)="openAddTask()">
           <span aria-hidden="true"></span>
         </a>
       </div>
@@ -48,23 +35,11 @@
           {{ columnEmptyText(column) }}
         </p>
 
-        <article
-          class="task-card"
-          *ngFor="let task of column.tasks"
-          role="button"
-          tabindex="0"
-          draggable="true"
-          [class.task-card--dragging]="draggedTask()?.id === task.id"
-          (dragstart)="startTaskDrag(task, $event)"
-          (dragend)="endTaskDrag()"
-          (click)="openTaskDetail(task)"
-          (keydown.enter)="openTaskDetail(task)"
-        >
-          <span
-            class="task-card__category"
-            [class.task-card__category--user-story]="task.category === 'User Story'"
-            [class.task-card__category--technical]="task.category === 'Technical Task'"
-          >
+        <article class="task-card" *ngFor="let task of column.tasks" role="button" tabindex="0" draggable="true"
+          [class.task-card--dragging]="draggedTask()?.id === task.id" (dragstart)="startTaskDrag(task, $event)"
+          (dragend)="endTaskDrag()" (click)="openTaskDetail(task)" (keydown.enter)="openTaskDetail(task)">
+          <span class="task-card__category" [class.task-card__category--user-story]="task.category === 'User Story'"
+            [class.task-card__category--technical]="task.category === 'Technical Task'">
             {{ task.category }}
           </span>
 
@@ -76,10 +51,8 @@
 
           <div class="task-card__subtasks" *ngIf="task.subtasks.length > 0">
             <div class="task-card__progress">
-              <span
-                class="task-card__progress-value"
-                [style.width.%]="(doneSubtasks(task) / task.subtasks.length) * 100"
-              ></span>
+              <span class="task-card__progress-value"
+                [style.width.%]="(doneSubtasks(task) / task.subtasks.length) * 100"></span>
             </div>
 
             <span class="task-card__subtasks-text">
@@ -89,23 +62,15 @@
 
           <div class="task-card__footer">
             <div class="task-card__assignees" *ngIf="task.assignedContactIds.length > 0">
-              <span
-                class="task-card__assignee"
-                *ngFor="let contactId of task.assignedContactIds"
-                [style.background-color]="assigneeColor(contactId)"
-                [attr.title]="assigneeName(contactId)"
-              >
+              <span class="task-card__assignee" *ngFor="let contactId of task.assignedContactIds"
+                [style.background-color]="assigneeColor(contactId)" [attr.title]="assigneeName(contactId)">
                 {{ assigneeInitials(contactId) }}
               </span>
             </div>
 
-            <span
-              class="task-card__priority"
-              [class.task-card__priority--urgent]="task.priority === 'urgent'"
+            <span class="task-card__priority" [class.task-card__priority--urgent]="task.priority === 'urgent'"
               [class.task-card__priority--medium]="task.priority === 'medium'"
-              [class.task-card__priority--low]="task.priority === 'low'"
-              [attr.aria-label]="task.priority"
-            ></span>
+              [class.task-card__priority--low]="task.priority === 'low'" [attr.aria-label]="task.priority"></span>
           </div>
         </article>
       </div>
@@ -121,20 +86,13 @@
       <article class="task-detail" (click)="$event.stopPropagation()">
         <div class="task-detail__content">
           <header class="task-detail__header">
-            <span
-              class="task-detail__category"
+            <span class="task-detail__category"
               [class.task-detail__category--user-story]="task.category === 'User Story'"
-              [class.task-detail__category--technical]="task.category === 'Technical Task'"
-            >
+              [class.task-detail__category--technical]="task.category === 'Technical Task'">
               {{ task.category }}
             </span>
 
-            <button
-              class="task-detail__close"
-              type="button"
-              aria-label="Close task detail"
-              (click)="closeTaskDetail()"
-            >
+            <button class="task-detail__close" type="button" aria-label="Close task detail" (click)="closeTaskDetail()">
               ×
             </button>
           </header>
@@ -154,12 +112,9 @@
             <p class="task-detail__meta-row">
               <strong>Priority:</strong>
 
-              <span
-                class="task-detail__priority"
-                [class.task-detail__priority--urgent]="task.priority === 'urgent'"
+              <span class="task-detail__priority" [class.task-detail__priority--urgent]="task.priority === 'urgent'"
                 [class.task-detail__priority--medium]="task.priority === 'medium'"
-                [class.task-detail__priority--low]="task.priority === 'low'"
-              >
+                [class.task-detail__priority--low]="task.priority === 'low'">
                 <span>{{ priorityLabel(task.priority) }}</span>
                 <span class="task-detail__priority-icon" aria-hidden="true"></span>
               </span>
@@ -170,12 +125,8 @@
             <h3>Assigned To</h3>
 
             <div class="task-detail__assignees">
-              <span
-                class="task-detail__assignee"
-                *ngFor="let contactId of task.assignedContactIds"
-                [attr.data-initials]="assigneeInitials(contactId)"
-                [style.--assignee-color]="assigneeColor(contactId)"
-              >
+              <span class="task-detail__assignee" *ngFor="let contactId of task.assignedContactIds"
+                [attr.data-initials]="assigneeInitials(contactId)" [style.--assignee-color]="assigneeColor(contactId)">
                 {{ assigneeName(contactId) }}
               </span>
             </div>
@@ -210,17 +161,8 @@
 
   <ng-container *ngIf="editTask()">
     <div class="task-edit-backdrop" (click)="closeTaskEdit()">
-      <form
-        class="task-edit"
-        (click)="$event.stopPropagation()"
-        (submit)="$event.preventDefault(); saveTaskEdit()"
-      >
-        <button
-          class="task-edit__close"
-          type="button"
-          aria-label="Close edit task"
-          (click)="closeTaskEdit()"
-        >
+      <form class="task-edit" (click)="$event.stopPropagation()" (submit)="$event.preventDefault(); saveTaskEdit()">
+        <button class="task-edit__close" type="button" aria-label="Close edit task" (click)="closeTaskEdit()">
           ×
         </button>
 
@@ -230,12 +172,8 @@
           <div class="task-edit__column">
             <label class="task-edit__field">
               <span>Title<strong>*</strong></span>
-              <input
-                type="text"
-                placeholder="Enter a title"
-                [value]="editDraft().title"
-                (input)="updateEditTitle($event)"
-              />
+              <input type="text" placeholder="Enter a title" [value]="editDraft().title"
+                (input)="updateEditTitle($event)" />
               <small *ngIf="editSubmitted() && !editDraft().title.trim()">
                 This field is required
               </small>
@@ -243,20 +181,13 @@
 
             <label class="task-edit__field">
               <span>Description</span>
-              <textarea
-                placeholder="Enter a Description"
-                [value]="editDraft().description"
-                (input)="updateEditDescription($event)"
-              ></textarea>
+              <textarea placeholder="Enter a Description" [value]="editDraft().description"
+                (input)="updateEditDescription($event)"></textarea>
             </label>
 
             <label class="task-edit__field">
               <span>Due date<strong>*</strong></span>
-              <input
-                type="date"
-                [value]="editDraft().dueDate"
-                (input)="updateEditDueDate($event)"
-              />
+              <input type="date" [value]="editDraft().dueDate" (input)="updateEditDueDate($event)" />
               <small *ngIf="editSubmitted() && !editDraft().dueDate.trim()">
                 This field is required
               </small>
@@ -270,32 +201,23 @@
               <span>Priority</span>
 
               <div class="task-edit__priorities">
-                <button
-                  type="button"
-                  class="task-edit__priority"
+                <button type="button" class="task-edit__priority"
                   [class.task-edit__priority--urgent-active]="editDraft().priority === 'urgent'"
-                  (click)="setEditPriority('urgent')"
-                >
+                  (click)="setEditPriority('urgent')">
                   Urgent
                   <span class="task-edit__priority-icon task-edit__priority-icon--urgent"></span>
                 </button>
 
-                <button
-                  type="button"
-                  class="task-edit__priority"
+                <button type="button" class="task-edit__priority"
                   [class.task-edit__priority--medium-active]="editDraft().priority === 'medium'"
-                  (click)="setEditPriority('medium')"
-                >
+                  (click)="setEditPriority('medium')">
                   Medium
                   <span class="task-edit__priority-icon task-edit__priority-icon--medium"></span>
                 </button>
 
-                <button
-                  type="button"
-                  class="task-edit__priority"
+                <button type="button" class="task-edit__priority"
                   [class.task-edit__priority--low-active]="editDraft().priority === 'low'"
-                  (click)="setEditPriority('low')"
-                >
+                  (click)="setEditPriority('low')">
                   Low
                   <span class="task-edit__priority-icon task-edit__priority-icon--low"></span>
                 </button>
@@ -317,17 +239,10 @@
                   </p>
 
                   <label class="task-edit__contact" *ngFor="let contact of contacts()">
-                    <input
-                      type="checkbox"
-                      [disabled]="!contact.id"
-                      [checked]="isEditContactSelected(contact.id)"
-                      (change)="toggleEditAssignedContact(contact.id)"
-                    />
+                    <input type="checkbox" [disabled]="!contact.id" [checked]="isEditContactSelected(contact.id)"
+                      (change)="toggleEditAssignedContact(contact.id)" />
 
-                    <span
-                      class="task-edit__contact-avatar"
-                      [style.background-color]="contact.color || '#ff7a00'"
-                    >
+                    <span class="task-edit__contact-avatar" [style.background-color]="contact.color || '#ff7a00'">
                       {{ contactInitials(contact) }}
                     </span>
 
@@ -355,31 +270,19 @@
               <span>Subtasks</span>
 
               <div class="task-edit__subtask-input">
-                <input
-                  type="text"
-                  placeholder="Add new subtask"
-                  [value]="editDraft().newSubtaskTitle"
-                  (input)="updateEditNewSubtaskTitle($event)"
-                />
+                <input type="text" placeholder="Add new subtask" [value]="editDraft().newSubtaskTitle"
+                  (input)="updateEditNewSubtaskTitle($event)" />
 
                 <button type="button" (click)="addEditSubtask()">+</button>
               </div>
 
               <div class="task-edit__subtasks" *ngIf="editDraft().subtasks.length > 0">
                 <label class="task-edit__subtask" *ngFor="let subtask of editDraft().subtasks">
-                  <input
-                    type="checkbox"
-                    [checked]="subtask.done"
-                    (change)="toggleEditSubtaskDone(subtask.id)"
-                  />
+                  <input type="checkbox" [checked]="subtask.done" (change)="toggleEditSubtaskDone(subtask.id)" />
 
                   <span>{{ subtask.title }}</span>
 
-                  <button
-                    type="button"
-                    aria-label="Remove subtask"
-                    (click)="removeEditSubtask(subtask.id)"
-                  >
+                  <button type="button" aria-label="Remove subtask" (click)="removeEditSubtask(subtask.id)">
                     ×
                   </button>
                 </label>
@@ -407,3 +310,6 @@
     </div>
   </ng-container>
 </section>
+
+<app-add-task-modal *ngIf="showAddTaskModal" (closed)="showAddTaskModal = false"
+  (taskCreated)="onTaskCreated($event)" />
