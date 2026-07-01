@@ -92,6 +92,7 @@ export class AddTaskModal {
   }
 
   async createTask(): Promise<void> {
+    console.log("create");
     if (!this.form.title || !this.form.dueDate || !this.form.category || this.isSaving) {
       return;
     }
