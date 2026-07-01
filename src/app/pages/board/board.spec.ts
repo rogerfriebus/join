@@ -68,6 +68,7 @@ describe('Board', () => {
     const contactServiceStub = {
       contacts: signal<Contact[]>([]).asReadonly(),
       loadContacts: loadContactsSpy,
+      resolveContact: (_id: string): Contact | undefined => undefined,
     };
 
     await TestBed.configureTestingModule({

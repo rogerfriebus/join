@@ -93,19 +93,6 @@ export class Board implements OnInit {
   /** Gibt an, ob aktuell gesucht wird. */
   readonly hasSearchQuery = computed(() => this.normalizedSearchQuery().length > 0);
 
-  /** Kontakte nach ID gemappt, damit assignedContactIds sauber aufgelöst werden können. */
-  readonly contactsById = computed(() => {
-    const map = new Map<string, Contact>();
-
-    for (const contact of this.contacts()) {
-      if (contact.id) {
-        map.set(contact.id, contact);
-      }
-    }
-
-    return map;
-  });
-
   /** Gibt an, ob das Edit-Formular aktuell valide ist. */
   readonly editFormIsValid = computed(() => {
     const draft = this.editDraft();
@@ -205,7 +192,7 @@ export class Board implements OnInit {
 
   /** Liefert die Initialen eines zugewiesenen Kontakts. */
   assigneeInitials(contactId: string): string {
-    const contact = this.contactsById().get(contactId);
+    const contact = this.contactService.resolveContact(contactId);
 
     if (contact?.initials) {
       return contact.initials;
@@ -220,12 +207,12 @@ export class Board implements OnInit {
 
   /** Liefert den Namen eines zugewiesenen Kontakts. */
   assigneeName(contactId: string): string {
-    return this.contactsById().get(contactId)?.name ?? 'Unknown contact';
+    return this.contactService.resolveContact(contactId)?.name ?? 'Unknown contact';
   }
 
   /** Liefert die Avatar-Farbe eines zugewiesenen Kontakts. */
   assigneeColor(contactId: string): string {
-    return this.contactsById().get(contactId)?.color ?? '#ff7a00';
+    return this.contactService.resolveContact(contactId)?.color ?? '#ff7a00';
   }
 
   /** Liefert Initialen für einen Kontakt im Edit-Overlay. */
