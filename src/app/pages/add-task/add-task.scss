@@ -1,0 +1,421 @@
+.add-task-page {
+    padding: 40px;
+    max-width: 1100px;
+
+    h1 {
+        font-size: 61px;
+        font-weight: 700;
+        margin: 0 0 32px;
+    }
+}
+
+.form-columns {
+    display: flex;
+    gap: 64px;
+
+    @media (max-width: 1060px) {
+        flex-direction: column;
+        gap: 24px;
+    }
+}
+
+.form-column {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.form-divider {
+    width: 2px;
+    height: 400px;
+    background: #D1D1D1;
+    flex-shrink: 0;
+
+    @media (max-width: 1060px) {
+        display: none !important;
+    }
+}
+
+.form-group {
+    max-width: 440px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    position: relative;
+
+    label {
+        font-size: 20px;
+        font-weight: 400;
+        color: #000000;
+    }
+
+    input {
+        min-height: 48px;
+    }
+
+    input[type="text"],
+    input[type="date"],
+    textarea {
+        padding: 10px 14px;
+        border: 1px solid #ddd;
+        border-radius: 8px;
+        font-size: 14px;
+        outline: none;
+        font-family: inherit;
+
+        &::placeholder {
+            color: #bbb;
+        }
+
+        &:focus {
+            border-color: #29b6f6;
+        }
+    }
+
+    textarea {
+        resize: vertical;
+        min-height: 80px;
+    }
+}
+
+.required {
+    color: #ff4646;
+    margin-left: 2px;
+}
+
+.input-wrapper {
+    position: relative;
+
+    input {
+        width: 100%;
+        padding-right: 40px;
+        box-sizing: border-box;
+    }
+
+    input[type="date"] {
+        width: 100%;
+        padding-right: 40px;
+        box-sizing: border-box;
+    }
+
+    .input-icon {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        width: 24px;
+        height: 24px;
+        cursor: pointer;
+        pointer-events: auto; // wieder klickbar machen
+    }
+}
+
+// --- Priority Toggle ---
+
+.priority-toggle {
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+}
+
+.priority-btn {
+    width: 136px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #fff;
+    font-size: 20px;
+    font-weight: 400;
+    cursor: pointer;
+
+    svg {
+        width: 16px;
+        height: 16px;
+    }
+
+    &.urgent {
+        color: #ff3d00;
+    }
+
+    &.medium {
+        color: #ffa35e;
+    }
+
+    &.low {
+        color: #7ae229;
+    }
+
+    &.active {
+        color: #fff; // SVG + Text werden weiß durch currentColor
+    }
+
+    &.active.urgent {
+        background: #ff3d00;
+        border-color: #ff3d00;
+    }
+
+    &.active.medium {
+        background: #ffa35e;
+        border-color: #ffa35e;
+    }
+
+    &.active.low {
+        background: #7ae229;
+        border-color: #7ae229;
+    }
+}
+
+// --- Dropdowns ---
+
+.dropdown-group.required-group .dropdown {
+    border-color: #29b6f6;
+}
+
+.dropdown {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    min-height: 48px;
+    box-sizing: border-box;
+
+    .dropdown-placeholder {
+        color: #bbb;
+    }
+
+    .dropdown-arrow {
+        width: 16px;
+        height: 16px;
+        flex-shrink: 0;
+    }
+}
+
+.assigned-avatars {
+    display: flex;
+    gap: 4px;
+    flex-wrap: wrap;
+}
+
+.avatar-chip {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 600;
+
+    &.small {
+        width: 24px;
+        height: 24px;
+        font-size: 10px;
+    }
+}
+
+.dropdown-panel {
+    position: absolute;
+    top: calc(100% + 4px);
+    left: 0;
+    right: 0;
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+    max-height: 220px;
+    overflow-y: auto;
+    z-index: 10;
+}
+
+.dropdown-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    cursor: pointer;
+    font-size: 14px;
+
+    &:hover {
+        background: #f5f5f5;
+    }
+
+    span {
+        flex: 1;
+    }
+
+    input[type="checkbox"] {
+        pointer-events: none;
+    }
+}
+
+// --- Subtasks ---
+
+.subtask-input {
+    .input-actions {
+        position: absolute;
+        right: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        display: flex;
+        gap: 8px;
+    }
+
+    .input-icon {
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
+        position: static;
+        transform: none;
+    }
+}
+
+.subtask-list {
+    list-style: none;
+    margin: 4px 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.subtask-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    font-size: 14px;
+    border-radius: 6px;
+    border-bottom: 1px solid #eee;
+
+    &:hover {
+        background: #f5f5f5;
+
+        .hover-only {
+            opacity: 1;
+        }
+    }
+}
+
+.subtask-text {
+    flex: 1;
+}
+
+.subtask-edit-input {
+    flex: 1;
+    border: none;
+    border-bottom: 1px solid #29b6f6;
+    outline: none;
+    font-size: 14px;
+    padding: 4px 0;
+    font-family: inherit;
+}
+
+.subtask-actions {
+    display: flex;
+    gap: 10px;
+    flex-shrink: 0;
+    margin-left: 12px;
+
+    img {
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
+        opacity: 0.6;
+
+        &:hover {
+            opacity: 1;
+        }
+    }
+
+    &.hover-only {
+        opacity: 0;
+        transition: opacity 0.15s;
+    }
+}
+
+// --- Footer ---
+
+.form-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 48px;
+
+    @media (max-width: 1060px) {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 16px;
+    }
+}
+
+.required-note {
+    font-size: 13px;
+    color: #888;
+    margin: 0;
+}
+
+.footer-actions {
+    display: flex;
+    gap: 12px;
+}
+
+.btn-cancel {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 20px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: #fff;
+    font-size: 20px;
+    font-weight: 400;
+    cursor: pointer;
+
+    &:hover {
+        background: #f5f5f5;
+    }
+}
+
+.btn-create {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 20px;
+    border: none;
+    border-radius: 8px;
+    background: #2A3647;
+    color: #fff;
+    font-size: 20px;
+    font-weight: 700;
+    cursor: pointer;
+
+    &:hover {
+        background: #1a2535;
+    }
+
+    &:disabled {
+        background: #a0a8b0;
+        cursor: not-allowed;
+        opacity: 0.6;
+    }
+}
+
+input[type="date"] {
+    position: relative;
+
+    &::-webkit-calendar-picker-indicator {
+        opacity: 0; // natives Icon unsichtbar machen, bleibt aber klickbar
+        cursor: pointer;
+    }
+}

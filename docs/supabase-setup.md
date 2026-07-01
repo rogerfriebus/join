@@ -82,6 +82,31 @@ Für dieses Developer-Akademie-Demo-Projekt ist entschieden:
 - Diese Mock-Daten werden später durch echte Supabase-Daten ersetzt.
 - Echte personenbezogene Daten dürfen **nicht** als Demo-Daten verwendet werden.
 
+## Tasks Setup
+
+Für Sprint 2 (Board & Add Task) wird die Supabase-Struktur für Tasks
+vorbereitet. Die Ausführung erfolgt **manuell über den Supabase SQL Editor** –
+in diesem Schritt gibt es noch **keine** Angular-Supabase-Anbindung für Tasks.
+
+- **SQL-Datei:** `supabase/sql/tasks-setup.sql` (idempotent, mehrfach ausführbar)
+- **Tabellen:** `tasks`, `subtasks`
+  - `tasks.id` ist `text` (z. B. `t1`), konsistent zum Angular-Task-Modell.
+  - `subtasks.task_id` referenziert `tasks(id)` mit `on delete cascade`.
+  - `tasks.assigned_contact_ids` ist `text[]` und referenziert die
+    Contacts-Demo-IDs.
+- **Statuswerte:** `todo`, `inProgress`, `awaitFeedback`, `done`
+- **Prioritäten:** `urgent`, `medium`, `low`
+- **Kategorien:** `Technical Task`, `User Story`
+- **Demo-Daten:** mind. 6 Demo-Tasks inkl. Subtasks, passend zu
+  `src/app/core/data/task-dummy-data.ts`, ohne echte personenbezogene Daten.
+- **Demo-RLS:** Policies für `anon` (select/insert/update/delete) sind **bewusst
+  offen** und **nicht produktionsreif** (analog zur Contacts-Demo).
+- **Keine Secrets:** Weder Secret Key noch Service Role Key oder Passwörter
+  gehören in die SQL-Datei oder ins Repository.
+
+> Wie bei Contacts gilt: demo-tauglich, aber nicht produktionsreif. Später
+> sollten **Auth und RLS gehärtet** werden.
+
 ## Secret-Regeln
 
 **Nicht ins Repository:**

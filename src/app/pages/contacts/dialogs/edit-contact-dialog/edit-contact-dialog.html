@@ -29,18 +29,25 @@
                             <input type="email" placeholder="Email" [(ngModel)]="form.email"
                                 [style.--input-icon]="'url(/assets/icons/mail.svg)'" />
                         </div>
+                        <span class="field-error" *ngIf="form.email && !isEmailValid(form.email)">
+                            Please enter a valid email address
+                        </span>
 
                         <div class="input-wrapper">
                             <input type="tel" placeholder="Phone" [(ngModel)]="form.phone"
                                 [style.--input-icon]="'url(/assets/icons/call.svg)'" />
                         </div>
+                        <span class="field-error" *ngIf="form.phone && !isPhoneValid(form.phone)">
+                            Please enter a valid phone number
+                        </span>
                     </div>
 
                     <div class="dialog-actions">
                         <button class="btn-delete" (click)="delete()">
                             Delete
                         </button>
-                        <button class="btn-save" (click)="save()" [disabled]="!form.name || !form.email || !form.phone">
+                        <button class="btn-save" (click)="save()"
+                            [disabled]="!form.name || !form.email || !form.phone || !isEmailValid(form.email) || !isPhoneValid(form.phone)">
                             Save ✓
                         </button>
                     </div>
