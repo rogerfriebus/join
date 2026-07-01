@@ -30,17 +30,24 @@
               <input type="email" placeholder="Email" [(ngModel)]="form.email"
                 [style.--input-icon]="'url(/assets/icons/mail.svg)'" />
             </div>
+            <span class="field-error" *ngIf="form.email && !isEmailValid(form.email)">
+              Please enter a valid email address
+            </span>
 
             <div class="input-wrapper">
               <input type="tel" placeholder="Phone" [(ngModel)]="form.phone"
                 [style.--input-icon]="'url(/assets/icons/call.svg)'" />
             </div>
+            <span class="field-error" *ngIf="form.phone && !isPhoneValid(form.phone)">
+              Please enter a valid phone number
+            </span>
           </div>
           <div class="dialog-actions">
             <button class="btn-cancel" (click)="cancel()">
               Cancel ✕
             </button>
-            <button class="btn-create" (click)="submit()" [disabled]="!form.name || !form.email || !form.phone">
+            <button class="btn-create" (click)="submit()"
+              [disabled]="!form.name || !form.email || !form.phone || !isEmailValid(form.email) || !isPhoneValid(form.phone)">
               Create contact ✓
             </button>
           </div>

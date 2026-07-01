@@ -25,8 +25,18 @@ export class AddContactDialog {
     this.closed.emit();
   }
 
+  isEmailValid(email: string): boolean {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email.trim());
+  }
+  
+  isPhoneValid(phone: string): boolean {
+    const phoneRegex = /^\+?[\d\s\-()]{7,20}$/;
+    return phoneRegex.test(phone.trim());
+  }
+
   submit(): void {
-    if (!this.form.name || !this.form.email || !this.form.phone) return;
+    if (!this.form.name || !this.form.email || !this.form.phone || !this.isEmailValid(this.form.email)) return;
 
     const contact: Contact = {
       name: this.form.name.trim(),
