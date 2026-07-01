@@ -4,7 +4,9 @@ import { provideRouter } from '@angular/router';
 
 import { Board } from './board';
 import { TaskService } from '../../core/services/task.service';
+import { ContactService } from '../../core/services/contact.service';
 import { Task } from '../../core/models/task.model';
+import { Contact } from '../../core/models/contact.model';
 
 /**
  * Test-Tasks: todo und inProgress sind belegt, awaitFeedback und done sind leer
@@ -42,21 +44,39 @@ describe('Board', () => {
   let fixture: ComponentFixture<Board>;
   let loadTasksSpy: ReturnType<typeof vi.fn>;
   let updateTaskStatusSpy: ReturnType<typeof vi.fn>;
+  let updateTaskSpy: ReturnType<typeof vi.fn>;
+  let deleteTaskSpy: ReturnType<typeof vi.fn>;
+  let loadContactsSpy: ReturnType<typeof vi.fn>;
 
   beforeEach(async () => {
     loadTasksSpy = vi.fn().mockResolvedValue(undefined);
     updateTaskStatusSpy = vi.fn().mockResolvedValue(undefined);
+    updateTaskSpy = vi.fn().mockResolvedValue(TEST_TASKS[0]);
+    deleteTaskSpy = vi.fn().mockResolvedValue(true);
+    loadContactsSpy = vi.fn().mockResolvedValue(undefined);
 
     // Stub statt echter TaskService: keine Supabase-/Netzwerkaufrufe im Test.
     const taskServiceStub = {
       tasks: signal<Task[]>(TEST_TASKS).asReadonly(),
       loadTasks: loadTasksSpy,
       updateTaskStatus: updateTaskStatusSpy,
+      updateTask: updateTaskSpy,
+      deleteTask: deleteTaskSpy,
+    };
+
+    // Stub statt echter ContactService: keine Supabase-/Netzwerkaufrufe im Test.
+    const contactServiceStub = {
+      contacts: signal<Contact[]>([]).asReadonly(),
+      loadContacts: loadContactsSpy,
     };
 
     await TestBed.configureTestingModule({
       imports: [Board],
-      providers: [provideRouter([]), { provide: TaskService, useValue: taskServiceStub }],
+      providers: [
+        provideRouter([]),
+        { provide: TaskService, useValue: taskServiceStub },
+        { provide: ContactService, useValue: contactServiceStub },
+      ],
     }).compileComponents();
 
     fixture = TestBed.createComponent(Board);
@@ -71,6 +91,10 @@ describe('Board', () => {
 
   it('ruft loadTasks beim Init über den TaskService auf', () => {
     expect(loadTasksSpy).toHaveBeenCalled();
+  });
+
+  it('ruft loadContacts beim Init über den ContactService auf', () => {
+    expect(loadContactsSpy).toHaveBeenCalled();
   });
 
   it('rendert vier Board-Spalten', () => {
@@ -142,5 +166,62 @@ describe('Board', () => {
     const firstColumn = component.board()[0];
 
     expect(component.columnEmptyText(firstColumn)).toBe('No matching tasks');
+  });
+
+  it('öffnet das Edit-Overlay mit den vorhandenen Task-Daten', () => {
+    component.openTaskEdit(TEST_TASKS[0]);
+
+    expect(component.editTask()).toEqual(TEST_TASKS[0]);
+    expect(component.editDraft().title).toBe('Todo Task');
+    expect(component.editDraft().priority).toBe('urgent');
+    expect(component.editDraft().subtasks.length).toBe(2);
+  });
+
+  it('speichert geänderte Task-Daten über den TaskService', async () => {
+    component.openTaskEdit(TEST_TASKS[0]);
+
+    component.updateEditTitle({
+      target: { value: 'Updated Task' },
+    } as unknown as Event);
+
+    component.setEditPriority('low');
+
+    await component.saveTaskEdit();
+
+    expect(updateTaskSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        id: 'a',
+        title: 'Updated Task',
+        priority: 'low',
+      }),
+    );
+  });
+
+  it('speichert keine ungültige Edit-Task ohne Titel', async () => {
+    component.openTaskEdit(TEST_TASKS[0]);
+
+    component.updateEditTitle({
+      target: { value: '' },
+    } as unknown as Event);
+
+    await component.saveTaskEdit();
+
+    expect(updateTaskSpy).not.toHaveBeenCalled();
+    expect(component.editSubmitted()).toBe(true);
+  });
+
+  it('löscht den ausgewählten Task über den TaskService', async () => {
+    component.openTaskDetail(TEST_TASKS[0]);
+
+    await component.deleteSelectedTask();
+
+    expect(deleteTaskSpy).toHaveBeenCalledWith('a');
+    expect(component.selectedTask()).toBeNull();
+  });
+
+  it('zeigt Fallback-Werte für unbekannte Kontakt-IDs', () => {
+    expect(component.assigneeInitials('unknown')).toBe('?');
+    expect(component.assigneeName('unknown')).toBe('Unknown contact');
+    expect(component.assigneeColor('unknown')).toBe('#ff7a00');
   });
 });
