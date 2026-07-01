@@ -1,3 +1,53 @@
+.overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.4);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    padding: 20px; 
+    box-sizing: border-box;
+}
+
+.modal-card {
+    background: #fff;
+    border-radius: 24px;
+    padding: 40px;
+    width: 100%;
+    max-width: 900px;
+    max-height: 90vh;
+    overflow-y: auto;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.2);
+    box-sizing: border-box;
+}
+
+.modal-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 32px;
+
+    h1 {
+        font-size: 32px;
+        font-weight: 700;
+        margin: 0;
+    }
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    font-size: 20px;
+    color: #888;
+    cursor: pointer;
+    line-height: 1;
+
+    &:hover {
+        color: #333;
+    }
+}
+
 .add-task-page {
     padding: 40px;
     max-width: 1100px;

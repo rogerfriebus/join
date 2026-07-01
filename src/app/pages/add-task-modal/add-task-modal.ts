@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, EventEmitter, inject, Output } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ContactService } from '../../core/services/contact.service';
@@ -12,13 +12,16 @@ interface CategoryOption {
 }
 
 @Component({
-  selector: 'app-add-task',
+  selector: 'app-add-task-modal',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  templateUrl: './add-task.html',
-  styleUrl: './add-task.scss',
+  templateUrl: './add-task-modal.html',
+  styleUrl: './add-task-modal.scss',
 })
-export class AddTask {
+export class AddTaskModal {
+  @Output() closed = new EventEmitter<void>();
+  @Output() taskCreated = new EventEmitter<Task>();
+
   readonly today: string = new Date().toISOString().split('T')[0];
 
   private contactService = inject(ContactService);
@@ -36,13 +39,23 @@ export class AddTask {
     description: '',
     dueDate: '',
     priority: 'medium' as TaskPriority,
-    assignedTo: [] as string[], // Contact ids
+    assignedTo: [] as string[],
     category: '' as TaskCategory | '',
     subtasks: [] as string[],
   };
 
   newSubtask = '';
   isSaving = false;
+
+  showAssigneeDropdown = false;
+  showCategoryDropdown = false;
+
+  editingSubtaskIndex: number | null = null;
+  editingSubtaskValue = '';
+
+  close(): void {
+    this.closed.emit();
+  }
 
   setPriority(priority: TaskPriority): void {
     this.form.priority = priority;
@@ -90,7 +103,7 @@ export class AddTask {
     }));
 
     const newTask: Task = {
-      id: '', // wird im TaskService generiert
+      id: '',
       title: this.form.title.trim(),
       description: this.form.description.trim() || undefined,
       dueDate: this.form.dueDate,
@@ -103,17 +116,16 @@ export class AddTask {
 
     this.isSaving = true;
     try {
-      await this.taskService.addTask(newTask);
+      const saved = await this.taskService.addTask(newTask);
+      this.taskCreated.emit(saved);
       this.clear();
+      this.closed.emit();
     } catch (error) {
       console.error('Task konnte nicht erstellt werden:', error);
     } finally {
       this.isSaving = false;
     }
   }
-
-  showAssigneeDropdown = false;
-  showCategoryDropdown = false;
 
   toggleAssigneeDropdown(): void {
     this.showAssigneeDropdown = !this.showAssigneeDropdown;
@@ -135,9 +147,6 @@ export class AddTask {
   getAssignedContacts(): Contact[] {
     return this.contacts.filter((c) => c.id && this.form.assignedTo.includes(c.id));
   }
-
-  editingSubtaskIndex: number | null = null;
-  editingSubtaskValue = '';
 
   addSubtask(): void {
     const value = this.newSubtask.trim();
