@@ -1,6 +1,5 @@
 <div class="contacts-layout">
-
-  <aside class="contacts-sidebar">
+  <aside class="contacts-sidebar" [class.hidden]="isMobile && mobileView === 'detail'">
     <button class="add-btn" (click)="showAddDialog = true">
       Add new contact
       <img src="./assets/icons/person_add.svg">
@@ -26,7 +25,15 @@
     </div>
   </aside>
 
-  <main class="contacts-main">
+  <main class="contacts-main" [class.hidden]="isMobile && mobileView === 'list'">
+    <div class="mobile-header" *ngIf="isMobile">
+      <div>
+        <h1>Contacts</h1>
+        <p class="subtitle">Better with a team</p>
+      </div>
+      <button class="back-btn" (click)="backToList()"><img src="./assets/icons/arrow_left.svg"></button>
+    </div>
+
     <div class="main-header">
       <h1>Contacts</h1>
       <span class="divider"></span>
@@ -66,6 +73,20 @@
 
   </main>
 
+  <div class="fab-container" *ngIf="isMobile">
+    <div class="fab-menu" *ngIf="showFabMenu && mobileView === 'detail'">
+      <button (click)="openEdit()">
+        <img src="./assets/icons/edit.svg"> Edit
+      </button>
+      <button class="danger" (click)="deleteSelected()">
+        <img src="./assets/icons/delete.svg"> Delete
+      </button>
+    </div>
+
+    <button class="fab" (click)="mobileView === 'list' ? (showAddDialog = true) : toggleFabMenu()">
+      <img [src]="mobileView === 'list' ? './assets/icons/person_add.svg' : './assets/icons/tripple_dot.svg'">
+    </button>
+  </div>
 </div>
 
 <app-add-contact-dialog *ngIf="showAddDialog" (closed)="showAddDialog = false" (contactCreated)="addContact($event)" />

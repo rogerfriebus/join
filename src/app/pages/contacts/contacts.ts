@@ -1,4 +1,4 @@
-import { Component, inject, computed, OnInit } from '@angular/core';
+import { Component, HostListener, inject, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ContactService } from '../../core/services/contact.service';
 import { Contact, ContactGroup } from '../../core/models/contact.model';
@@ -16,15 +16,46 @@ import { EditContactDialog } from './dialogs/edit-contact-dialog/edit-contact-di
 export class Contacts implements OnInit {
   private contactService = inject(ContactService);
 
-  /** Read-only Kontakt-Signal aus der ContactService-Fassade. */
   readonly contacts = this.contactService.contacts;
 
   selectedContact: Contact | null = null;
 
   showAddDialog = false;
   showEditDialog = false;
+  showFabMenu = false;
 
-  /** Reaktiv nach Anfangsbuchstaben gruppierte, alphabetisch sortierte Kontakte. */
+  mobileView: 'list' | 'detail' = 'list';
+  isMobile = window.innerWidth < 792;
+
+  @HostListener('window:resize')
+  onResize(): void {
+    this.isMobile = window.innerWidth < 792;
+  }
+
+  backToList(): void {
+    this.mobileView = 'list';
+    this.selectedContact = null;
+  }
+
+  toggleFabMenu(): void {
+    this.showFabMenu = !this.showFabMenu;
+    if (this.showFabMenu) {
+      setTimeout(() => {
+        document.addEventListener('click', this.closeFabMenuHandler);
+      }, 0);
+    }
+  }
+
+  closeFabMenuHandler = (): void => {
+    this.showFabMenu = false;
+    document.removeEventListener('click', this.closeFabMenuHandler);
+  }
+
+  closeFabMenu(): void {
+    this.showFabMenu = false;
+    document.removeEventListener('click', this.closeFabMenuHandler);
+  }
+
   readonly groupedContacts = computed<ContactGroup[]>(() => {
     const sorted = [...this.contacts()].sort((a, b) =>
       a.name.localeCompare(b.name)
@@ -46,13 +77,13 @@ export class Contacts implements OnInit {
     }));
   });
 
-  /** Lädt die Kontakte beim Öffnen der Seite über die Fassade aus Supabase. */
   async ngOnInit(): Promise<void> {
     await this.contactService.loadContacts();
   }
 
   selectContact(contact: Contact): void {
     this.selectedContact = contact;
+    if (this.isMobile) this.mobileView = 'detail';
   }
 
   async addContact(contact: Contact): Promise<void> {
@@ -80,6 +111,16 @@ export class Contacts implements OnInit {
     } catch (error) {
       console.error('Kontakt konnte nicht gelöscht werden.', error);
     }
+  }
+
+  openEdit(): void {
+    this.showFabMenu = false;
+    this.showEditDialog = true;
+  }
+
+  deleteSelected(): void {
+    this.showFabMenu = false;
+    if (this.selectedContact) this.deleteContact(this.selectedContact);
   }
 
   getInitials(name: string): string {
