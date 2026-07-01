@@ -49,6 +49,53 @@ function mapContactToRowPayload(contact: Contact): ContactRowPayload {
   };
 }
 
+/** Leitet Initialen aus einem Namen ab (max. 2 Zeichen, Großbuchstaben). */
+function deriveInitials(name: string): string {
+  return name
+    .split(' ')
+    .filter(Boolean)
+    .map((part) => part[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase();
+}
+
+/**
+ * Normalisiert einen Kontakt in eine stabile, vollständige Form: garantiert
+ * vorhandene Initialen (aus dem Namen abgeleitet, falls nicht gesetzt). Die
+ * id bleibt bewusst unangetastet, damit CRUD-Referenzen stabil bleiben.
+ */
+function normalizeContact(contact: Contact): Contact {
+  return {
+    ...contact,
+    initials: contact.initials?.trim() || deriveInitials(contact.name),
+  };
+}
+
+/**
+ * Stabiler Seed-Kontaktbestand mit festen String-IDs ("1"…"12").
+ *
+ * Dient zwei Zwecken:
+ *  1. Initialer/Fallback-Bestand des sichtbaren Signals (Entwicklung ohne Backend).
+ *  2. Unveränderliche Referenz-Directory: Die Demo-Tasks referenzieren Kontakte
+ *     über diese stabilen IDs. Über sie bleibt das Board-Mapping deterministisch,
+ *     auch nachdem das sichtbare Signal mit Supabase-Daten (UUIDs) ersetzt wurde.
+ */
+const SEED_CONTACTS: readonly Contact[] = [
+  { id: '1', name: 'Anja Schulz', email: 'anja.schulz@example.com', phone: '+49 151 1234567', initials: 'AS', color: '#FF7A00' },
+  { id: '2', name: 'Benjamin Krüger', email: 'benjamin.krueger@example.com', phone: '+49 160 2345678', initials: 'BK', color: '#9327FF' },
+  { id: '3', name: 'Carolin Weber', email: 'carolin.weber@example.com', phone: '+49 170 3456789', initials: 'CW', color: '#6E52FF' },
+  { id: '4', name: 'David Hoffmann', email: 'david.hoffmann@example.com', phone: '+49 152 4567890', initials: 'DH', color: '#FC71FF' },
+  { id: '5', name: 'Elena Fischer', email: 'elena.fischer@example.com', phone: '+49 171 5678901', initials: 'EF', color: '#FFBB2B' },
+  { id: '6', name: 'Florian Becker', email: 'florian.becker@example.com', phone: '+49 162 6789012', initials: 'FB', color: '#1FD7C1' },
+  { id: '7', name: 'Greta Wagner', email: 'greta.wagner@example.com', phone: '+49 172 7890123', initials: 'GW', color: '#462F8A' },
+  { id: '8', name: 'Hannes Richter', email: 'hannes.richter@example.com', phone: '+49 153 8901234', initials: 'HR', color: '#FF4646' },
+  { id: '9', name: 'Isabel Neumann', email: 'isabel.neumann@example.com', phone: '+49 163 9012345', initials: 'IN', color: '#00BEE8' },
+  { id: '10', name: 'Jonas Schäfer', email: 'jonas.schaefer@example.com', phone: '+49 173 0123456', initials: 'JS', color: '#FFA35E' },
+  { id: '11', name: 'Katharina Lange', email: 'katharina.lange@example.com', phone: '+49 154 1234567', initials: 'KL', color: '#FF5EB3' },
+  { id: '12', name: 'Lukas Brandt', email: 'lukas.brandt@example.com', phone: '+49 174 2345678', initials: 'LB', color: '#20D300' },
+].map(normalizeContact);
+
 /**
  * Zentraler Service für Kontakte.
  *
@@ -73,23 +120,22 @@ export class ContactService {
    */
   private supabaseClient: SupabaseClient | null = null;
   /**
-   * Mock-Datenbestand für die Entwicklung. Mindestens 10 seriöse Kontakte
-   * für die Sprint-Abgabe. Wird später durch Supabase-Daten ersetzt.
+   * Sichtbarer Kontaktbestand. Startet als Kopie des stabilen Seeds und wird
+   * beim Laden durch Supabase-Daten (echte UUIDs) ersetzt – diese Kopie darf
+   * daher mutiert/ersetzt werden, ohne den unveränderlichen Seed zu berühren.
    */
-  private readonly mockContacts = signal<Contact[]>([
-    { id: '1', name: 'Anja Schulz', email: 'anja.schulz@example.com', phone: '+49 151 1234567', initials: 'AS', color: '#FF7A00' },
-    { id: '2', name: 'Benjamin Krüger', email: 'benjamin.krueger@example.com', phone: '+49 160 2345678', initials: 'BK', color: '#9327FF' },
-    { id: '3', name: 'Carolin Weber', email: 'carolin.weber@example.com', phone: '+49 170 3456789', initials: 'CW', color: '#6E52FF' },
-    { id: '4', name: 'David Hoffmann', email: 'david.hoffmann@example.com', phone: '+49 152 4567890', initials: 'DH', color: '#FC71FF' },
-    { id: '5', name: 'Elena Fischer', email: 'elena.fischer@example.com', phone: '+49 171 5678901', initials: 'EF', color: '#FFBB2B' },
-    { id: '6', name: 'Florian Becker', email: 'florian.becker@example.com', phone: '+49 162 6789012', initials: 'FB', color: '#1FD7C1' },
-    { id: '7', name: 'Greta Wagner', email: 'greta.wagner@example.com', phone: '+49 172 7890123', initials: 'GW', color: '#462F8A' },
-    { id: '8', name: 'Hannes Richter', email: 'hannes.richter@example.com', phone: '+49 153 8901234', initials: 'HR', color: '#FF4646' },
-    { id: '9', name: 'Isabel Neumann', email: 'isabel.neumann@example.com', phone: '+49 163 9012345', initials: 'IN', color: '#00BEE8' },
-    { id: '10', name: 'Jonas Schäfer', email: 'jonas.schaefer@example.com', phone: '+49 173 0123456', initials: 'JS', color: '#FFA35E' },
-    { id: '11', name: 'Katharina Lange', email: 'katharina.lange@example.com', phone: '+49 154 1234567', initials: 'KL', color: '#FF5EB3' },
-    { id: '12', name: 'Lukas Brandt', email: 'lukas.brandt@example.com', phone: '+49 174 2345678', initials: 'LB', color: '#20D300' },
-  ]);
+  private readonly mockContacts = signal<Contact[]>(SEED_CONTACTS.map((contact) => ({ ...contact })));
+
+  /**
+   * Unveränderliche Auflösungstabelle der Seed-Kontakte nach ihrer stabilen id
+   * ("1"…"12"). Wird – anders als das sichtbare Signal – NIEMALS durch
+   * Supabase-Daten ersetzt und dient als deterministischer Anker, damit die
+   * `assignedContactIds` der Demo-Tasks über den gesamten Lifecycle auflösbar
+   * bleiben (kein "?" nach dem Wechsel Mock → Supabase).
+   */
+  private readonly seedContactsById: ReadonlyMap<string, Contact> = new Map(
+    SEED_CONTACTS.map((contact) => [contact.id as string, contact]),
+  );
 
   /**
    * Öffentlicher, read-only Zugriff auf den aktuellen Kontaktbestand.
@@ -126,6 +172,25 @@ export class ContactService {
   /** Liefert einen einzelnen Kontakt anhand der id oder undefined, wenn nicht gefunden. */
   getContactById(id: string): Contact | undefined {
     return this.mockContacts().find((contact) => contact.id === id);
+  }
+
+  /**
+   * Löst eine `assignedContactId` deterministisch auf einen Kontakt auf.
+   *
+   * Auflösungsreihenfolge:
+   *  1. Aktueller (ggf. Supabase-)Bestand nach id – für Tasks mit echten
+   *     Contact-UUIDs.
+   *  2. Stabiler Seed nach id ("1"…"12") – für die Demo-Tasks, deren Referenzen
+   *     erhalten bleiben, auch nachdem das Signal mit UUIDs ersetzt wurde.
+   *
+   * Dadurch bleibt das Board-Mapping stabil und liefert nie "?" allein durch
+   * einen Wechsel der Datenquelle (Mock → Supabase).
+   */
+  resolveContact(contactId: string): Contact | undefined {
+    return (
+      this.mockContacts().find((contact) => contact.id === contactId) ??
+      this.seedContactsById.get(contactId)
+    );
   }
 
   /**
