@@ -469,12 +469,26 @@ export class TaskService {
     };
   }
 
-  /** Stellt sicher, dass jeder Subtask eine eindeutige id besitzt. */
+  /**
+   * Stellt sicher, dass jeder Subtask eine eindeutige, task-bezogene id besitzt.
+   *
+   * Neu vergeben wird die id (`${taskId}-s${index + 1}`), wenn sie
+   *  - leer ist,
+   *  - mit `tmp-` beginnt (temporäre UI-Platzhalter-id) oder
+   *  - nicht mit `${taskId}-` beginnt (fremde id eines anderen Tasks).
+   * So können keine globalen/fremden ids in die subtasks-Tabelle gelangen und
+   * den Primärschlüssel `subtasks.id` verletzen (Duplicate-Key/409).
+   */
   private ensureSubtaskIds(subtasks: Subtask[], taskId: string): Subtask[] {
-    return subtasks.map((subtask, index) => ({
-      ...subtask,
-      id: subtask.id || `${taskId}-s${index + 1}`,
-    }));
+    return subtasks.map((subtask, index) => {
+      const id = subtask.id;
+      const needsNewId =
+        !id || id.startsWith('tmp-') || !id.startsWith(`${taskId}-`);
+      return {
+        ...subtask,
+        id: needsNewId ? `${taskId}-s${index + 1}` : id,
+      };
+    });
   }
 
   /**

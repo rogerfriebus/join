@@ -92,13 +92,12 @@ export class AddTaskModal {
   }
 
   async createTask(): Promise<void> {
-    console.log("create");
     if (!this.form.title || !this.form.dueDate || !this.form.category || this.isSaving) {
       return;
     }
 
-    const subtasks: Subtask[] = this.form.subtasks.map((title, index) => ({
-      id: `tmp-s${index + 1}`,
+    const subtasks: Subtask[] = this.form.subtasks.map((title) => ({
+      id: '',
       title,
       done: false,
     }));
