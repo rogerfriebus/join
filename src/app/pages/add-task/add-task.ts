@@ -83,8 +83,8 @@ export class AddTask {
       return;
     }
 
-    const subtasks: Subtask[] = this.form.subtasks.map((title, index) => ({
-      id: `tmp-s${index + 1}`,
+    const subtasks: Subtask[] = this.form.subtasks.map((title) => ({
+      id: '',
       title,
       done: false,
     }));
