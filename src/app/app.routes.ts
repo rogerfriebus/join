@@ -1,4 +1,5 @@
 import { Routes } from '@angular/router';
+import { authGuard } from './core/guards/auth.guard';
 
 /**
  * Routing für Join (SPA).
@@ -6,6 +7,9 @@ import { Routes } from '@angular/router';
  * - /login liegt bewusst AUSSERHALB der Shell (kein Header/Navbar/Footer).
  * - Alle App-Seiten laufen als Kind-Routen innerhalb der Shell.
  * - Default-Route leitet auf /login um, Wildcard ebenfalls auf /login.
+ * - Geschützte Seiten (summary, board, add-task, contacts) sind mit dem
+ *   authGuard abgesichert. Öffentlich bleiben login, legal-notice und
+ *   privacy-policy.
  */
 export const routes: Routes = [
   {
@@ -23,20 +27,24 @@ export const routes: Routes = [
     children: [
       {
         path: 'summary',
+        canActivate: [authGuard],
         loadComponent: () =>
           import('./pages/summary/summary').then((m) => m.Summary),
       },
       {
         path: 'board',
+        canActivate: [authGuard],
         loadComponent: () => import('./pages/board/board').then((m) => m.Board),
       },
       {
         path: 'add-task',
+        canActivate: [authGuard],
         loadComponent: () =>
           import('./pages/add-task/add-task').then((m) => m.AddTask),
       },
       {
         path: 'contacts',
+        canActivate: [authGuard],
         loadComponent: () =>
           import('./pages/contacts/contacts').then((m) => m.Contacts),
       },
