@@ -1,10 +1,17 @@
 import { Injectable, signal } from '@angular/core';
 import { createClient, SupabaseClient } from '@supabase/supabase-js';
 import { Contact } from '../models/contact.model';
+import { AuthUser } from './auth.service';
 import { environment } from '../../../environments/environment';
 
 /** Name der Supabase-Tabelle für Kontakte. */
 const CONTACTS_TABLE = 'contacts';
+
+/** Präfix der stabilen id eines aus dem Auth-User abgeleiteten Kontakts. */
+const CURRENT_USER_CONTACT_PREFIX = 'auth-';
+
+/** Avatar-Farbe des eigenen Accounts (Join-Akzentfarbe). */
+const CURRENT_USER_CONTACT_COLOR = '#29ABE2';
 
 /**
  * Form einer Kontaktzeile in der Supabase-Tabelle `contacts` (snake_case).
@@ -236,6 +243,84 @@ export class ContactService {
       this.mockContacts.update((contacts) => contacts.filter((c) => c.id !== id));
     }
     return deleted;
+  }
+
+  // ---------------------------------------------------------------------------
+  // Aktueller Auth-User als Kontakt (Sprint 3: Türkis 5)
+  //
+  // Der eingeloggte Benutzer soll in der Contacts-Liste sichtbar und bearbeitbar
+  // sein. Die Logik ist bewusst als reine, mit dem AuthUser parametrisierte
+  // Methoden umgesetzt (KEINE AuthService-Injektion), damit ContactService wie
+  // bisher ohne Injection-Context (`new ContactService()`) testbar bleibt. Die
+  // reaktive Verknüpfung mit dem AuthService erfolgt in der Contacts-Seite.
+  // ---------------------------------------------------------------------------
+
+  /** True, wenn die id einen aus dem Auth-User abgeleiteten (synthetischen) Kontakt kennzeichnet. */
+  isCurrentUserContactId(id: string | undefined): boolean {
+    return id?.startsWith(CURRENT_USER_CONTACT_PREFIX) ?? false;
+  }
+
+  /**
+   * Leitet aus dem aktuellen Auth-User einen Kontakt ab (oder null, wenn niemand
+   * eingeloggt ist). Name/E-Mail kommen aus dem User; Initialen und eine feste
+   * Akzentfarbe werden ergänzt. Die id ist stabil: `auth-<userId>`.
+   * Gäste (ohne E-Mail) erhalten einen sinnvollen "Guest"-Kontakt.
+   */
+  buildContactFromUser(user: AuthUser | null | undefined): Contact | null {
+    if (!user) {
+      return null;
+    }
+    const name = user.name?.trim() || (user.isGuest ? 'Guest' : user.email?.trim() || 'User');
+    return normalizeContact({
+      id: `${CURRENT_USER_CONTACT_PREFIX}${user.id}`,
+      name,
+      email: user.email?.trim() ?? '',
+      phone: '',
+      color: CURRENT_USER_CONTACT_COLOR,
+    });
+  }
+
+  /**
+   * Kombinierte Kontaktliste: bestehender Bestand + aktueller Auth-User als
+   * Kontakt, ohne Dublette. Existiert bereits ein Kontakt für den User (Match
+   * per E-Mail, sonst per Name), wird KEIN synthetischer Eintrag erzeugt.
+   * Der eigene Account steht ganz oben.
+   */
+  getContactsWithCurrentUser(user: AuthUser | null | undefined): Contact[] {
+    const base = this.mockContacts();
+    const self = this.buildContactFromUser(user);
+    if (!self) {
+      return base;
+    }
+    return this.findExistingUserContact(self, base) ? base : [self, ...base];
+  }
+
+  /**
+   * Liefert die id des Kontakts, der den aktuellen Auth-User in der kombinierten
+   * Liste repräsentiert – entweder ein bereits vorhandener Kontakt (Match per
+   * E-Mail/Name) oder der synthetische `auth-<userId>`. undefined ohne User.
+   */
+  currentUserContactId(user: AuthUser | null | undefined): string | undefined {
+    const self = this.buildContactFromUser(user);
+    if (!self) {
+      return undefined;
+    }
+    return this.findExistingUserContact(self, this.mockContacts())?.id ?? self.id;
+  }
+
+  /**
+   * Sucht im Bestand einen Kontakt, der den abgeleiteten User-Kontakt bereits
+   * abbildet: bevorzugt per (nicht-leerer) E-Mail, sonst per Name – jeweils
+   * case-insensitiv. Verhindert Dubletten und trägt einen bereits gespeicherten
+   * eigenen Kontakt (nach dem Bearbeiten) korrekt als "eigenen" wieder ein.
+   */
+  private findExistingUserContact(self: Contact, base: Contact[]): Contact | undefined {
+    const email = self.email.trim().toLowerCase();
+    if (email) {
+      return base.find((contact) => contact.email.trim().toLowerCase() === email);
+    }
+    const name = self.name.trim().toLowerCase();
+    return base.find((contact) => contact.name.trim().toLowerCase() === name);
   }
 
   // ---------------------------------------------------------------------------
