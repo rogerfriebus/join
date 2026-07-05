@@ -1,8 +1,15 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
+import { AuthService } from '../../core/services/auth.service';
 
 /**
  * Hauptnavigation der App. Verlinkt die eingeloggten Bereiche.
+ *
+ * Die Links zu den geschützten Bereichen (Summary, Add Task, Board, Contacts)
+ * werden nur für authentifizierte Nutzer angezeigt. Auf den öffentlichen Seiten
+ * (Privacy Policy, Legal Notice) sieht ein nicht angemeldeter Nutzer damit KEINE
+ * Navigation in geschützte Bereiche; der authGuard bleibt zusätzlich der letzte
+ * Schutz. Das Brand-Logo führt für Gäste/Ausgeloggte bewusst zu /login.
  */
 @Component({
   selector: 'app-navbar',
@@ -10,4 +17,9 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
   templateUrl: './navbar.html',
   styleUrl: './navbar.scss',
 })
-export class Navbar {}
+export class Navbar {
+  private authService = inject(AuthService);
+
+  /** True, wenn ein Benutzer (inkl. Gast) eingeloggt ist. */
+  readonly isAuthenticated = this.authService.isAuthenticated;
+}
