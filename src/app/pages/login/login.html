@@ -1,8 +1,58 @@
-<!-- TODO (Sprint 1+): Login-/Gast-Login-Formular laut Figma inkl. Validierung -->
-<section class="login">
-  <h1>Join</h1>
-  <p>Login folgt. Vorerst geht es als Gast direkt in die App.</p>
+<div class="login-page">
 
-  <!-- Platzhalter-Einstieg, bis das echte Login steht -->
-  <a routerLink="/summary">Als Gast fortfahren</a>
-</section>
+  <header class="login-header">
+    <img src="./assets/img/join-logo-dark.svg" alt="Join Logo" class="logo" />
+    <div class="header-actions">
+      <span>Not a Join user?</span>
+      <button type="button" class="btn-signup" (click)="goToSignUp()">Sign up</button>
+    </div>
+  </header>
+
+  <main class="login-main">
+    <div class="login-card">
+
+      <div class="card-title">
+        <h1>Log in</h1>
+        <span class="accent-line"></span>
+      </div>
+
+      <div class="form-group">
+        <div class="input-wrapper" [class.error]="emailError">
+          <input
+            type="email"
+            placeholder="Email"
+            [(ngModel)]="form.email"
+            (ngModelChange)="emailError = ''"
+          />
+          <img src="./assets/icons/mail.svg" class="input-icon" />
+        </div>
+        <span class="field-error" *ngIf="emailError">{{ emailError }}</span>
+      </div>
+
+      <div class="form-group">
+        <div class="input-wrapper" [class.error]="passwordError">
+          <input
+            type="password"
+            placeholder="Password"
+            [(ngModel)]="form.password"
+            (ngModelChange)="passwordError = ''"
+          />
+          <img src="./assets/icons/lock.svg" class="input-icon" />
+        </div>
+        <span class="field-error" *ngIf="passwordError">{{ passwordError }}</span>
+      </div>
+
+      <div class="card-actions">
+        <button type="button" class="btn-login" (click)="login()">Log in</button>
+        <button type="button" class="btn-guest" (click)="guestLogin()">Guest Log in</button>
+      </div>
+
+    </div>
+  </main>
+
+  <footer class="login-footer">
+    <a href="#">Privacy Policy</a>
+    <a href="#">Legal notice</a>
+  </footer>
+
+</div>
