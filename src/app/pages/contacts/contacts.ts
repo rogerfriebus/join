@@ -1,6 +1,7 @@
 import { Component, HostListener, inject, computed, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ContactService } from '../../core/services/contact.service';
+import { AuthService } from '../../core/services/auth.service';
 import { Contact, ContactGroup } from '../../core/models/contact.model';
 import { AddContactDialog } from './dialogs/add-contact-dialog/add-contact-dialog';
 import { EditContactDialog } from './dialogs/edit-contact-dialog/edit-contact-dialog';
@@ -15,8 +16,20 @@ import { EditContactDialog } from './dialogs/edit-contact-dialog/edit-contact-di
 })
 export class Contacts implements OnInit {
   private contactService = inject(ContactService);
+  private authService = inject(AuthService);
 
-  readonly contacts = this.contactService.contacts;
+  /**
+   * Sichtbare Kontaktliste inkl. des aktuellen Auth-Users (ohne Dublette).
+   * Reagiert sowohl auf Bestandsänderungen als auch auf Login/Logout.
+   */
+  readonly contacts = computed(() =>
+    this.contactService.getContactsWithCurrentUser(this.authService.user()),
+  );
+
+  /** id des Kontakts, der den eigenen Account repräsentiert ("(You)"-Markierung). */
+  readonly currentUserContactId = computed(() =>
+    this.contactService.currentUserContactId(this.authService.user()),
+  );
 
   selectedContact: Contact | null = null;
 
@@ -96,7 +109,12 @@ export class Contacts implements OnInit {
 
   async saveContact(updated: Contact): Promise<void> {
     try {
-      const result = await this.contactService.updateContact(updated);
+      // Der eigene, nur abgeleitete (synthetische) Kontakt existiert noch nicht
+      // in der DB. Beim ersten Bearbeiten wird er daher als echter Kontakt
+      // angelegt (Insert) und danach ganz normal weitergepflegt (Update).
+      const result = this.contactService.isCurrentUserContactId(updated.id)
+        ? await this.contactService.addContact({ ...updated, id: undefined })
+        : await this.contactService.updateContact(updated);
       this.selectedContact = result ?? updated;
     } catch (error) {
       console.error('Kontakt konnte nicht aktualisiert werden.', error);

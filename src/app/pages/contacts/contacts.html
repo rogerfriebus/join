@@ -16,7 +16,10 @@
             {{ contact.initials ?? getInitials(contact.name) }}
           </div>
           <div class="contact-info">
-            <p class="contact-name">{{ contact.name }}</p>
+            <p class="contact-name">
+              {{ contact.name }}
+              <span class="contact-you" *ngIf="contact.id === currentUserContactId()">(You)</span>
+            </p>
             <p class="contact-email">{{ contact.email }}</p>
           </div>
         </div>
@@ -46,7 +49,10 @@
           {{ selectedContact.initials ?? getInitials(selectedContact.name) }}
         </div>
         <div class="detail-name-block">
-          <h2>{{ selectedContact.name }}</h2>
+          <h2>
+            {{ selectedContact.name }}
+            <span class="contact-you" *ngIf="selectedContact.id === currentUserContactId()">(You)</span>
+          </h2>
           <div class="detail-actions">
             <button class="action-btn" (click)="showEditDialog = true">
               <img src="./assets/icons/edit.svg"> Edit
