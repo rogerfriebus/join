@@ -1,0 +1,234 @@
+.register-page {
+  min-height: 100vh;
+  background: #f0f4f8;
+  display: flex;
+  flex-direction: column;
+}
+
+// --- Header ---
+
+.register-header {
+  padding: 24px 40px;
+
+  .logo {
+    height: 80px;
+  }
+}
+
+// --- Main ---
+
+.register-main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.register-card {
+  background: #fff;
+  border-radius: 24px;
+  padding: 48px 56px;
+  width: 100%;
+  max-width: 480px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+// --- Title ---
+
+.card-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  margin-bottom: 8px;
+
+  .back-btn {
+    position: absolute;
+    left: 0;
+    background: none;
+    border: none;
+    font-size: 22px;
+    color: #29b6f6;
+    cursor: pointer;
+    line-height: 1;
+
+    &:hover {
+      color: #0288d1;
+    }
+  }
+
+  .title-center {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+
+    h1 {
+      font-size: 48px;
+      font-weight: 700;
+      margin: 0;
+      color: #1a1a2e;
+    }
+
+    .accent-line {
+      width: 80px;
+      height: 3px;
+      background: #29b6f6;
+      border-radius: 2px;
+    }
+  }
+}
+
+// --- Form ---
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+
+  input {
+    width: 100%;
+    padding: 14px 44px 14px 16px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    font-size: 15px;
+    outline: none;
+    box-sizing: border-box;
+    font-family: inherit;
+
+    &::placeholder {
+      color: #bbb;
+    }
+
+    &:focus {
+      border-color: #29b6f6;
+    }
+  }
+
+  .input-icon {
+    position: absolute;
+    right: 14px;
+    width: 20px;
+    height: 20px;
+    pointer-events: none;
+  }
+
+  &.error input {
+    border-color: #e53935;
+  }
+}
+
+.field-error {
+  font-size: 12px;
+  color: #e53935;
+}
+
+// --- Privacy Policy ---
+
+.privacy-policy-group {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+
+  input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+
+  label {
+    font-size: 14px;
+    color: #444;
+    cursor: pointer;
+
+    a {
+      color: #29b6f6;
+      text-decoration: none;
+      font-weight: 500;
+
+      &:hover {
+        text-decoration: underline;
+      }
+    }
+  }
+}
+
+// --- Actions ---
+
+.card-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 8px;
+}
+
+.btn-signup {
+  padding: 14px 40px;
+  background: #2A3647;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 500;
+  cursor: pointer;
+
+  &:hover {
+    background: #1a2535;
+  }
+
+  &:disabled {
+    background: #a0a8b0;
+    cursor: not-allowed;
+    opacity: 0.6;
+  }
+}
+
+// --- Footer ---
+
+.register-footer {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+  padding: 24px;
+
+  a {
+    font-size: 14px;
+    color: #888;
+    text-decoration: none;
+
+    &:hover {
+      color: #444;
+    }
+  }
+}
+
+// --- Mobile ---
+
+@media (max-width: 792px) {
+  .register-header {
+    padding: 16px 20px;
+
+    .logo {
+      height: 56px;
+    }
+  }
+
+  .register-card {
+    padding: 32px 24px;
+    margin: 0 16px;
+    border-radius: 16px;
+  }
+
+  .card-title .title-center h1 {
+    font-size: 36px;
+  }
+}
