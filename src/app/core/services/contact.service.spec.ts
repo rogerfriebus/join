@@ -333,4 +333,60 @@ describe('ContactService', () => {
       expect(await service.deleteContactFromSupabase('unbekannt')).toBe(false);
     });
   });
+
+  // Sprint 3 – Türkis 5: aktueller Auth-User als Kontakt.
+  describe('Current-User-Contact-Integration', () => {
+    const user = { id: 'u1', name: 'Nina Test', email: 'nina.test@example.com', isGuest: false };
+    const guest = { id: 'guest', name: 'Guest', isGuest: true };
+
+    it('buildContactFromUser leitet einen Kontakt mit stabiler id und Initialen ab', () => {
+      const contact = service.buildContactFromUser(user);
+      expect(contact?.id).toBe('auth-u1');
+      expect(contact?.name).toBe('Nina Test');
+      expect(contact?.email).toBe('nina.test@example.com');
+      expect(contact?.initials).toBe('NT');
+      expect(contact?.color).toBeTruthy();
+    });
+
+    it('buildContactFromUser liefert null ohne User', () => {
+      expect(service.buildContactFromUser(null)).toBeNull();
+    });
+
+    it('buildContactFromUser behandelt einen Gast sinnvoll (Name Guest, leere E-Mail)', () => {
+      const contact = service.buildContactFromUser(guest);
+      expect(contact?.id).toBe('auth-guest');
+      expect(contact?.name).toBe('Guest');
+      expect(contact?.email).toBe('');
+      expect(contact?.initials).toBe('G');
+    });
+
+    it('getContactsWithCurrentUser fügt den eingeloggten User oben hinzu', () => {
+      const before = service.getContacts().length;
+      const list = service.getContactsWithCurrentUser(user);
+      expect(list.length).toBe(before + 1);
+      expect(list[0].id).toBe('auth-u1');
+    });
+
+    it('getContactsWithCurrentUser ohne User liefert den unveränderten Bestand', () => {
+      expect(service.getContactsWithCurrentUser(null)).toEqual(service.getContacts());
+    });
+
+    it('erzeugt keine Dublette, wenn bereits ein Kontakt mit gleicher E-Mail existiert', () => {
+      const existing = service.getContacts()[0];
+      const sameEmailUser = { id: 'x', name: 'Anders Benannt', email: existing.email, isGuest: false };
+      const list = service.getContactsWithCurrentUser(sameEmailUser);
+      expect(list.length).toBe(service.getContacts().length);
+      expect(service.currentUserContactId(sameEmailUser)).toBe(existing.id);
+    });
+
+    it('currentUserContactId liefert die synthetische id, wenn kein Bestandskontakt passt', () => {
+      expect(service.currentUserContactId(user)).toBe('auth-u1');
+    });
+
+    it('isCurrentUserContactId erkennt synthetische ids', () => {
+      expect(service.isCurrentUserContactId('auth-u1')).toBe(true);
+      expect(service.isCurrentUserContactId('1')).toBe(false);
+      expect(service.isCurrentUserContactId(undefined)).toBe(false);
+    });
+  });
 });
