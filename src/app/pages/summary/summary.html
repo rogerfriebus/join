@@ -1,68 +1,75 @@
 <section class="summary" aria-labelledby="summary-title">
-  <div class="summary__headline">
-    <h1 id="summary-title">Join 360</h1>
-    <span class="summary__headline-divider" aria-hidden="true"></span>
-    <p>Key Metrics at a Glance</p>
+  <div class="summary__mobile-intro" aria-label="Mobile greeting">
+    <p>{{ mobileGreetingText() }}</p>
+    <strong>{{ mobileDisplayName() }}</strong>
   </div>
 
-  <div class="summary__content">
-    <div class="summary__cards" aria-label="Task overview">
-      <div class="summary__top-row">
-        <article class="summary-card summary-card--wide">
-          <span class="summary-card__icon summary-card__icon--edit" aria-hidden="true"></span>
-          <div class="summary-card__text">
-            <strong>{{ stats().todo }}</strong>
-            <span>To-do</span>
-          </div>
-        </article>
-
-        <article class="summary-card summary-card--wide">
-          <span class="summary-card__icon summary-card__icon--check" aria-hidden="true"></span>
-          <div class="summary-card__text">
-            <strong>{{ stats().done }}</strong>
-            <span>Done</span>
-          </div>
-        </article>
-      </div>
-
-      <article class="summary-card summary-card--urgent">
-        <div class="summary-card__urgent-info">
-          <span class="summary-card__icon summary-card__icon--urgent" aria-hidden="true"></span>
-          <div class="summary-card__text">
-            <strong>{{ stats().urgent }}</strong>
-            <span>Urgent</span>
-          </div>
-        </div>
-
-        <span class="summary-card__divider" aria-hidden="true"></span>
-
-        <div class="summary-card__deadline">
-          <strong>{{ stats().upcomingDeadline }}</strong>
-          <span>Upcoming Deadline</span>
-        </div>
-      </article>
-
-      <div class="summary__bottom-row">
-        <article class="summary-card summary-card--small">
-          <strong>{{ stats().total }}</strong>
-          <span>Tasks in Board</span>
-        </article>
-
-        <article class="summary-card summary-card--small">
-          <strong>{{ stats().inProgress }}</strong>
-          <span>Tasks in Progress</span>
-        </article>
-
-        <article class="summary-card summary-card--small">
-          <strong>{{ stats().awaitFeedback }}</strong>
-          <span>Awaiting Feedback</span>
-        </article>
-      </div>
+  <div class="summary__dashboard">
+    <div class="summary__headline">
+      <h1 id="summary-title">Join 360</h1>
+      <span class="summary__headline-divider" aria-hidden="true"></span>
+      <p>Key Metrics at a Glance</p>
     </div>
 
-    <aside class="summary__greeting" aria-label="Greeting">
-      <p>Good morning,</p>
-      <strong>Guest</strong>
-    </aside>
+    <div class="summary__content">
+      <div class="summary__cards" aria-label="Task overview">
+        <div class="summary__top-row">
+          <article class="summary-card summary-card--wide">
+            <span class="summary-card__icon summary-card__icon--edit" aria-hidden="true"></span>
+            <div class="summary-card__text">
+              <strong>{{ stats().todo }}</strong>
+              <span>To-do</span>
+            </div>
+          </article>
+
+          <article class="summary-card summary-card--wide">
+            <span class="summary-card__icon summary-card__icon--check" aria-hidden="true"></span>
+            <div class="summary-card__text">
+              <strong>{{ stats().done }}</strong>
+              <span>Done</span>
+            </div>
+          </article>
+        </div>
+
+        <article class="summary-card summary-card--urgent">
+          <div class="summary-card__urgent-info">
+            <span class="summary-card__icon summary-card__icon--urgent" aria-hidden="true"></span>
+            <div class="summary-card__text">
+              <strong>{{ stats().urgent }}</strong>
+              <span>Urgent</span>
+            </div>
+          </div>
+
+          <span class="summary-card__divider" aria-hidden="true"></span>
+
+          <div class="summary-card__deadline">
+            <strong>{{ stats().upcomingDeadline }}</strong>
+            <span>Upcoming Deadline</span>
+          </div>
+        </article>
+
+        <div class="summary__bottom-row">
+          <article class="summary-card summary-card--small">
+            <strong>{{ stats().total }}</strong>
+            <span>Tasks in Board</span>
+          </article>
+
+          <article class="summary-card summary-card--small">
+            <strong>{{ stats().inProgress }}</strong>
+            <span>Tasks in Progress</span>
+          </article>
+
+          <article class="summary-card summary-card--small">
+            <strong>{{ stats().awaitFeedback }}</strong>
+            <span>Awaiting Feedback</span>
+          </article>
+        </div>
+      </div>
+
+      <aside class="summary__greeting" aria-label="Greeting">
+        <p>{{ greetingText }}</p>
+        <strong>{{ displayName() }}</strong>
+      </aside>
+    </div>
   </div>
 </section>

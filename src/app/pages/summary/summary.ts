@@ -1,5 +1,6 @@
 import { Component, OnInit, computed, inject } from '@angular/core';
 import { Task, TaskStatus } from '../../core/models/task.model';
+import { AuthService } from '../../core/services/auth.service';
 import { TaskService } from '../../core/services/task.service';
 
 interface DeadlineCandidate {
@@ -24,10 +25,23 @@ interface SummaryStats {
   styleUrl: './summary.scss',
 })
 export class Summary implements OnInit {
+  private readonly authService = inject(AuthService);
   private readonly taskService = inject(TaskService);
 
   /** Reaktive Summary-Kennzahlen aus dem zentralen TaskService. */
   readonly stats = computed(() => this.createStats(this.taskService.tasks()));
+
+  /** Anzeigename für User- und Gast-Begrüßung. */
+  readonly displayName = computed(() => this.getDisplayName(this.authService.displayName()));
+
+  /** Tageszeitabhängige Begrüßung für das Summary-Dashboard. */
+  readonly greetingText = this.getGreetingText(new Date().getHours());
+
+  /** Mobile-Greeting nach Figma: Gäste bekommen nur einen Gruß ohne Namen. */
+  readonly mobileGreetingText = computed(() => this.getMobileGreetingText(this.displayName()));
+
+  /** Anzeigename für die mobile Begrüßung, bei Gästen bewusst leer. */
+  readonly mobileDisplayName = computed(() => this.getMobileDisplayName(this.displayName()));
 
   /** Lädt Tasks über die Service-Fassade, ohne Supabase-Logik in Summary. */
   async ngOnInit(): Promise<void> {
@@ -105,5 +119,27 @@ export class Summary implements OnInit {
   private todayTimestamp(): number {
     const today = new Date();
     return new Date(today.getFullYear(), today.getMonth(), today.getDate()).getTime();
+  }
+
+  /** Liefert einen stabilen Anzeigenamen für Summary. */
+  private getDisplayName(displayName: string): string {
+    return displayName.trim() || 'Guest';
+  }
+
+  /** Liefert die passende Begrüßung anhand der Tageszeit. */
+  private getGreetingText(hour: number): string {
+    if (hour < 12) return 'Good morning,';
+    if (hour < 18) return 'Good afternoon,';
+    return 'Good evening,';
+  }
+
+  /** Liefert den mobilen Gruß ohne Komma, wenn nur ein Gast angemeldet ist. */
+  private getMobileGreetingText(displayName: string): string {
+    return displayName === 'Guest' ? this.greetingText.replace(',', '!') : this.greetingText;
+  }
+
+  /** Versteckt den Namen auf der mobilen Gast-Greeting-Ansicht. */
+  private getMobileDisplayName(displayName: string): string {
+    return displayName === 'Guest' ? '' : displayName;
   }
 }
