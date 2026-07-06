@@ -22,6 +22,12 @@ export const routes: Routes = [
     loadComponent: () => import('./pages/login/login').then((m) => m.Login),
   },
   {
+    path: 'sign-up',
+    loadComponent: () =>
+      import('./pages/sign-up/sign-up')
+        .then((m) => m.SignUp),
+  },
+  {
     path: '',
     loadComponent: () => import('./layout/shell/shell').then((m) => m.Shell),
     children: [

@@ -1,34 +1,65 @@
 import { Component, inject } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { AuthRedirectService } from '../../core/services/auth-redirect.service';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 
-/**
- * Login-Seite (Einstieg der SPA).
- *
- * TODO (Sprint 1+): Login-Formular, Registrierung und Validierung ergänzen.
- * Gast-Login und eingeloggte User nutzen laut Kursvorgabe denselben Datenbestand.
- */
 @Component({
   selector: 'app-login',
-  imports: [],
+  standalone: true,
+  imports: [CommonModule, FormsModule],
   templateUrl: './login.html',
   styleUrl: './login.scss',
 })
 export class Login {
-  private readonly authService = inject(AuthService);
-  private readonly router = inject(Router);
-  private readonly route = inject(ActivatedRoute);
-  private readonly authRedirectService = inject(AuthRedirectService);
+  private router = inject(Router);
+  private authService = inject(AuthService);
 
-  /** Meldet den Nutzer als Gast an und öffnet danach die gewünschte App-Seite. */
-  async loginAsGuest(): Promise<void> {
-    await this.authService.loginAsGuest();
-    await this.router.navigateByUrl(this.getRedirectUrl());
+  form = {
+    email: '',
+    password: '',
+  };
+
+  emailError = '';
+  passwordError = '';
+
+  isEmailValid(email: string): boolean {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email.trim());
   }
 
-  /** Liefert das sichere Ziel nach erfolgreichem Gast-Login. */
-  private getRedirectUrl(): string {
-    return this.authRedirectService.getRedirectUrlFromParams(this.route.snapshot.queryParamMap);
+  validateForm(): boolean {
+    this.emailError = '';
+    this.passwordError = '';
+
+    if (!this.form.email) {
+      this.emailError = 'Please enter your email';
+      return false;
+    }
+    if (!this.isEmailValid(this.form.email)) {
+      this.emailError = 'Please enter a valid email address';
+      return false;
+    }
+    if (!this.form.password) {
+      this.passwordError = 'Please enter your password';
+      return false;
+    }
+
+    return true;
+  }
+
+  async login(): Promise<void> {
+    if (!this.validateForm()) return;
+    await this.authService.login(this.form.email, this.form.password);
+    this.router.navigate(['/summary']);
+  }
+
+  async guestLogin() {
+    await this.authService.loginAsGuest();
+    this.router.navigate(['/summary']);
+  }
+
+  goToSignUp(): void {
+    this.router.navigate(['/sign-up']);
   }
 }
