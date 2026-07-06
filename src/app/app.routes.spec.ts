@@ -31,7 +31,7 @@ describe('app.routes', () => {
     return findRoute(path)?.canActivate?.includes(authGuard) ?? false;
   }
 
-  const PROTECTED = ['summary', 'board', 'add-task', 'contacts'];
+  const PROTECTED = ['summary', 'board', 'add-task', 'contacts', 'help'];
   const PUBLIC = ['login', 'legal-notice', 'privacy-policy'];
 
   it.each(PROTECTED)('schützt die Route /%s mit dem authGuard', (path) => {

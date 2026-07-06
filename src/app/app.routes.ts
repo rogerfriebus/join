@@ -55,6 +55,11 @@ export const routes: Routes = [
           import('./pages/contacts/contacts').then((m) => m.Contacts),
       },
       {
+        path: 'help',
+        canActivate: [authGuard],
+        loadComponent: () => import('./pages/help/help').then((m) => m.Help),
+      },
+      {
         path: 'legal-notice',
         loadComponent: () =>
           import('./pages/legal-notice/legal-notice').then(

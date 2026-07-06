@@ -47,6 +47,12 @@ export class Header {
       .toUpperCase();
   });
 
+  /** Navigiert zur Help-Seite. */
+  async openHelp(): Promise<void> {
+    this.closeMenu();
+    await this.router.navigate(['/help']);
+  }
+
   /** Öffnet/schließt das User-Dropdown. */
   toggleMenu(): void {
     this.menuOpen.update((open) => !open);
