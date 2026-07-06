@@ -1,5 +1,68 @@
-<!-- TODO (Sprint 1+): Summary-Kacheln / Kennzahlen laut Figma -->
-<section class="summary">
-  <h1>Summary</h1>
-  <p>Übersicht folgt.</p>
+<section class="summary" aria-labelledby="summary-title">
+  <div class="summary__headline">
+    <h1 id="summary-title">Join 360</h1>
+    <span class="summary__headline-divider" aria-hidden="true"></span>
+    <p>Key Metrics at a Glance</p>
+  </div>
+
+  <div class="summary__content">
+    <div class="summary__cards" aria-label="Task overview">
+      <div class="summary__top-row">
+        <article class="summary-card summary-card--wide">
+          <span class="summary-card__icon summary-card__icon--edit" aria-hidden="true"></span>
+          <div class="summary-card__text">
+            <strong>0</strong>
+            <span>To-do</span>
+          </div>
+        </article>
+
+        <article class="summary-card summary-card--wide">
+          <span class="summary-card__icon summary-card__icon--check" aria-hidden="true"></span>
+          <div class="summary-card__text">
+            <strong>0</strong>
+            <span>Done</span>
+          </div>
+        </article>
+      </div>
+
+      <article class="summary-card summary-card--urgent">
+        <div class="summary-card__urgent-info">
+          <span class="summary-card__icon summary-card__icon--urgent" aria-hidden="true"></span>
+          <div class="summary-card__text">
+            <strong>0</strong>
+            <span>Urgent</span>
+          </div>
+        </div>
+
+        <span class="summary-card__divider" aria-hidden="true"></span>
+
+        <div class="summary-card__deadline">
+          <strong>—</strong>
+          <span>Upcoming Deadline</span>
+        </div>
+      </article>
+
+      <div class="summary__bottom-row">
+        <article class="summary-card summary-card--small">
+          <strong>0</strong>
+          <span>Tasks in Board</span>
+        </article>
+
+        <article class="summary-card summary-card--small">
+          <strong>0</strong>
+          <span>Tasks in Progress</span>
+        </article>
+
+        <article class="summary-card summary-card--small">
+          <strong>0</strong>
+          <span>Awaiting Feedback</span>
+        </article>
+      </div>
+    </div>
+
+    <aside class="summary__greeting" aria-label="Greeting">
+      <p>Good morning,</p>
+      <strong>Guest</strong>
+    </aside>
+  </div>
 </section>
