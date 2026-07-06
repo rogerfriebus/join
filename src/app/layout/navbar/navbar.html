@@ -30,5 +30,12 @@
         <span class="navbar__text">Contacts</span>
       </a>
     </div>
+  } @else {
+    <div class="navbar__links navbar__links--public">
+      <a class="navbar__link" routerLink="/login">
+        <span class="navbar__icon navbar__icon--login" aria-hidden="true"></span>
+        <span class="navbar__text">Log In</span>
+      </a>
+    </div>
   }
 </nav>

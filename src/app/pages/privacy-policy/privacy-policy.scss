@@ -1,0 +1,114 @@
+.privacy-policy {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 1208px;
+  padding: 116px 96px 80px;
+  font-family: 'Inter', sans-serif;
+  color: #000000;
+}
+
+.privacy-policy__title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+  width: 100%;
+  max-width: 1016px;
+  margin-bottom: 26px;
+}
+
+.privacy-policy__title-row h1 {
+  margin: 0;
+  font-size: 61px;
+  font-weight: 700;
+  line-height: 120%;
+}
+
+.privacy-policy__back {
+  display: none;
+  width: 37px;
+  height: 37px;
+  border: unset;
+  padding: 0;
+  cursor: pointer;
+  background-color: #124658;
+
+  mask-image: url('/assets/icons/arrow_left.svg');
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: 32px 32px;
+
+  -webkit-mask-image: url('/assets/icons/arrow_left.svg');
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  -webkit-mask-size: 32px 32px;
+}
+
+.privacy-policy__back:hover,
+.privacy-policy__back:focus-visible {
+  background-color: #29abe2;
+}
+
+.privacy-policy__content {
+  display: flex;
+  flex-direction: column;
+  gap: 35px;
+  width: 100%;
+  max-width: 1016px;
+}
+
+.privacy-policy__section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.privacy-policy__section h2 {
+  margin: 0;
+  font-size: 27px;
+  font-weight: 700;
+  line-height: 120%;
+}
+
+.privacy-policy__section p {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 120%;
+}
+
+@media (max-width: 1010px) {
+  .privacy-policy {
+    max-width: none;
+    min-height: calc(100vh - 160px);
+    padding: 48px 16px 120px;
+  }
+
+  .privacy-policy__title-row {
+    max-width: 396px;
+    margin: 0 auto 32px;
+  }
+
+  .privacy-policy__title-row h1 {
+    max-width: 323px;
+    font-size: 47px;
+  }
+
+  .privacy-policy__back {
+    display: block;
+    flex: 0 0 32px;
+    width: 32px;
+    height: 32px;
+    mask-size: 32px 32px;
+    -webkit-mask-size: 32px 32px;
+  }
+
+  .privacy-policy__content {
+    max-width: 396px;
+    margin: 0 auto;
+  }
+
+  .privacy-policy__section h2 {
+    font-size: 27px;
+  }
+}
