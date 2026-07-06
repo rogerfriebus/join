@@ -64,6 +64,13 @@ describe('Header', () => {
     expect(query('.header__menu-name')?.textContent?.trim()).toBe('Anna Schulz');
   });
 
+  it('navigiert über den Help-Button zur Help-Seite', async () => {
+    query('.header__help')!.click();
+    await fixture.whenStable();
+
+    expect(navigateSpy).toHaveBeenCalledWith(['/help']);
+  });
+
   it('zeigt "G" und "Guest" für einen Gast', () => {
     displayName.set('Guest');
     fixture.detectChanges();
