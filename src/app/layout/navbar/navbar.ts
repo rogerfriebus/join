@@ -7,9 +7,10 @@ import { AuthService } from '../../core/services/auth.service';
  *
  * Die Links zu den geschützten Bereichen (Summary, Add Task, Board, Contacts)
  * werden nur für authentifizierte Nutzer angezeigt. Auf den öffentlichen Seiten
- * (Privacy Policy, Legal Notice) sieht ein nicht angemeldeter Nutzer damit KEINE
- * Navigation in geschützte Bereiche; der authGuard bleibt zusätzlich der letzte
- * Schutz. Das Brand-Logo führt für Gäste/Ausgeloggte bewusst zu /login.
+ * (Privacy Policy, Legal Notice) sieht ein nicht angemeldeter Nutzer nur den
+ * Login-Einstieg, aber keine Links in geschützte Bereiche. Der authGuard bleibt
+ * zusätzlich der letzte Schutz. Das Brand-Logo führt für Gäste/Ausgeloggte
+ * bewusst zu /login.
  */
 @Component({
   selector: 'app-navbar',

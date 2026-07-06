@@ -79,6 +79,11 @@
   -webkit-mask-image: url('/assets/icons/contacts.svg');
 }
 
+.navbar__icon--login {
+  mask-image: url('/assets/icons/login.svg');
+  -webkit-mask-image: url('/assets/icons/login.svg');
+}
+
 .navbar__text {
   font-size: 16px;
   line-height: 19px;
@@ -104,6 +109,10 @@
     margin-top: 0;
     padding: 0 16px;
     background-color: #2a3647;
+  }
+
+  .navbar__links--public {
+    justify-content: center;
   }
 
   .navbar__link {

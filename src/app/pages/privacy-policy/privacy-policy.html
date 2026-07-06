@@ -1,5 +1,40 @@
-<!-- TODO (Sprint 1+): Datenschutzerklärung laut Kursvorgabe -->
-<section class="privacy-policy">
-  <h1>Privacy Policy</h1>
-  <p>Datenschutzerklärung folgt.</p>
+<section class="privacy-policy" aria-labelledby="privacy-policy-title">
+  <div class="privacy-policy__title-row">
+    <h1 id="privacy-policy-title">Privacy Policy</h1>
+
+    <button
+      class="privacy-policy__back"
+      type="button"
+      aria-label="Go back"
+      (click)="goBack()"
+    ></button>
+  </div>
+
+  <div class="privacy-policy__content">
+    <article class="privacy-policy__section">
+      <h2>Data processing in Join</h2>
+      <p>
+        Join is a kanban-based project management app created as part of the
+        Developer Akademie. This privacy policy explains how data is handled
+        before signing up or logging in, and while using the app as a registered
+        user or guest. Before login, only the data required to display public
+        pages such as this Privacy Policy is processed. After login, Join may
+        use account information, contacts, tasks, priorities, due dates and board
+        data to provide the task management features of the application.
+      </p>
+    </article>
+
+    <article class="privacy-policy__section">
+      <h2>Your data and rights</h2>
+      <p>
+        You decide which information you enter into Join. Please do not add
+        sensitive personal information to tasks, contacts or comments. The data
+        you provide is used only to display and manage your board, assign tasks,
+        show deadlines and keep the project state available to you and your team.
+        Join does not sell personal data. If data is no longer needed, it should
+        be corrected or deleted. For questions about stored data, access,
+        correction or deletion, please contact the Join project team.
+      </p>
+    </article>
+  </div>
 </section>
