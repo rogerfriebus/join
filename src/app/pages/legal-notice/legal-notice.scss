@@ -1,0 +1,135 @@
+.legal-notice {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: 1208px;
+  padding: 116px 96px 80px;
+  font-family: 'Inter', sans-serif;
+  color: #000000;
+}
+
+.legal-notice__title-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 32px;
+  width: 100%;
+  max-width: 1014px;
+  margin-bottom: 26px;
+}
+
+.legal-notice__title-row h1 {
+  margin: 0;
+  font-size: 61px;
+  font-weight: 700;
+  line-height: 120%;
+}
+
+.legal-notice__back {
+  display: none;
+  width: 37px;
+  height: 37px;
+  border: unset;
+  padding: 0;
+  cursor: pointer;
+  background-color: #124658;
+
+  mask-image: url('/assets/icons/arrow_left.svg');
+  mask-repeat: no-repeat;
+  mask-position: center;
+  mask-size: 32px 32px;
+
+  -webkit-mask-image: url('/assets/icons/arrow_left.svg');
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-position: center;
+  -webkit-mask-size: 32px 32px;
+}
+
+.legal-notice__back:hover,
+.legal-notice__back:focus-visible {
+  background-color: #29abe2;
+}
+
+.legal-notice__content {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  width: 100%;
+  max-width: 1014px;
+}
+
+.legal-notice__imprint,
+.legal-notice__block {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.legal-notice__imprint {
+  gap: 16px;
+}
+
+.legal-notice__block {
+  gap: 8px;
+}
+
+.legal-notice__imprint h2 {
+  margin: 0;
+  font-size: 27px;
+  font-weight: 700;
+  line-height: 120%;
+}
+
+.legal-notice__block h2 {
+  margin: 0;
+  font-size: 20px;
+  font-weight: 700;
+  line-height: 120%;
+}
+
+.legal-notice__imprint p,
+.legal-notice__block p {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 400;
+  line-height: 120%;
+}
+
+@media (max-width: 1010px) {
+  .legal-notice {
+    max-width: none;
+    min-height: calc(100vh - 160px);
+    padding: 48px 16px 120px;
+  }
+
+  .legal-notice__title-row {
+    max-width: 396px;
+    margin: 0 auto 32px;
+  }
+
+  .legal-notice__title-row h1 {
+    max-width: 286px;
+    font-size: 47px;
+  }
+
+  .legal-notice__back {
+    display: block;
+    flex: 0 0 32px;
+    width: 32px;
+    height: 32px;
+    mask-size: 32px 32px;
+    -webkit-mask-size: 32px 32px;
+  }
+
+  .legal-notice__content {
+    max-width: 396px;
+    margin: 0 auto;
+  }
+
+  .legal-notice__imprint h2 {
+    font-size: 27px;
+  }
+
+  .legal-notice__block h2 {
+    font-size: 20px;
+  }
+}

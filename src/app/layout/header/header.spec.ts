@@ -6,7 +6,7 @@ import { Header } from './header';
 import { AuthService } from '../../core/services/auth.service';
 
 /**
- * Tests für den Header inkl. User-Menü / Logout (Sprint 3: Türkis 3).
+ * Tests für den Header inkl. User-Menü / Logout.
  *
  * Der AuthService wird über steuerbare Signale gestubbt (isAuthenticated,
  * displayName); der Router ist real (provideRouter) mit gespyter navigate().
@@ -22,6 +22,10 @@ describe('Header', () => {
 
   function query(selector: string): HTMLElement | null {
     return fixture.nativeElement.querySelector(selector);
+  }
+
+  function menuItems(selector = '.header__menu-item'): HTMLButtonElement[] {
+    return Array.from(fixture.nativeElement.querySelectorAll(selector));
   }
 
   beforeEach(async () => {
@@ -57,11 +61,29 @@ describe('Header', () => {
     expect(query('.header__avatar')?.textContent?.trim()).toBe('AS');
   });
 
-  it('zeigt den displayName im geöffneten Menü', () => {
+  it('zeigt "G" für einen Gast', () => {
+    displayName.set('Guest');
+    fixture.detectChanges();
+
+    expect(query('.header__avatar')?.textContent?.trim()).toBe('G');
+  });
+
+  it('zeigt im Desktop-Submenu nur die Legal-Links und Logout', () => {
     query('.header__avatar')!.click();
     fixture.detectChanges();
 
-    expect(query('.header__menu-name')?.textContent?.trim()).toBe('Anna Schulz');
+    expect(menuItems('.header__menu-item:not(.header__menu-item--mobile-only)').map((item) => item.textContent?.trim())).toEqual([
+      'Legal Notice',
+      'Privacy Policy',
+      'Log out',
+    ]);
+  });
+
+  it('hält Help als mobilen Submenu-Eintrag vor', () => {
+    query('.header__avatar')!.click();
+    fixture.detectChanges();
+
+    expect(query('.header__menu-item--mobile-only')?.textContent?.trim()).toBe('Help');
   });
 
   it('navigiert über den Help-Button zur Help-Seite', async () => {
@@ -71,16 +93,37 @@ describe('Header', () => {
     expect(navigateSpy).toHaveBeenCalledWith(['/help']);
   });
 
-  it('zeigt "G" und "Guest" für einen Gast', () => {
-    displayName.set('Guest');
-    fixture.detectChanges();
-
-    expect(query('.header__avatar')?.textContent?.trim()).toBe('G');
-
+  it('navigiert aus dem mobilen Submenu zur Help-Seite', async () => {
     query('.header__avatar')!.click();
     fixture.detectChanges();
 
-    expect(query('.header__menu-name')?.textContent?.trim()).toBe('Guest');
+    query('.header__menu-item--mobile-only')!.click();
+    await fixture.whenStable();
+
+    expect(component.menuOpen()).toBe(false);
+    expect(navigateSpy).toHaveBeenCalledWith(['/help']);
+  });
+
+  it('navigiert aus dem Submenu zur Legal-Notice-Seite', async () => {
+    query('.header__avatar')!.click();
+    fixture.detectChanges();
+
+    menuItems('.header__menu-item:not(.header__menu-item--mobile-only)')[0].click();
+    await fixture.whenStable();
+
+    expect(component.menuOpen()).toBe(false);
+    expect(navigateSpy).toHaveBeenCalledWith(['/legal-notice']);
+  });
+
+  it('navigiert aus dem Submenu zur Privacy-Policy-Seite', async () => {
+    query('.header__avatar')!.click();
+    fixture.detectChanges();
+
+    menuItems('.header__menu-item:not(.header__menu-item--mobile-only)')[1].click();
+    await fixture.whenStable();
+
+    expect(component.menuOpen()).toBe(false);
+    expect(navigateSpy).toHaveBeenCalledWith(['/privacy-policy']);
   });
 
   it('rendert kein User-Menü, wenn niemand eingeloggt ist', () => {
@@ -95,7 +138,7 @@ describe('Header', () => {
     query('.header__avatar')!.click();
     fixture.detectChanges();
 
-    query('.header__menu-item')!.click();
+    menuItems('.header__menu-item:not(.header__menu-item--mobile-only)')[2].click();
     await fixture.whenStable();
 
     expect(logoutSpy).toHaveBeenCalledTimes(1);
@@ -107,7 +150,7 @@ describe('Header', () => {
     fixture.detectChanges();
     expect(component.menuOpen()).toBe(true);
 
-    query('.header__menu-item')!.click();
+    menuItems('.header__menu-item:not(.header__menu-item--mobile-only)')[2].click();
     await fixture.whenStable();
 
     expect(component.menuOpen()).toBe(false);

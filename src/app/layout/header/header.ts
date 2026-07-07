@@ -5,10 +5,9 @@ import { AuthService } from '../../core/services/auth.service';
 /**
  * Kopfzeile der App (innerhalb der Shell).
  *
- * Enthält das User-Menü: Der Avatar zeigt die Initialen des eingeloggten
- * Benutzers (bzw. "G" für Guest) und öffnet ein kleines Dropdown mit der
- * Logout-Aktion. Die Auth-Logik liegt ausschließlich im {@link AuthService};
- * der Header konsumiert nur dessen Signale und ruft `logout()` auf.
+ * Enthält den Help-Button und das User-Menü. Der Avatar zeigt die Initialen
+ * des eingeloggten Benutzers (bzw. "G" für Guest). Das Dropdown enthält die
+ * Links Help, Legal Notice, Privacy Policy und die Logout-Aktion.
  */
 @Component({
   selector: 'app-header',
@@ -49,8 +48,17 @@ export class Header {
 
   /** Navigiert zur Help-Seite. */
   async openHelp(): Promise<void> {
-    this.closeMenu();
-    await this.router.navigate(['/help']);
+    await this.openPage('/help');
+  }
+
+  /** Navigiert zur Legal-Notice-Seite. */
+  async openLegalNotice(): Promise<void> {
+    await this.openPage('/legal-notice');
+  }
+
+  /** Navigiert zur Privacy-Policy-Seite. */
+  async openPrivacyPolicy(): Promise<void> {
+    await this.openPage('/privacy-policy');
   }
 
   /** Öffnet/schließt das User-Dropdown. */
@@ -68,5 +76,11 @@ export class Header {
     this.closeMenu();
     this.authService.logout();
     await this.router.navigate(['/login']);
+  }
+
+  /** Schließt das Menü und navigiert anschließend zur angegebenen Route. */
+  private async openPage(route: string): Promise<void> {
+    this.closeMenu();
+    await this.router.navigate([route]);
   }
 }

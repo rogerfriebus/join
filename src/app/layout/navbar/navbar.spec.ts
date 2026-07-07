@@ -9,8 +9,8 @@ import { AuthService } from '../../core/services/auth.service';
  * Tests für die Navbar (Sprint 3: Türkis 6).
  *
  * Geprüft wird, dass geschützte Links nur für authentifizierte Nutzer sichtbar
- * sind und ausgeloggte Nutzer auf öffentlichen Seiten nur den Login-Einstieg
- * sehen.
+ * sind und ausgeloggte Nutzer auf öffentlichen Seiten den Login-Einstieg
+ * sowie die rechtlichen Links in der mobilen Navigation sehen.
  */
 describe('Navbar', () => {
   let component: Navbar;
@@ -59,13 +59,17 @@ describe('Navbar', () => {
     expect(hrefs).toEqual(['/summary', '/add-task', '/board', '/contacts']);
   });
 
-  it('zeigt für nicht authentifizierte Nutzer nur den Login-Link', async () => {
+  it('zeigt für nicht authentifizierte Nutzer die öffentlichen Links', async () => {
     isAuthenticated.set(false);
     await setup();
 
     const hrefs = queryAll('.navbar__link').map((a) => a.getAttribute('href'));
-    expect(hrefs).toEqual(['/login']);
-    expect(query('.navbar__text')?.textContent?.trim()).toBe('Log In');
+    expect(hrefs).toEqual(['/login', '/privacy-policy', '/legal-notice']);
+    expect(queryAll('.navbar__text').map((element) => element.textContent?.trim())).toEqual([
+      'Log In',
+      'Privacy Policy',
+      'Legal Notice',
+    ]);
   });
 
   it('führt das Brand-Logo für Ausgeloggte auf /login', async () => {
