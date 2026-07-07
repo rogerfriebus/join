@@ -1,5 +1,85 @@
-<!-- TODO (Sprint 1+): Impressum-Inhalt laut Kursvorgabe -->
-<section class="legal-notice">
-  <h1>Legal Notice</h1>
-  <p>Impressum folgt.</p>
+<section class="legal-notice" aria-labelledby="legal-notice-title">
+  <div class="legal-notice__title-row">
+    <h1 id="legal-notice-title">Legal Notice</h1>
+
+    <button
+      class="legal-notice__back"
+      type="button"
+      aria-label="Go back"
+      (click)="goBack()"
+    ></button>
+  </div>
+
+  <div class="legal-notice__content">
+    <article class="legal-notice__imprint">
+      <h2>Imprint</h2>
+      <p>
+        Join Project Team<br />
+        Developer Akademie student project<br />
+        This application was created for educational purposes as part of a web
+        development group project.<br />
+        Contact: Please use the project contact provided by the development
+        team.
+      </p>
+    </article>
+
+    <article class="legal-notice__block">
+      <h2>Acceptance of terms</h2>
+      <p>
+        By accessing and using Join, you acknowledge and agree to these terms
+        and conditions. Join is a learning project and may be updated, changed
+        or improved while the project is being developed.
+      </p>
+    </article>
+
+    <article class="legal-notice__block">
+      <h2>Scope and ownership of the product</h2>
+      <p>
+        Join was developed as part of a student group project in a web
+        development bootcamp at the Developer Akademie GmbH. It has an
+        educational purpose and is not intended for extensive personal or
+        business use. The design concept of Join belongs to the Developer
+        Akademie GmbH and may not be copied, distributed or reused without
+        permission.
+      </p>
+    </article>
+
+    <article class="legal-notice__block">
+      <h2>Proprietary rights</h2>
+      <p>
+        Apart from the design owned by the Developer Akademie GmbH, the listed
+        project team retains rights to the implementation created during the
+        project, including code, structure and project-specific content.
+      </p>
+    </article>
+
+    <article class="legal-notice__block">
+      <h2>Use of the product</h2>
+      <p>
+        Join is intended to be used for lawful purposes only. Users are
+        responsible for the information they enter into tasks, contacts and
+        boards. Content that is illegal, harmful, threatening or abusive must not
+        be added to the application.
+      </p>
+    </article>
+
+    <article class="legal-notice__block">
+      <h2>Disclaimer of warranties and limitation of liability</h2>
+      <p>
+        Join is provided as a student project and without warranty of any kind.
+        We cannot guarantee permanent availability, accuracy or reliability of
+        the application. The project team and the Developer Akademie are not
+        liable for damages resulting from the use or unavailability of Join.
+      </p>
+    </article>
+
+    <article class="legal-notice__block">
+      <h2>Indemnity</h2>
+      <p>
+        You agree to use Join responsibly and to respect the rights of other
+        users and the project team. For questions or notices regarding this
+        Legal Notice, please contact the Join project team. Date: July 26, 2023.
+      </p>
+    </article>
+  </div>
 </section>

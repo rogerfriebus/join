@@ -26,8 +26,31 @@
             (click)="closeMenu()"
           ></button>
 
-          <div class="header__menu" role="menu">
-            <span class="header__menu-name">{{ displayName() }}</span>
+          <div class="header__menu" role="menu" aria-label="User submenu">
+            <button
+              class="header__menu-item header__menu-item--mobile-only"
+              type="button"
+              role="menuitem"
+              (click)="openHelp()"
+            >
+              Help
+            </button>
+            <button
+              class="header__menu-item"
+              type="button"
+              role="menuitem"
+              (click)="openLegalNotice()"
+            >
+              Legal Notice
+            </button>
+            <button
+              class="header__menu-item"
+              type="button"
+              role="menuitem"
+              (click)="openPrivacyPolicy()"
+            >
+              Privacy Policy
+            </button>
             <button
               class="header__menu-item"
               type="button"

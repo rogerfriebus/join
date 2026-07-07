@@ -32,9 +32,25 @@
     </div>
   } @else {
     <div class="navbar__links navbar__links--public">
-      <a class="navbar__link" routerLink="/login">
+      <a class="navbar__link navbar__link--login" routerLink="/login">
         <span class="navbar__icon navbar__icon--login" aria-hidden="true"></span>
         <span class="navbar__text">Log In</span>
+      </a>
+
+      <a
+        class="navbar__link navbar__link--public-legal"
+        routerLink="/privacy-policy"
+        routerLinkActive="navbar__link--active"
+      >
+        <span class="navbar__text">Privacy Policy</span>
+      </a>
+
+      <a
+        class="navbar__link navbar__link--public-legal"
+        routerLink="/legal-notice"
+        routerLinkActive="navbar__link--active"
+      >
+        <span class="navbar__text">Legal Notice</span>
       </a>
     </div>
   }
