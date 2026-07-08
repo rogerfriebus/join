@@ -5,10 +5,14 @@
 }
 
 .shell__sidebar {
+  position: sticky;
+  top: 0;
   display: flex;
   flex: 0 0 232px;
   flex-direction: column;
   justify-content: space-between;
+  align-self: flex-start;
+  height: 100vh;
   min-height: 100vh;
   background-color: #2a3647;
 }

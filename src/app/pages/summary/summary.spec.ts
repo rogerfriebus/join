@@ -1,5 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { signal } from '@angular/core';
+import { provideRouter } from '@angular/router';
 
 import { Summary } from './summary';
 import { AuthService } from '../../core/services/auth.service';
@@ -75,6 +76,7 @@ describe('Summary', () => {
       providers: [
         { provide: TaskService, useValue: taskServiceStub },
         { provide: AuthService, useValue: authServiceStub },
+        provideRouter([]),
       ],
     }).compileComponents();
 
@@ -94,6 +96,13 @@ describe('Summary', () => {
 
   it('loads tasks through the TaskService facade', () => {
     expect(loadTasksSpy).toHaveBeenCalled();
+  });
+
+
+  it('links all summary cards to the board', () => {
+    const boardLinks = fixture.nativeElement.querySelectorAll('a.summary-card[href="/board"]');
+
+    expect(boardLinks.length).toBe(6);
   });
 
   it('shows the total amount of tasks', () => {
