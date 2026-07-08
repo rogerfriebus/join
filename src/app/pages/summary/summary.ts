@@ -1,4 +1,5 @@
 import { Component, OnInit, computed, inject } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { Task, TaskStatus } from '../../core/models/task.model';
 import { AuthService } from '../../core/services/auth.service';
 import { TaskService } from '../../core/services/task.service';
@@ -20,7 +21,7 @@ interface SummaryStats {
 
 @Component({
   selector: 'app-summary',
-  imports: [],
+  imports: [RouterLink],
   templateUrl: './summary.html',
   styleUrl: './summary.scss',
 })
