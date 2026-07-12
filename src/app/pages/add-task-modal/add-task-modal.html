@@ -109,7 +109,7 @@
 
                     <div class="dropdown-panel" *ngIf="showAssigneeDropdown" (click)="$event.stopPropagation()">
                         <div class="dropdown-option" *ngFor="let contact of contacts"
-                            (click)="toggleAssignee(contact.id!)">
+                            (click)="toggleAssignee(contact.id!)" [class.checked]="isAssigned(contact.id!)">
                             <div class="avatar-chip small" [style.background-color]="contact.color">
                                 {{ contact.initials ?? getInitials(contact.name) }}
                             </div>
@@ -143,33 +143,40 @@
                         <input type="text" placeholder="Add new subtask" [(ngModel)]="newSubtask"
                             (keydown.enter)="addSubtask()" />
                         <div class="input-actions" *ngIf="newSubtask">
-                            <img src="./assets/icons/iconoir_cancel.svg" class="input-icon" (click)="clearSubtaskInput()" />
+                            <img src="./assets/icons/iconoir_cancel.svg" class="input-icon"
+                                (click)="clearSubtaskInput()" />
                             <img src="./assets/icons/check_black.svg" class="input-icon" (click)="addSubtask()" />
                         </div>
                     </div>
 
-                    <ul class="subtask-list" *ngIf="form.subtasks.length > 0">
-                        <li *ngFor="let subtask of form.subtasks; let i = index" class="subtask-item">
+                    <div class="subtask-container" *ngIf="form.subtasks.length > 0">
+                        <ul class="subtask-list">
+                            <li *ngFor="let subtask of form.subtasks; let i = index" class="subtask-item">
 
-                            <ng-container *ngIf="editingSubtaskIndex === i">
-                                <input type="text" class="subtask-edit-input" [(ngModel)]="editingSubtaskValue"
-                                    (keydown.enter)="confirmEditSubtask(i)" />
-                                <div class="subtask-actions">
-                                    <img src="./assets/icons/delete.svg" (click)="deleteEditingSubtask(i)" />
-                                    <img src="./assets/icons/check.svg" (click)="confirmEditSubtask(i)" />
-                                </div>
-                            </ng-container>
+                                <!-- EDIT MODE -->
+                                <ng-container *ngIf="editingSubtaskIndex === i">
+                                    <input type="text" class="subtask-edit-input" [(ngModel)]="editingSubtaskValue"
+                                        (keydown.enter)="confirmEditSubtask(i)" />
 
-                            <ng-container *ngIf="editingSubtaskIndex !== i">
-                                <span class="subtask-text">• {{ subtask }}</span>
-                                <div class="subtask-actions hover-only">
-                                    <img src="./assets/icons/edit.svg" (click)="startEditSubtask(i)" />
-                                    <img src="./assets/icons/delete.svg" (click)="removeSubtask(i)" />
-                                </div>
-                            </ng-container>
+                                    <div class="subtask-actions">
+                                        <img src="./assets/icons/delete.svg" (click)="deleteEditingSubtask(i)" />
+                                        <img src="./assets/icons/check.svg" (click)="confirmEditSubtask(i)" />
+                                    </div>
+                                </ng-container>
 
-                        </li>
-                    </ul>
+                                <!-- VIEW MODE -->
+                                <ng-container *ngIf="editingSubtaskIndex !== i">
+                                    <span class="subtask-text">• {{ subtask }}</span>
+
+                                    <div class="subtask-actions hover-only">
+                                        <img src="./assets/icons/edit.svg" (click)="startEditSubtask(i)" />
+                                        <img src="./assets/icons/delete.svg" (click)="removeSubtask(i)" />
+                                    </div>
+                                </ng-container>
+
+                            </li>
+                        </ul>
+                    </div>
                 </div>
             </div>
         </div>

@@ -1,4 +1,4 @@
-import { Component, HostListener, inject, computed, OnInit } from '@angular/core';
+import { Component, HostListener, inject, computed, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ContactService } from '../../core/services/contact.service';
 import { AuthService } from '../../core/services/auth.service';
@@ -17,16 +17,12 @@ import { EditContactDialog } from './dialogs/edit-contact-dialog/edit-contact-di
 export class Contacts implements OnInit {
   private contactService = inject(ContactService);
   private authService = inject(AuthService);
+  private cdr = inject(ChangeDetectorRef);
 
-  /**
-   * Sichtbare Kontaktliste inkl. des aktuellen Auth-Users (ohne Dublette).
-   * Reagiert sowohl auf Bestandsänderungen als auch auf Login/Logout.
-   */
   readonly contacts = computed(() =>
     this.contactService.getContactsWithCurrentUser(this.authService.user()),
   );
 
-  /** id des Kontakts, der den eigenen Account repräsentiert ("(You)"-Markierung). */
   readonly currentUserContactId = computed(() =>
     this.contactService.currentUserContactId(this.authService.user()),
   );
@@ -95,8 +91,16 @@ export class Contacts implements OnInit {
   }
 
   selectContact(contact: Contact): void {
-    this.selectedContact = contact;
-    if (this.isMobile) this.mobileView = 'detail';
+    this.selectedContact = null;
+
+    setTimeout(() => {
+      this.selectedContact = contact;
+
+      if (this.isMobile) {
+        this.mobileView = 'detail';
+      }
+      this.cdr.detectChanges();
+    }, 50);
   }
 
   async addContact(contact: Contact): Promise<void> {
@@ -109,9 +113,6 @@ export class Contacts implements OnInit {
 
   async saveContact(updated: Contact): Promise<void> {
     try {
-      // Der eigene, nur abgeleitete (synthetische) Kontakt existiert noch nicht
-      // in der DB. Beim ersten Bearbeiten wird er daher als echter Kontakt
-      // angelegt (Insert) und danach ganz normal weitergepflegt (Update).
       const result = this.contactService.isCurrentUserContactId(updated.id)
         ? await this.contactService.addContact({ ...updated, id: undefined })
         : await this.contactService.updateContact(updated);

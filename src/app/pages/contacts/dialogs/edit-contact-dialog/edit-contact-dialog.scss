@@ -9,6 +9,7 @@
 }
 
 .dialog {
+    position: relative;
     display: flex;
     border-radius: 16px;
     overflow: hidden;
@@ -61,7 +62,6 @@
     flex-direction: column;
     align-items: center;
     gap: 20px;
-    position: relative;
 }
 
 .dialog-right-wrapper {
@@ -212,11 +212,11 @@
     .dialog-left {
         width: 100%;
         min-width: unset;
-        padding: 32px 28px 48px;
+        padding: 40px 28px 100px; // mehr Platz -> größerer blauer Bereich
         border-radius: 0;
 
         .logo {
-            margin-bottom: 16px;
+            display: none; // Logo entfällt auf Mobile
         }
 
         .dialog-left-text {
@@ -229,7 +229,13 @@
     .dialog-right {
         width: 100%;
         padding: 0 24px 32px;
-        margin-top: -40px; // Avatar überlappt den dunklen Header
+    }
+
+    .dialog-right-wrapper {
+        flex-direction: column; // Avatar über den Feldern stapeln statt nebeneinander
+        align-items: center;
+        gap: 20px;
+        margin-top: -32px; // Avatar überlappt den dunklen Header
     }
 
     .detail-avatar,
@@ -237,14 +243,19 @@
         width: 80px;
         height: 80px;
         font-size: 26px;
-        margin-bottom: 20px;
-        border: 3px solid #29b6f6;
+        margin: 0 auto;
+        border: 3px solid #fff;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
     }
 
     .close-btn {
         top: 16px;
         right: 16px;
         color: #fff;
+    }
+
+    .input-wrapper input {
+        border-radius: 22px; // konsistent zu add-contact
     }
 
     .dialog-actions {
