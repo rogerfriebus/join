@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { ContactService } from '../../core/services/contact.service';
@@ -36,7 +36,7 @@ export class AddTask {
     description: '',
     dueDate: '',
     priority: 'medium' as TaskPriority,
-    assignedTo: [] as string[], // Contact ids
+    assignedTo: [] as string[],
     category: '' as TaskCategory | '',
     subtasks: [] as string[],
   };
@@ -103,8 +103,8 @@ export class AddTask {
 
     this.isSaving = true;
     try {
-      await this.taskService.addTask(newTask);
       this.clear();
+      await this.taskService.addTask(newTask);
     } catch (error) {
       console.error('Task konnte nicht erstellt werden:', error);
     } finally {
@@ -116,10 +116,12 @@ export class AddTask {
   showCategoryDropdown = false;
 
   toggleAssigneeDropdown(): void {
+    if(this.showCategoryDropdown) this.showCategoryDropdown = false;
     this.showAssigneeDropdown = !this.showAssigneeDropdown;
   }
 
   toggleCategoryDropdown(): void {
+    if(this.showAssigneeDropdown) this.showAssigneeDropdown = false;
     this.showCategoryDropdown = !this.showCategoryDropdown;
   }
 
@@ -134,6 +136,16 @@ export class AddTask {
 
   getAssignedContacts(): Contact[] {
     return this.contacts.filter((c) => c.id && this.form.assignedTo.includes(c.id));
+  }
+
+  @HostListener('document:click', ['$event'])
+  closeDropdownOnOutsideClick(event: MouseEvent): void {
+    const target = event.target as HTMLElement;
+
+    if (!target.closest('.dropdown')) {
+      this.showAssigneeDropdown = false;
+      this.showCategoryDropdown = false;
+    }
   }
 
   editingSubtaskIndex: number | null = null;

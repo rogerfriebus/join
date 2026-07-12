@@ -116,9 +116,9 @@ export class AddTaskModal {
 
     this.isSaving = true;
     try {
+      this.clear();
       const saved = await this.taskService.addTask(newTask);
       this.taskCreated.emit(saved);
-      this.clear();
       this.closed.emit();
     } catch (error) {
       console.error('Task konnte nicht erstellt werden:', error);
@@ -128,10 +128,12 @@ export class AddTaskModal {
   }
 
   toggleAssigneeDropdown(): void {
+    if (this.showCategoryDropdown) this.showCategoryDropdown = false;
     this.showAssigneeDropdown = !this.showAssigneeDropdown;
   }
 
   toggleCategoryDropdown(): void {
+    if (this.showAssigneeDropdown) this.showAssigneeDropdown = false;
     this.showCategoryDropdown = !this.showCategoryDropdown;
   }
 

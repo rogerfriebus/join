@@ -39,7 +39,9 @@
   font-weight: 500;
   cursor: pointer;
 
-  &:hover { background: #1a2535; }
+  &:hover {
+    background: #1a2535;
+  }
 }
 
 // --- Main ---
@@ -108,8 +110,13 @@
     box-sizing: border-box;
     font-family: inherit;
 
-    &::placeholder { color: #bbb; }
-    &:focus { border-color: #29b6f6; }
+    &::placeholder {
+      color: #bbb;
+    }
+
+    &:focus {
+      border-color: #29b6f6;
+    }
   }
 
   .input-icon {
@@ -149,7 +156,9 @@
   font-weight: 500;
   cursor: pointer;
 
-  &:hover { background: #1a2535; }
+  &:hover {
+    background: #1a2535;
+  }
 }
 
 .btn-guest {
@@ -180,7 +189,57 @@
     color: #888;
     text-decoration: none;
 
-    &:hover { color: #444; }
+    &:hover {
+      color: #444;
+    }
+  }
+}
+
+
+.logo-wrapper {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+
+  width: 180px;
+
+  transform: translate(-50%, -50%);
+  z-index: 1000;
+
+  transition:
+    top 0.8s ease-in-out,
+    left 0.8s ease-in-out,
+    width 0.8s ease-in-out,
+    transform 0.8s ease-in-out;
+}
+
+.logo {
+  width: 100%;
+  display: block;
+}
+
+.logo-wrapper.logo-final {
+  top: 40px;
+  left: 40px;
+
+  width: 100px;
+
+  transform: translate(0, 0);
+}
+
+.login-header,
+.login-main,
+.login-footer {
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+
+.login-page.intro-done {
+
+  .login-header,
+  .login-main,
+  .login-footer {
+    opacity: 1;
   }
 }
 
@@ -189,7 +248,10 @@
 @media (max-width: 792px) {
   .login-header {
     padding: 16px 20px;
-    .logo { height: 60px; }
+
+    .logo {
+      height: 60px;
+    }
   }
 
   .login-card {
@@ -198,5 +260,7 @@
     border-radius: 16px;
   }
 
-  .card-title h1 { font-size: 36px; }
+  .card-title h1 {
+    font-size: 36px;
+  }
 }

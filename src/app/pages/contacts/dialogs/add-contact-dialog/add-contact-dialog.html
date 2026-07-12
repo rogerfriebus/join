@@ -1,5 +1,6 @@
 <div class="overlay" (click)="cancel()">
   <div class="dialog" (click)="$event.stopPropagation()">
+    <button class="close-btn" (click)="cancel()">✕</button>
 
     <div class="dialog-left">
       <div class="logo">
@@ -13,7 +14,6 @@
     </div>
 
     <div class="dialog-right">
-      <button class="close-btn" (click)="cancel()">✕</button>
       <div class="dialog-right-wrapper">
         <div class="avatar-placeholder">
           <img src="./assets/icons/person_white.svg">

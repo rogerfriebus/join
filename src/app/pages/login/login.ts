@@ -1,4 +1,4 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -11,9 +11,10 @@ import { AuthService } from '../../core/services/auth.service';
   templateUrl: './login.html',
   styleUrl: './login.scss',
 })
-export class Login {
+export class Login implements OnInit {
   private router = inject(Router);
   private authService = inject(AuthService);
+  private cdr = inject(ChangeDetectorRef);
 
   form = {
     email: '',
@@ -22,6 +23,22 @@ export class Login {
 
   emailError = '';
   passwordError = '';
+
+  logoAnimating = true;
+  introComplete = false;
+
+  ngOnInit(): void {
+
+    setTimeout(() => {
+      this.logoAnimating = false;
+      this.cdr.detectChanges();
+    }, 300);
+
+    setTimeout(() => {
+      this.introComplete = true;
+      this.cdr.detectChanges();
+    }, 1000);
+  }
 
   isEmailValid(email: string): boolean {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

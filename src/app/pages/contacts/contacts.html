@@ -43,7 +43,7 @@
       <p class="subtitle">Better with a team</p>
     </div>
 
-    <div class="contact-detail" *ngIf="selectedContact">
+    <div class="contact-detail" *ngIf="selectedContact as contact" [attr.data-contact-id]="contact.id">
       <div class="detail-header">
         <div class="detail-avatar" [style.background-color]="selectedContact.color">
           {{ selectedContact.initials ?? getInitials(selectedContact.name) }}
