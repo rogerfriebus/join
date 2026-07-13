@@ -37,6 +37,8 @@
         <span class="field-error" *ngIf="passwordError">{{ passwordError }}</span>
       </div>
 
+      <span class="field-error login-error" *ngIf="loginError">{{ loginError }}</span>
+
       <div class="card-actions">
         <button type="button" class="btn-login" (click)="login()">Log in</button>
         <button type="button" class="btn-guest" (click)="guestLogin()">Guest Log in</button>

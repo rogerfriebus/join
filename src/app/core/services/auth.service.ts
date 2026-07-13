@@ -33,8 +33,42 @@ export interface AuthState {
 /** localStorage-Schlüssel für den optionalen Session-Fallback. */
 const STORAGE_KEY = 'join.auth.user';
 
+/** localStorage-Schlüssel für die lokale User-Registry (Sign-up-Konten). */
+const USERS_STORAGE_KEY = 'join.auth.users';
+
 /** Fester Gast-Benutzer (kein persistenter Datensatz nötig). */
 const GUEST_USER: AuthUser = { id: 'guest', name: 'Guest', isGuest: true };
+
+/**
+ * Ein in der lokalen Registry gespeichertes Konto (Sign-up-Datensatz).
+ *
+ * Enthält bewusst NUR die für den Demo-Login nötigen Felder. Das Passwort wird
+ * ausschließlich als (Demo-)Hash abgelegt – nie im Klartext.
+ */
+interface StoredCredential {
+  id: string;
+  name: string;
+  email: string;
+  passwordHash: string;
+}
+
+/**
+ * Demo-Hash für Passwörter.
+ *
+ * ACHTUNG: Dies ist BEWUSST KEIN kryptographisch sicherer Hash. Er dient nur
+ * dazu, das Passwort im Schulprojekt nicht im Klartext in den localStorage zu
+ * schreiben. Für Produktion ist ein echtes Auth-Backend (z. B. Supabase Auth)
+ * erforderlich. Der Algorithmus ist eine FNV-1a-Variante (32-bit) und liefert
+ * einen synchronen, deterministischen Hex-String – gut testbar, ohne Library.
+ */
+function demoHash(input: string): string {
+  let hash = 0x811c9dc5;
+  for (let i = 0; i < input.length; i++) {
+    hash ^= input.charCodeAt(i);
+    hash = Math.imul(hash, 0x01000193);
+  }
+  return (hash >>> 0).toString(16).padStart(8, '0');
+}
 
 /**
  * Zentraler Auth-Service (Sprint 3: Türkis 1 – Grundlage).
@@ -44,12 +78,16 @@ const GUEST_USER: AuthUser = { id: 'guest', name: 'Guest', isGuest: true };
  * spätere Guards konsumieren ausschließlich diese Fassade.
  *
  * Demo-Setup (Developer-Akademie):
- *  - Die Auth-Logik ist BEWUSST lokal/demo-tauglich: keine echte
- *    Passwortprüfung, keine Tokens, keine Supabase-Auth-Anbindung.
- *  - Der Zustand wird optional in localStorage gespiegelt, damit ein Reload die
- *    Session behält. Der Zugriff ist gekapselt und fehlertolerant.
+ *  - Die Auth-Logik ist BEWUSST lokal/demo-tauglich: keine Tokens, keine
+ *    Supabase-Auth-Anbindung. Konten werden in einer lokalen Registry
+ *    (localStorage) gehalten; das Passwort wird nur als Demo-Hash gespeichert,
+ *    nie im Klartext – das ist NICHT produktionssicher.
+ *  - login() prüft E-Mail + Passwort gegen diese Registry (kein Auto-Anlegen
+ *    unbekannter Konten mehr).
+ *  - Der aktuelle Zustand wird zusätzlich in localStorage gespiegelt, damit ein
+ *    Reload die Session behält. Der Zugriff ist gekapselt und fehlertolerant.
  *  - Struktur und API sind so gewählt, dass Pink/Login und Türkis/Guards sie
- *    später ohne Umbau verwenden können.
+ *    ohne Umbau verwenden können.
  */
 @Injectable({ providedIn: 'root' })
 export class AuthService {
@@ -97,19 +135,27 @@ export class AuthService {
   }
 
   /**
-   * Meldet einen Benutzer an. Demo-tauglich: Es wird lediglich geprüft, dass
-   * E-Mail und Passwort übergeben wurden – keine echte Passwortprüfung.
-   * Wirft einen Error, wenn Pflichtwerte fehlen.
+   * Meldet einen Benutzer an. Prüft E-Mail + Passwort gegen die lokale Registry
+   * (Demo-Auth): Es muss ein per Sign-up angelegtes Konto existieren und der
+   * Passwort-Hash übereinstimmen. Der Anzeigename kommt aus der Registry.
+   *
+   * Wirft einen Error, wenn Pflichtwerte fehlen, kein Konto existiert oder das
+   * Passwort falsch ist.
    */
   async login(email: string, password: string): Promise<AuthUser> {
     const mail = (email ?? '').trim();
     if (!mail || !password) {
       throw new Error('E-Mail und Passwort sind erforderlich.');
     }
+    const record = this.loadRegistry()[this.normalizeEmail(mail)];
+    if (!record || record.passwordHash !== this.hashPassword(password)) {
+      throw new Error('E-Mail oder Passwort ist falsch.');
+    }
     const user: AuthUser = {
-      id: this.createUserId(mail),
-      name: this.nameFromEmail(mail),
-      email: mail,
+      id: record.id,
+      // Name aus der Registry; nameFromEmail nur als Fallback für Altbestand.
+      name: record.name?.trim() || this.nameFromEmail(record.email || mail),
+      email: record.email || mail,
       isGuest: false,
     };
     this.setUser(user);
@@ -117,9 +163,12 @@ export class AuthService {
   }
 
   /**
-   * Registriert einen Benutzer und meldet ihn direkt an. Demo-tauglich: Es wird
-   * nur geprüft, dass Name, E-Mail und Passwort übergeben wurden – es werden
-   * keine Zugangsdaten gespeichert. Wirft einen Error, wenn Pflichtwerte fehlen.
+   * Registriert einen Benutzer und meldet ihn direkt an. Legt einen
+   * Registry-Eintrag mit Name, E-Mail und Passwort-Hash an (Passwort NICHT im
+   * Klartext). Der aktuelle AuthUser übernimmt den eingegebenen Namen.
+   *
+   * Wirft einen Error, wenn Pflichtwerte fehlen oder die E-Mail bereits
+   * registriert ist.
    */
   async signUp(name: string, email: string, password: string): Promise<AuthUser> {
     const displayName = (name ?? '').trim();
@@ -127,8 +176,22 @@ export class AuthService {
     if (!displayName || !mail || !password) {
       throw new Error('Name, E-Mail und Passwort sind erforderlich.');
     }
-    const user: AuthUser = {
+    const key = this.normalizeEmail(mail);
+    const registry = this.loadRegistry();
+    if (registry[key]) {
+      throw new Error('Diese E-Mail ist bereits registriert.');
+    }
+    const record: StoredCredential = {
       id: this.createUserId(mail),
+      name: displayName,
+      email: mail,
+      passwordHash: this.hashPassword(password),
+    };
+    registry[key] = record;
+    this.saveRegistry(registry);
+
+    const user: AuthUser = {
+      id: record.id,
       name: displayName,
       email: mail,
       isGuest: false,
@@ -169,6 +232,48 @@ export class AuthService {
   private nameFromEmail(email: string): string {
     const localPart = email.split('@')[0]?.trim();
     return localPart || email;
+  }
+
+  /** Normalisiert eine E-Mail als stabilen Registry-Schlüssel (trim + lowercase). */
+  private normalizeEmail(email: string): string {
+    return email.trim().toLowerCase();
+  }
+
+  /**
+   * Bildet den (Demo-)Passwort-Hash. Ein fester Präfix macht deutlich, dass es
+   * sich um einen abgeleiteten Hash und nicht um eine reine Kodierung handelt.
+   */
+  private hashPassword(password: string): string {
+    return demoHash(`join::${password}`);
+  }
+
+  /**
+   * Lädt die lokale User-Registry aus dem localStorage (fehlertolerant).
+   * Liefert bei fehlendem/kaputtem Eintrag oder ohne localStorage ein leeres
+   * Objekt.
+   */
+  private loadRegistry(): Record<string, StoredCredential> {
+    try {
+      const raw = this.getStorage()?.getItem(USERS_STORAGE_KEY);
+      if (!raw) {
+        return {};
+      }
+      const parsed = JSON.parse(raw) as unknown;
+      return parsed && typeof parsed === 'object'
+        ? (parsed as Record<string, StoredCredential>)
+        : {};
+    } catch {
+      return {};
+    }
+  }
+
+  /** Spiegelt die User-Registry in den localStorage (fehlertolerant). */
+  private saveRegistry(registry: Record<string, StoredCredential>): void {
+    try {
+      this.getStorage()?.setItem(USERS_STORAGE_KEY, JSON.stringify(registry));
+    } catch {
+      // Registry-Persistenz ist demo-lokal – Fehler dürfen Sign-up nicht brechen.
+    }
   }
 
   /**
