@@ -1,8 +1,9 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
+import { AuthRedirectService } from '../../core/services/auth-redirect.service';
 
 @Component({
   selector: 'app-sign-up',
@@ -13,7 +14,9 @@ import { AuthService } from '../../core/services/auth.service';
 })
 export class SignUp {
   private router = inject(Router);
+  private route = inject(ActivatedRoute);
   private authService = inject(AuthService);
+  private authRedirect = inject(AuthRedirectService);
 
   form = {
     name: '',
@@ -81,9 +84,14 @@ export class SignUp {
         this.form.email.trim(),
         this.form.password
       );
-      this.router.navigate(['/summary']);
+      const target = this.authRedirect.getRedirectUrlFromParams(
+        this.route.snapshot.queryParamMap,
+      );
+      this.router.navigateByUrl(target);
     } catch (error) {
-      console.error('Registrierung fehlgeschlagen:', error);
+      // Häufigster Fall: E-Mail bereits registriert – am E-Mail-Feld anzeigen.
+      this.emailError =
+        error instanceof Error ? error.message : 'Registrierung fehlgeschlagen.';
     }
   }
 
