@@ -188,7 +188,8 @@
     font-size: 14px;
     color: #888;
     text-decoration: none;
-
+    cursor: pointer;
+    
     &:hover {
       color: #444;
     }
@@ -205,6 +206,7 @@
 
   transform: translate(-50%, -50%);
   z-index: 1000;
+  pointer-events: none;
 
   transition:
     top 0.8s ease-in-out,
