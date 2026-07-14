@@ -8,6 +8,17 @@
   z-index: 1000;
 }
 
+@keyframes slideInFromRight {
+  from {
+    opacity: 0;
+    transform: translateX(100px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
 .dialog {
   position: relative;
   display: flex;
@@ -17,6 +28,7 @@
   width: 900px;
   min-height: 400px;
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.18);
+  animation: slideInFromRight 0.35s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;
 }
 
 // --- Left Panel ---

@@ -165,6 +165,11 @@
   display: flex;
   align-items: center;
   gap: 20px;
+  @media (max-width: 792px) {
+    flex-direction: column;
+    align-items: start;
+    justify-content: center;
+  }
 }
 
 .detail-avatar {
