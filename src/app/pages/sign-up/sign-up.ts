@@ -1,14 +1,14 @@
 import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router';
+import { RouterLink, ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { AuthRedirectService } from '../../core/services/auth-redirect.service';
 
 @Component({
   selector: 'app-sign-up',
   standalone: true,
-  imports: [CommonModule, FormsModule],
+  imports: [RouterLink, CommonModule, FormsModule],
   templateUrl: './sign-up.html',
   styleUrl: './sign-up.scss',
 })
@@ -32,48 +32,79 @@ export class SignUp {
   confirmPasswordError = '';
   privacyPolicyError = '';
 
+  // --- Live Validierung ---
+
+  validateName(): void {
+    if (!this.form.name.trim()) {
+      this.nameError = 'Please enter your name';
+    } else if (this.form.name.trim().length < 3) {
+      this.nameError = 'Name must be at least 3 characters';
+    } else {
+      this.nameError = '';
+    }
+  }
+
+  validateEmail(): void {
+    if (!this.form.email) {
+      this.emailError = 'Please enter your email';
+    } else if (!this.isEmailValid(this.form.email)) {
+      this.emailError = 'Please enter a valid email address';
+    } else {
+      this.emailError = '';
+    }
+  }
+
+  validatePassword(): void {
+    if (!this.form.password) {
+      this.passwordError = 'Please enter a password';
+    } else if (this.form.password.length < 8) {
+      this.passwordError = 'Password must be at least 8 characters';
+    } else if (!/\d/.test(this.form.password)) {
+      this.passwordError = 'Password must contain at least one number';
+    } else {
+      this.passwordError = '';
+    }
+    // Confirm Password live neu prüfen wenn Passwort sich ändert
+    if (this.form.confirmPassword) {
+      this.validateConfirmPassword();
+    }
+  }
+
+  validateConfirmPassword(): void {
+    if (this.form.confirmPassword !== this.form.password) {
+      this.confirmPasswordError = 'Passwords do not match';
+    } else {
+      this.confirmPasswordError = '';
+    }
+  }
+
   isEmailValid(email: string): boolean {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email.trim());
   }
 
-  validateForm(): boolean {
-    this.nameError = '';
-    this.emailError = '';
-    this.passwordError = '';
-    this.confirmPasswordError = '';
-    this.privacyPolicyError = '';
+  get isFormValid(): boolean {
+    return (
+      this.form.name.trim().length >= 3 &&
+      this.isEmailValid(this.form.email) &&
+      this.form.password.length >= 8 &&
+      /\d/.test(this.form.password) &&
+      this.form.confirmPassword === this.form.password &&
+      this.form.acceptPrivacyPolicy
+    );
+  }
 
-    if (!this.form.name.trim()) {
-      this.nameError = 'Please enter your name';
-      return false;
-    }
-    if (!this.form.email) {
-      this.emailError = 'Please enter your email';
-      return false;
-    }
-    if (!this.isEmailValid(this.form.email)) {
-      this.emailError = 'Please enter a valid email address';
-      return false;
-    }
-    if (!this.form.password) {
-      this.passwordError = 'Please enter a password';
-      return false;
-    }
-    if (this.form.password.length < 6) {
-      this.passwordError = 'Password must be at least 6 characters';
-      return false;
-    }
-    if (this.form.confirmPassword !== this.form.password) {
-      this.confirmPasswordError = 'Passwords do not match';
-      return false;
-    }
+  validateForm(): boolean {
+    this.validateName();
+    this.validateEmail();
+    this.validatePassword();
+    this.validateConfirmPassword();
+
     if (!this.form.acceptPrivacyPolicy) {
       this.privacyPolicyError = 'Please accept the Privacy Policy';
-      return false;
     }
 
-    return true;
+    return !this.nameError && !this.emailError && !this.passwordError && !this.confirmPasswordError && !this.privacyPolicyError;
   }
 
   async signUp(): Promise<void> {
@@ -89,7 +120,6 @@ export class SignUp {
       );
       this.router.navigateByUrl(target);
     } catch (error) {
-      // Häufigster Fall: E-Mail bereits registriert – am E-Mail-Feld anzeigen.
       this.emailError =
         error instanceof Error ? error.message : 'Registrierung fehlgeschlagen.';
     }

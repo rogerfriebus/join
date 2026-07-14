@@ -18,7 +18,8 @@
 
             <div class="form-group">
                 <div class="input-wrapper" [class.error]="nameError">
-                    <input type="text" placeholder="Name" [(ngModel)]="form.name" (ngModelChange)="nameError = ''" />
+                    <input type="text" placeholder="Name" [(ngModel)]="form.name"
+                        (ngModelChange)="validateName()" />
                     <img src="./assets/icons/person.svg" class="input-icon" />
                 </div>
                 <span class="field-error" *ngIf="nameError">{{ nameError }}</span>
@@ -27,7 +28,7 @@
             <div class="form-group">
                 <div class="input-wrapper" [class.error]="emailError">
                     <input type="email" placeholder="Email" [(ngModel)]="form.email"
-                        (ngModelChange)="emailError = ''" />
+                        (ngModelChange)="validateEmail()" />
                     <img src="./assets/icons/mail.svg" class="input-icon" />
                 </div>
                 <span class="field-error" *ngIf="emailError">{{ emailError }}</span>
@@ -36,7 +37,7 @@
             <div class="form-group">
                 <div class="input-wrapper" [class.error]="passwordError">
                     <input type="password" placeholder="Password" [(ngModel)]="form.password"
-                        (ngModelChange)="passwordError = ''" />
+                        (ngModelChange)="validatePassword()" />
                     <img src="./assets/icons/lock.svg" class="input-icon" />
                 </div>
                 <span class="field-error" *ngIf="passwordError">{{ passwordError }}</span>
@@ -45,7 +46,7 @@
             <div class="form-group">
                 <div class="input-wrapper" [class.error]="confirmPasswordError">
                     <input type="password" placeholder="Confirm Password" [(ngModel)]="form.confirmPassword"
-                        (ngModelChange)="confirmPasswordError = ''" />
+                        (ngModelChange)="validateConfirmPassword()" />
                     <img src="./assets/icons/lock.svg" class="input-icon" />
                 </div>
                 <span class="field-error" *ngIf="confirmPasswordError">{{ confirmPasswordError }}</span>
@@ -61,7 +62,7 @@
             <span class="field-error" *ngIf="privacyPolicyError">{{ privacyPolicyError }}</span>
 
             <div class="card-actions">
-                <button type="button" class="btn-signup" (click)="signUp()"  [disabled]="!form.acceptPrivacyPolicy">
+                <button type="button" class="btn-signup" (click)="signUp()" [disabled]="!isFormValid">
                     Sign up
                 </button>
             </div>
