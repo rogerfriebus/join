@@ -193,160 +193,181 @@
   <ng-container *ngIf="editTask()">
     <div class="task-edit-backdrop" (click)="closeTaskEdit()">
       <form class="task-edit" (click)="$event.stopPropagation()" (submit)="$event.preventDefault(); saveTaskEdit()">
-        <button class="task-edit__close" type="button" aria-label="Close edit task" (click)="closeTaskEdit()">
-          ×
-        </button>
+        <header class="modal-header">
+          <h2>Edit Task</h2>
+          <button type="button" class="close-btn" aria-label="Close edit task" (click)="closeTaskEdit()">
+            ✕
+          </button>
+        </header>
 
-        <h2 class="task-edit__title">Edit Task</h2>
-
-        <div class="task-edit__body">
-          <div class="task-edit__column">
-            <label class="task-edit__field">
-              <span>Title<strong>*</strong></span>
+        <div class="form-columns">
+          <div class="form-column">
+            <div class="form-group">
+              <label>Title<span class="required">*</span></label>
               <input type="text" placeholder="Enter a title" [value]="editDraft().title"
                 (input)="updateEditTitle($event)" />
-              <small *ngIf="editSubmitted() && !editDraft().title.trim()">
-                This field is required
-              </small>
-            </label>
+              <small *ngIf="editSubmitted() && !editDraft().title.trim()">This field is required</small>
+            </div>
 
-            <label class="task-edit__field">
-              <span>Description</span>
+            <div class="form-group">
+              <label>Description</label>
               <textarea placeholder="Enter a Description" [value]="editDraft().description"
                 (input)="updateEditDescription($event)"></textarea>
-            </label>
+            </div>
 
-            <label class="task-edit__field">
-              <span>Due date<strong>*</strong></span>
-              <div class="task-edit__input-wrapper">
+            <div class="form-group">
+              <label>Due date<span class="required">*</span></label>
+              <div class="input-wrapper">
                 <input #editDateInput type="date" [value]="editDraft().dueDate" [min]="today"
                   (input)="updateEditDueDate($event)" />
-                <img src="assets/icons/date.svg" class="task-edit__input-icon" alt="" aria-hidden="true"
+                <img src="assets/icons/date.svg" class="input-icon" alt="" aria-hidden="true"
                   (click)="editDateInput.showPicker()" />
               </div>
-              <small *ngIf="editSubmitted() && !editDraft().dueDate.trim()">
-                This field is required
-              </small>
-              <small *ngIf="editSubmitted() && editDueDateIsPast()">
-                Due date cannot be in the past
-              </small>
-            </label>
+              <small *ngIf="editSubmitted() && !editDraft().dueDate.trim()">This field is required</small>
+              <small *ngIf="editSubmitted() && editDueDateIsPast()">Due date cannot be in the past</small>
+            </div>
           </div>
 
-          <div class="task-edit__separator"></div>
+          <div class="form-divider"></div>
 
-          <div class="task-edit__column">
-            <div class="task-edit__field">
-              <span>Priority</span>
-
-              <div class="task-edit__priorities">
-                <button type="button" class="task-edit__priority task-edit__priority--urgent"
-                  [class.task-edit__priority--active]="editDraft().priority === 'urgent'"
-                  (click)="setEditPriority('urgent')">
+          <div class="form-column">
+            <div class="form-group">
+              <label>Priority</label>
+              <div class="priority-toggle">
+                <button type="button" class="priority-btn urgent"
+                  [class.active]="editDraft().priority === 'urgent'" (click)="setEditPriority('urgent')">
                   Urgent
-                  <span class="task-edit__priority-icon" aria-hidden="true"></span>
+                  <span class="priority-icon" aria-hidden="true"></span>
                 </button>
 
-                <button type="button" class="task-edit__priority task-edit__priority--medium"
-                  [class.task-edit__priority--active]="editDraft().priority === 'medium'"
-                  (click)="setEditPriority('medium')">
+                <button type="button" class="priority-btn medium"
+                  [class.active]="editDraft().priority === 'medium'" (click)="setEditPriority('medium')">
                   Medium
-                  <span class="task-edit__priority-icon" aria-hidden="true"></span>
+                  <span class="priority-icon" aria-hidden="true"></span>
                 </button>
 
-                <button type="button" class="task-edit__priority task-edit__priority--low"
-                  [class.task-edit__priority--active]="editDraft().priority === 'low'"
-                  (click)="setEditPriority('low')">
+                <button type="button" class="priority-btn low"
+                  [class.active]="editDraft().priority === 'low'" (click)="setEditPriority('low')">
                   Low
-                  <span class="task-edit__priority-icon" aria-hidden="true"></span>
+                  <span class="priority-icon" aria-hidden="true"></span>
                 </button>
               </div>
             </div>
 
-            <div class="task-edit__field">
-              <span>Assigned to</span>
+            <div class="form-group dropdown-group">
+              <label>Assigned to</label>
 
-              <details class="task-edit__select">
-                <summary>
-                  <span [class.task-edit__placeholder]="editDraft().assignedContactIds.length === 0">
-                    {{ editAssignedLabel() }}
-                  </span>
-                  <img src="assets/icons/arrow_drop_down.svg" alt="" aria-hidden="true" />
-                </summary>
+              <div class="dropdown" (click)="toggleEditAssigneeDropdown()">
+                <span class="dropdown-placeholder" *ngIf="editDraft().assignedContactIds.length === 0">
+                  Select contacts to assign
+                </span>
 
-                <div class="task-edit__contact-list">
-                  <p class="task-edit__empty" *ngIf="contacts().length === 0">
-                    No contacts available
-                  </p>
-
-                  <label class="task-edit__contact" *ngFor="let contact of contacts()">
-                    <span class="task-edit__contact-avatar" [style.background-color]="contact.color || '#ff7a00'">
-                      {{ contactInitials(contact) }}
-                    </span>
-
-                    <span>{{ contact.name }}</span>
-                    <input type="checkbox" [disabled]="!contact.id" [checked]="isEditContactSelected(contact.id)"
-                      (change)="toggleEditAssignedContact(contact.id)" />
-                  </label>
+                <div class="assigned-avatars" *ngIf="editDraft().assignedContactIds.length > 0">
+                  <div class="avatar-chip" *ngFor="let contact of editAssignedContacts()"
+                    [style.background-color]="contact.color || '#ff7a00'">
+                    {{ contactInitials(contact) }}
+                  </div>
                 </div>
-              </details>
-            </div>
 
-            <label class="task-edit__field task-edit__field--required-select">
-              <span>Category<strong>*</strong></span>
-
-              <div class="task-edit__select-wrapper">
-                <select [value]="editDraft().category" (change)="updateEditCategory($event)">
-                  <option value="" disabled>Select task category</option>
-                  <option value="Technical Task">Technical Task</option>
-                  <option value="User Story">User Story</option>
-                </select>
-                <img src="assets/icons/arrow_drop_down.svg" alt="" aria-hidden="true" />
+                <img src="assets/icons/arrow_drop_down.svg" class="dropdown-arrow" alt=""
+                  aria-hidden="true" />
               </div>
 
-              <small *ngIf="editSubmitted() && !editDraft().category">
-                This field is required
-              </small>
-            </label>
+              <div class="dropdown-panel" *ngIf="editAssigneeDropdownOpen()"
+                (click)="$event.stopPropagation()">
+                <p class="dropdown-empty" *ngIf="contacts().length === 0">No contacts available</p>
 
-            <div class="task-edit__field">
-              <span>Subtasks</span>
+                <div class="dropdown-option" *ngFor="let contact of contacts()"
+                  [class.checked]="isEditContactSelected(contact.id)" (click)="toggleEditAssignedContact(contact.id)">
+                  <div class="avatar-chip small"
+                    [style.background-color]="contact.color || '#ff7a00'">
+                    {{ contactInitials(contact) }}
+                  </div>
+                  <span>{{ contact.name }}</span>
+                  <input type="checkbox" [checked]="isEditContactSelected(contact.id)" readonly />
+                </div>
+              </div>
+            </div>
 
-              <div class="task-edit__input-wrapper task-edit__subtask-input">
+            <div class="form-group dropdown-group">
+              <label>Category<span class="required">*</span></label>
+
+              <div class="dropdown" (click)="toggleEditCategoryDropdown()">
+                <span class="dropdown-placeholder" *ngIf="!editDraft().category">Select task category</span>
+                <span *ngIf="editDraft().category">{{ editCategoryLabel() }}</span>
+                <img src="assets/icons/arrow_drop_down.svg" class="dropdown-arrow" alt=""
+                  aria-hidden="true" />
+              </div>
+
+              <div class="dropdown-panel" *ngIf="editCategoryDropdownOpen()"
+                (click)="$event.stopPropagation()">
+                <div class="dropdown-option" (click)="selectEditCategory('Technical Task')">
+                  <span>Technical Task</span>
+                </div>
+                <div class="dropdown-option" (click)="selectEditCategory('User Story')">
+                  <span>User Story</span>
+                </div>
+              </div>
+
+              <small *ngIf="editSubmitted() && !editDraft().category">This field is required</small>
+            </div>
+
+            <div class="form-group">
+              <label>Subtasks</label>
+
+              <div class="input-wrapper subtask-input">
                 <input type="text" placeholder="Add new subtask" [value]="editDraft().newSubtaskTitle"
                   (input)="updateEditNewSubtaskTitle($event)" (keydown.enter)="$event.preventDefault(); addEditSubtask()" />
 
-                <button type="button" aria-label="Add subtask" (click)="addEditSubtask()">
-                  <img src="assets/icons/check_black.svg" alt="" aria-hidden="true" />
-                </button>
+                <div class="input-actions" *ngIf="editDraft().newSubtaskTitle">
+                  <img src="assets/icons/iconoir_cancel.svg" class="input-icon" alt=""
+                    aria-hidden="true" (click)="clearEditSubtaskInput()" />
+                  <img src="assets/icons/check_black.svg" class="input-icon" alt=""
+                    aria-hidden="true" (click)="addEditSubtask()" />
+                </div>
               </div>
 
-              <ul class="task-edit__subtasks" *ngIf="editDraft().subtasks.length > 0">
-                <li class="task-edit__subtask" *ngFor="let subtask of editDraft().subtasks">
-                  <label>
-                    <input type="checkbox" [checked]="subtask.done" (change)="toggleEditSubtaskDone(subtask.id)" />
-                    <span>{{ subtask.title }}</span>
-                  </label>
+              <div class="subtask-container" *ngIf="editDraft().subtasks.length > 0">
+                <ul class="subtask-list">
+                  <li class="subtask-item" *ngFor="let subtask of editDraft().subtasks">
+                    <ng-container *ngIf="editingEditSubtaskId() === subtask.id; else subtaskViewMode">
+                      <input type="text" class="subtask-edit-input"
+                        [value]="editingEditSubtaskValue()" (input)="updateEditingEditSubtaskValue($event)"
+                        (keydown.enter)="$event.preventDefault(); confirmEditSubtaskText(subtask.id)" />
 
-                  <button type="button" aria-label="Remove subtask" (click)="removeEditSubtask(subtask.id)">
-                    <img src="assets/icons/delete.svg" alt="" aria-hidden="true" />
-                  </button>
-                </li>
-              </ul>
+                      <div class="subtask-actions">
+                        <img src="assets/icons/delete.svg" alt="Delete subtask"
+                          (click)="deleteEditingEditSubtask(subtask.id)" />
+                        <img src="assets/icons/check.svg" alt="Save subtask"
+                          (click)="confirmEditSubtaskText(subtask.id)" />
+                      </div>
+                    </ng-container>
+
+                    <ng-template #subtaskViewMode>
+                      <span class="subtask-text">• {{ subtask.title }}</span>
+
+                      <div class="subtask-actions hover-only">
+                        <img src="assets/icons/edit.svg" alt="Edit subtask" (click)="startEditSubtaskText(subtask)" />
+                        <img src="assets/icons/delete.svg" alt="Delete subtask" (click)="removeEditSubtask(subtask.id)" />
+                      </div>
+                    </ng-template>
+                  </li>
+                </ul>
+              </div>
             </div>
           </div>
         </div>
 
-        <footer class="task-edit__footer">
-          <p class="task-edit__required-note"><strong>*</strong>This field is required</p>
+        <footer class="form-footer">
+          <p class="required-note"><span class="required">*</span>This field is required</p>
 
-          <div class="task-edit__buttons">
-            <button class="task-edit__cancel" type="button" (click)="closeTaskEdit()">
+          <div class="footer-actions">
+            <button class="btn-cancel" type="button" (click)="closeTaskEdit()">
               Cancel
               <img src="assets/icons/iconoir_cancel.svg" alt="" aria-hidden="true" />
             </button>
 
-            <button class="task-edit__save" type="submit" [disabled]="!editFormIsValid()">
+            <button class="btn-create" type="submit" [disabled]="!editFormIsValid()">
               Save Task
               <img src="assets/icons/check.svg" alt="" aria-hidden="true" />
             </button>
