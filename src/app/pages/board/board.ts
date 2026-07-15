@@ -95,6 +95,18 @@ export class Board implements OnInit {
   /** Gibt an, ob im Edit-Overlay schon versucht wurde zu speichern. */
   readonly editSubmitted = signal(false);
 
+  /** Sichtbarkeit des Assigned-to-Dropdowns im Edit-Overlay. */
+  readonly editAssigneeDropdownOpen = signal(false);
+
+  /** Sichtbarkeit des Category-Dropdowns im Edit-Overlay. */
+  readonly editCategoryDropdownOpen = signal(false);
+
+  /** ID der Subtask, die im Edit-Overlay gerade bearbeitet wird. */
+  readonly editingEditSubtaskId = signal<string | null>(null);
+
+  /** Temporärer Text der aktuell bearbeiteten Subtask. */
+  readonly editingEditSubtaskValue = signal('');
+
   /** Heutiges Datum im Format des nativen Date-Inputs. */
   readonly today = formatDateForInput(new Date());
 
@@ -404,6 +416,10 @@ export class Board implements OnInit {
   /** Öffnet das Edit-Overlay für einen Task. */
   openTaskEdit(task: Task): void {
     this.editSubmitted.set(false);
+    this.editAssigneeDropdownOpen.set(false);
+    this.editCategoryDropdownOpen.set(false);
+    this.editingEditSubtaskId.set(null);
+    this.editingEditSubtaskValue.set('');
     this.editTask.set(task);
     this.editDraft.set({
       title: task.title,
@@ -421,6 +437,10 @@ export class Board implements OnInit {
   closeTaskEdit(): void {
     this.editTask.set(null);
     this.editSubmitted.set(false);
+    this.editAssigneeDropdownOpen.set(false);
+    this.editCategoryDropdownOpen.set(false);
+    this.editingEditSubtaskId.set(null);
+    this.editingEditSubtaskValue.set('');
     this.editDraft.set(createEmptyEditDraft());
   }
 
@@ -529,6 +549,45 @@ export class Board implements OnInit {
     });
   }
 
+  /** Leert die Eingabe für eine neue Subtask. */
+  clearEditSubtaskInput(): void {
+    this.patchEditDraft({ newSubtaskTitle: '' });
+  }
+
+  /** Startet den Text-Edit einer vorhandenen Subtask. */
+  startEditSubtaskText(subtask: Subtask): void {
+    this.editingEditSubtaskId.set(subtask.id);
+    this.editingEditSubtaskValue.set(subtask.title);
+  }
+
+  /** Aktualisiert den temporären Text einer bearbeiteten Subtask. */
+  updateEditingEditSubtaskValue(event: Event): void {
+    this.editingEditSubtaskValue.set(this.inputValue(event));
+  }
+
+  /** Übernimmt den geänderten Text einer vorhandenen Subtask. */
+  confirmEditSubtaskText(subtaskId: string): void {
+    const title = this.editingEditSubtaskValue().trim();
+
+    if (title) {
+      this.patchEditDraft({
+        subtasks: this.editDraft().subtasks.map((subtask) =>
+          subtask.id === subtaskId ? { ...subtask, title } : subtask,
+        ),
+      });
+    }
+
+    this.editingEditSubtaskId.set(null);
+    this.editingEditSubtaskValue.set('');
+  }
+
+  /** Löscht die Subtask, die gerade im Text-Edit geöffnet ist. */
+  deleteEditingEditSubtask(subtaskId: string): void {
+    this.removeEditSubtask(subtaskId);
+    this.editingEditSubtaskId.set(null);
+    this.editingEditSubtaskValue.set('');
+  }
+
   /** Entfernt eine Subtask aus dem Edit-Formular. */
   removeEditSubtask(subtaskId: string): void {
     this.patchEditDraft({
@@ -543,6 +602,35 @@ export class Board implements OnInit {
         subtask.id === subtaskId ? { ...subtask, done: !subtask.done } : subtask,
       ),
     });
+  }
+
+  /** Öffnet oder schließt das Assigned-to-Dropdown im Edit-Overlay. */
+  toggleEditAssigneeDropdown(): void {
+    this.editCategoryDropdownOpen.set(false);
+    this.editAssigneeDropdownOpen.update((open) => !open);
+  }
+
+  /** Öffnet oder schließt das Category-Dropdown im Edit-Overlay. */
+  toggleEditCategoryDropdown(): void {
+    this.editAssigneeDropdownOpen.set(false);
+    this.editCategoryDropdownOpen.update((open) => !open);
+  }
+
+  /** Wählt eine Kategorie und schließt das Category-Dropdown. */
+  selectEditCategory(category: TaskCategory): void {
+    this.patchEditDraft({ category });
+    this.editCategoryDropdownOpen.set(false);
+  }
+
+  /** Liefert das lesbare Label der ausgewählten Kategorie. */
+  editCategoryLabel(): string {
+    return this.editDraft().category || '';
+  }
+
+  /** Liefert die im Edit-Overlay ausgewählten Kontakte für die Avatar-Anzeige. */
+  editAssignedContacts(): Contact[] {
+    const selectedIds = new Set(this.editDraft().assignedContactIds);
+    return this.contacts().filter((contact) => Boolean(contact.id && selectedIds.has(contact.id)));
   }
 
   /** Wählt einen Kontakt für Assigned To aus oder entfernt ihn. */
