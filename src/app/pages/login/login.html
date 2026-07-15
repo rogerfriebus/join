@@ -4,7 +4,7 @@
   </div>
 
   <header class="login-header">
-    <div> 
+    <div>
     </div>
     <div class="header-actions">
       <span>Not a Join user?</span>
@@ -30,9 +30,13 @@
 
       <div class="form-group">
         <div class="input-wrapper" [class.error]="passwordError">
-          <input type="password" placeholder="Password" [(ngModel)]="form.password"
+          <input [type]="showPassword ? 'text' : 'password'" placeholder="Password" [(ngModel)]="form.password"
             (ngModelChange)="passwordError = ''" />
-          <img src="./assets/icons/lock.svg" class="input-icon" />
+          <img *ngIf="!form.password" src="./assets/icons/lock.svg" class="input-icon" />
+          <button *ngIf="form.password" type="button" class="toggle-pw-btn" (click)="togglePasswordVisibility()">
+            <img [src]="showPassword ? './assets/icons/visibility.svg' : './assets/icons/visibility_off.svg'"
+              class="input-icon" />
+          </button>
         </div>
         <span class="field-error" *ngIf="passwordError">{{ passwordError }}</span>
       </div>
@@ -46,6 +50,11 @@
 
     </div>
   </main>
+
+  <div class="signup-mobile">
+    <span>Not a Join user?</span>
+    <button type="button" class="btn-signup" (click)="goToSignUp()">Sign up</button>
+  </div>
 
   <footer class="login-footer">
     <a routerLink="/privacy-policy">Privacy Policy</a>

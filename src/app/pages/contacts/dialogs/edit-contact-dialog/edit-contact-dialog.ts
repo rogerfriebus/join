@@ -35,7 +35,7 @@ export class EditContactDialog implements OnInit {
   }
 
   isEmailValid(email: string): boolean {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
     return emailRegex.test(email.trim());
   }
 
@@ -45,7 +45,7 @@ export class EditContactDialog implements OnInit {
   }
 
   save(): void {
-    if (!this.form.name || !this.form.email || !this.form.phone || !this.isEmailValid(this.form.email)|| !this.isPhoneValid(this.form.phone)) return;
+    if (!this.form.name || !this.form.email || !this.form.phone || !this.isEmailValid(this.form.email) || !this.isPhoneValid(this.form.phone)) return;
 
     const updated: Contact = {
       ...this.contact,

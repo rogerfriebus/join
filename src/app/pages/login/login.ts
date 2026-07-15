@@ -24,6 +24,12 @@ export class Login implements OnInit {
     password: '',
   };
 
+  showPassword = false;
+
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
+  }
+
   emailError = '';
   passwordError = '';
   /** Globale Fehlermeldung für fehlgeschlagenen Login (z. B. falsches Passwort). */
@@ -46,7 +52,7 @@ export class Login implements OnInit {
   }
 
   isEmailValid(email: string): boolean {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
     return emailRegex.test(email.trim());
   }
 
