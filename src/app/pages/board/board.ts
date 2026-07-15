@@ -464,6 +464,12 @@ export class Board implements OnInit {
   async saveTaskEdit(): Promise<void> {
     this.editSubmitted.set(true);
 
+    const editingSubtaskId = this.editingEditSubtaskId();
+
+    if (editingSubtaskId) {
+      this.confirmEditSubtaskText(editingSubtaskId);
+    }
+
     const originalTask = this.editTask();
     const draft = this.editDraft();
 
