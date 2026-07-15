@@ -44,6 +44,7 @@ describe('Board', () => {
   let fixture: ComponentFixture<Board>;
   let loadTasksSpy: ReturnType<typeof vi.fn>;
   let updateTaskStatusSpy: ReturnType<typeof vi.fn>;
+  let updateSubtaskStatusSpy: ReturnType<typeof vi.fn>;
   let updateTaskSpy: ReturnType<typeof vi.fn>;
   let deleteTaskSpy: ReturnType<typeof vi.fn>;
   let loadContactsSpy: ReturnType<typeof vi.fn>;
@@ -51,6 +52,7 @@ describe('Board', () => {
   beforeEach(async () => {
     loadTasksSpy = vi.fn().mockResolvedValue(undefined);
     updateTaskStatusSpy = vi.fn().mockResolvedValue(undefined);
+    updateSubtaskStatusSpy = vi.fn().mockResolvedValue(undefined);
     updateTaskSpy = vi.fn().mockResolvedValue(TEST_TASKS[0]);
     deleteTaskSpy = vi.fn().mockResolvedValue(true);
     loadContactsSpy = vi.fn().mockResolvedValue(undefined);
@@ -60,6 +62,7 @@ describe('Board', () => {
       tasks: signal<Task[]>(TEST_TASKS).asReadonly(),
       loadTasks: loadTasksSpy,
       updateTaskStatus: updateTaskStatusSpy,
+      updateSubtaskStatus: updateSubtaskStatusSpy,
       updateTask: updateTaskSpy,
       deleteTask: deleteTaskSpy,
     };
@@ -123,6 +126,23 @@ describe('Board', () => {
   it('zeigt Subtask-Fortschritt auf der Karte', () => {
     const columns = fixture.nativeElement.querySelectorAll('.board-column');
     expect(columns[0].textContent).toContain('1/2 Subtasks');
+  });
+
+  it('aktualisiert einen Subtask direkt aus der Task-Detailansicht', async () => {
+    const updatedTask: Task = {
+      ...TEST_TASKS[0],
+      subtasks: TEST_TASKS[0].subtasks.map((subtask) =>
+        subtask.id === 'a-s2' ? { ...subtask, done: true } : subtask,
+      ),
+    };
+
+    updateSubtaskStatusSpy.mockResolvedValueOnce(updatedTask);
+    component.openTaskDetail(TEST_TASKS[0]);
+
+    await component.toggleDetailSubtask(TEST_TASKS[0], TEST_TASKS[0].subtasks[1]);
+
+    expect(updateSubtaskStatusSpy).toHaveBeenCalledWith('a', 'a-s2', true);
+    expect(component.selectedTask()).toEqual(updatedTask);
   });
 
   it('aktualisiert den Task-Status beim Drop in eine andere Spalte', async () => {

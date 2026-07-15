@@ -164,7 +164,10 @@
             <h3>Subtasks</h3>
 
             <label class="task-detail__subtask" *ngFor="let subtask of task.subtasks">
-              <input type="checkbox" [checked]="subtask.done" disabled />
+              <input
+                type="checkbox"
+                [checked]="subtask.done"
+                (change)="toggleDetailSubtask(task, subtask)" />
               <span>{{ subtask.title }}</span>
             </label>
           </section>
