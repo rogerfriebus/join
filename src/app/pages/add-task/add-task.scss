@@ -79,6 +79,12 @@
     }
 }
 
+.error-message {
+    font-size: 12px;
+    color: #ff4646;
+    margin-top: 2px;
+}
+
 .required {
     color: #ff4646;
     margin-left: 2px;
@@ -241,7 +247,7 @@
     cursor: pointer;
     font-size: 14px;
     border-radius: 8px;
-    
+
     &:hover {
         background: #f5f5f5;
     }
@@ -267,10 +273,10 @@
 // --- Subtasks ---
 
 .subtask-container {
-  max-height: 180px;
-  overflow-y: auto;
-  margin-top: 8px;
-  scrollbar-width: thin;
+    height: 120px;
+    overflow-y: auto;
+    margin-top: 8px;
+    scrollbar-width: thin;
 }
 
 .subtask-input {

@@ -89,6 +89,7 @@ export class AddTaskModal {
       subtasks: [],
     };
     this.newSubtask = '';
+    this.dueDateError = false;
   }
 
   async createTask(): Promise<void> {
@@ -181,5 +182,15 @@ export class AddTaskModal {
   deleteEditingSubtask(index: number): void {
     this.form.subtasks.splice(index, 1);
     this.editingSubtaskIndex = null;
+  }
+
+  dueDateError = false;
+
+  validateDueDate(): void {
+    if (this.form.dueDate && this.form.dueDate < this.today) {
+      this.dueDateError = true;
+    } else {
+      this.dueDateError = false;
+    }
   }
 }
