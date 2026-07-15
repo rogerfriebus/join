@@ -316,6 +316,23 @@ describe('Board', () => {
     expect(component.selectedTask()).toBeNull();
   });
 
+  it('begrenzt sichtbare Assignees auf der Task-Card und zählt weitere Kontakte', () => {
+    const taskWithManyAssignees: Task = {
+      ...TEST_TASKS[0],
+      assignedContactIds: ['1', '2', '3', '4', '5', '6', '7', '8'],
+    };
+
+    expect(component.visibleAssigneeIds(taskWithManyAssignees)).toEqual([
+      '1',
+      '2',
+      '3',
+      '4',
+      '5',
+      '6',
+    ]);
+    expect(component.hiddenAssigneeCount(taskWithManyAssignees)).toBe(2);
+  });
+
   it('zeigt Fallback-Werte für unbekannte Kontakt-IDs', () => {
     expect(component.assigneeInitials('unknown')).toBe('?');
     expect(component.assigneeName('unknown')).toBe('Unknown contact');

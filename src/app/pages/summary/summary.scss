@@ -41,8 +41,10 @@
 
 .summary__content {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 80px;
+  column-gap: 80px;
+  row-gap: 32px;
 }
 
 .summary__cards {
@@ -242,14 +244,17 @@
 
 .summary__greeting {
   display: flex;
+  flex: 0 0 340px;
   flex-direction: column;
   justify-content: center;
   gap: 3px;
-  min-width: 300px;
+  width: 340px;
+  min-width: 0;
 }
 
 .summary__greeting p,
 .summary__greeting strong {
+  max-width: 100%;
   margin: 0;
   line-height: 120%;
 }
@@ -263,16 +268,28 @@
   color: #29abe2;
   font-size: 64px;
   font-weight: 700;
+  overflow-wrap: break-word;
 }
 
-@media (max-width: 1180px) {
+@media (max-width: 1400px) {
   .summary {
     padding-right: 48px;
     padding-left: 48px;
   }
 
   .summary__content {
-    gap: 48px;
+    column-gap: 48px;
+  }
+}
+
+@media (max-width: 1220px) {
+  .summary {
+    padding-right: 32px;
+    padding-left: 32px;
+  }
+
+  .summary__content {
+    column-gap: 24px;
   }
 }
 
