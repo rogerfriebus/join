@@ -69,7 +69,32 @@ describe('Board', () => {
 
     // Stub statt echter ContactService: keine Supabase-/Netzwerkaufrufe im Test.
     const contactServiceStub = {
-      contacts: signal<Contact[]>([]).asReadonly(),
+      contacts: signal<Contact[]>([
+        {
+          id: '1',
+          name: 'Marco Alsen',
+          email: 'marco@example.com',
+          phone: '123',
+          color: '#ff7a00',
+          initials: 'MA',
+        },
+        {
+          id: '2',
+          name: 'Roger Example',
+          email: 'roger@example.com',
+          phone: '456',
+          color: '#29abe2',
+          initials: 'RE',
+        },
+        {
+          id: '3',
+          name: 'Anna Example',
+          email: 'anna@example.com',
+          phone: '789',
+          color: '#7ae229',
+          initials: 'AE',
+        },
+      ]).asReadonly(),
       loadContacts: loadContactsSpy,
       resolveContact: (_id: string): Contact | undefined => undefined,
     };
@@ -198,6 +223,18 @@ describe('Board', () => {
     expect(component.editDraft().subtasks.length).toBe(2);
   });
 
+  it('hebt bereits ausgewählte Kontakte im Edit-Dropdown hervor', () => {
+    component.openTaskEdit(TEST_TASKS[0]);
+    component.toggleEditAssigneeDropdown();
+    fixture.detectChanges();
+
+    const contacts = fixture.nativeElement.querySelectorAll('.dropdown-option');
+
+    expect(contacts[0].classList.contains('checked')).toBe(true);
+    expect(contacts[1].classList.contains('checked')).toBe(true);
+    expect(contacts[2].classList.contains('checked')).toBe(false);
+  });
+
   it('speichert geänderte Task-Daten über den TaskService', async () => {
     component.openTaskEdit(TEST_TASKS[0]);
 
@@ -219,6 +256,28 @@ describe('Board', () => {
         priority: 'low',
       }),
     );
+  });
+
+  it('übernimmt einen offenen Subtask-Text-Edit beim Speichern des Tasks', async () => {
+    component.openTaskEdit(TEST_TASKS[0]);
+    component.updateEditDueDate({
+      target: { value: '2099-12-31' },
+    } as unknown as Event);
+    component.startEditSubtaskText(TEST_TASKS[0].subtasks[0]);
+    component.updateEditingEditSubtaskValue({
+      target: { value: 'Updated subtask' },
+    } as unknown as Event);
+
+    await component.saveTaskEdit();
+
+    expect(updateTaskSpy).toHaveBeenCalledWith(
+      expect.objectContaining({
+        subtasks: expect.arrayContaining([
+          expect.objectContaining({ id: 'a-s1', title: 'Updated subtask' }),
+        ]),
+      }),
+    );
+    expect(component.editingEditSubtaskId()).toBeNull();
   });
 
   it('speichert keine ungültige Edit-Task ohne Titel', async () => {
