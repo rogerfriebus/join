@@ -219,12 +219,16 @@
             <label class="task-edit__field">
               <span>Due date<strong>*</strong></span>
               <div class="task-edit__input-wrapper">
-                <input #editDateInput type="date" [value]="editDraft().dueDate" (input)="updateEditDueDate($event)" />
+                <input #editDateInput type="date" [value]="editDraft().dueDate" [min]="today"
+                  (input)="updateEditDueDate($event)" />
                 <img src="assets/icons/date.svg" class="task-edit__input-icon" alt="" aria-hidden="true"
                   (click)="editDateInput.showPicker()" />
               </div>
               <small *ngIf="editSubmitted() && !editDraft().dueDate.trim()">
                 This field is required
+              </small>
+              <small *ngIf="editSubmitted() && editDueDateIsPast()">
+                Due date cannot be in the past
               </small>
             </label>
           </div>

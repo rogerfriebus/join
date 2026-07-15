@@ -45,6 +45,14 @@ interface EditTaskDraft {
   newSubtaskTitle: string;
 }
 
+function formatDateForInput(date: Date): string {
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0');
+  const day = String(date.getDate()).padStart(2, '0');
+
+  return `${year}-${month}-${day}`;
+}
+
 function createEmptyEditDraft(): EditTaskDraft {
   return {
     title: '',
@@ -87,6 +95,9 @@ export class Board implements OnInit {
   /** Gibt an, ob im Edit-Overlay schon versucht wurde zu speichern. */
   readonly editSubmitted = signal(false);
 
+  /** Heutiges Datum im Format des nativen Date-Inputs. */
+  readonly today = formatDateForInput(new Date());
+
   /** Task, der gerade per Drag & Drop bewegt wird. */
   readonly draggedTask = signal<Task | null>(null);
 
@@ -118,11 +129,23 @@ export class Board implements OnInit {
     return map;
   });
 
+  /** Gibt an, ob das gewählte Fälligkeitsdatum in der Vergangenheit liegt. */
+  readonly editDueDateIsPast = computed(() => {
+    const dueDate = this.editDraft().dueDate.trim();
+
+    return Boolean(dueDate && dueDate < this.today);
+  });
+
   /** Gibt an, ob das Edit-Formular aktuell valide ist. */
   readonly editFormIsValid = computed(() => {
     const draft = this.editDraft();
 
-    return Boolean(draft.title.trim() && draft.dueDate.trim() && draft.category);
+    return Boolean(
+      draft.title.trim() &&
+      draft.dueDate.trim() &&
+      draft.category &&
+      !this.editDueDateIsPast()
+    );
   });
 
   /** Die vier Kanban-Spalten in fester Reihenfolge. */
