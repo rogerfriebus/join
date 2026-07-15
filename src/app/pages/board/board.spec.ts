@@ -206,6 +206,9 @@ describe('Board', () => {
     } as unknown as Event);
 
     component.setEditPriority('low');
+    component.updateEditDueDate({
+      target: { value: '2099-12-31' },
+    } as unknown as Event);
 
     await component.saveTaskEdit();
 
@@ -227,6 +230,20 @@ describe('Board', () => {
 
     await component.saveTaskEdit();
 
+    expect(updateTaskSpy).not.toHaveBeenCalled();
+    expect(component.editSubmitted()).toBe(true);
+  });
+
+  it('speichert keine Edit-Task mit einem Datum in der Vergangenheit', async () => {
+    component.openTaskEdit(TEST_TASKS[0]);
+
+    component.updateEditDueDate({
+      target: { value: '2000-01-01' },
+    } as unknown as Event);
+
+    await component.saveTaskEdit();
+
+    expect(component.editDueDateIsPast()).toBe(true);
     expect(updateTaskSpy).not.toHaveBeenCalled();
     expect(component.editSubmitted()).toBe(true);
   });
