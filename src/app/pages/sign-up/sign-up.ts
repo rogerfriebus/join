@@ -32,6 +32,12 @@ export class SignUp {
   confirmPasswordError = '';
   privacyPolicyError = '';
 
+  showPassword = false;
+
+  togglePasswordVisibility(): void {
+    this.showPassword = !this.showPassword;
+  }
+
   // --- Live Validierung ---
 
   validateName(): void {
@@ -79,7 +85,7 @@ export class SignUp {
   }
 
   isEmailValid(email: string): boolean {
-    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
     return emailRegex.test(email.trim());
   }
 

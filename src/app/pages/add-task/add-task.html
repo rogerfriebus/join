@@ -19,9 +19,13 @@
       <div class="form-group">
         <label>Due date<span class="required">*</span></label>
         <div class="input-wrapper">
-          <input #dateInput type="date" placeholder="dd/mm/yyyy" [(ngModel)]="form.dueDate" [min]="today" />
+          <input #dateInput type="date" placeholder="dd/mm/yyyy" [(ngModel)]="form.dueDate" [min]="today"
+            (input)="validateDueDate()" />
           <img src="./assets/icons/date.svg" class="input-icon" (click)="dateInput.showPicker()" />
         </div>
+        <span class="error-message" *ngIf="dueDateError">
+          Due date cannot be in the past.
+        </span>
       </div>
     </div>
 
@@ -137,7 +141,7 @@
           </div>
         </div>
 
-        <div class="subtask-container" *ngIf="form.subtasks.length > 0">
+        <div class="subtask-container">
           <ul class="subtask-list">
             <li *ngFor="let subtask of form.subtasks; let i = index" class="subtask-item">
 
@@ -148,7 +152,7 @@
 
                 <div class="subtask-actions">
                   <img src="./assets/icons/delete.svg" (click)="deleteEditingSubtask(i)" />
-                  <img src="./assets/icons/check.svg" (click)="confirmEditSubtask(i)" />
+                  <img src="./assets/icons/check_black.svg" (click)="confirmEditSubtask(i)" />
                 </div>
               </ng-container>
 
@@ -176,7 +180,7 @@
         Clear <img src="./assets/icons/iconoir_cancel.svg" />
       </button>
       <button type="button" class="btn-create" (click)="createTask()"
-        [disabled]="!form.title || !form.dueDate || !form.category">
+        [disabled]="!form.title || !form.dueDate || !form.category || dueDateError">
         Create Task <img src="./assets/icons/check.svg" />
       </button>
     </div>

@@ -1,6 +1,7 @@
 import { Component, inject, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
 import { ContactService } from '../../core/services/contact.service';
 import { Contact } from '../../core/models/contact.model';
 import { TaskService } from '../../core/services/task.service';
@@ -21,6 +22,8 @@ interface CategoryOption {
 export class AddTask {
   readonly today: string = new Date().toISOString().split('T')[0];
 
+  private router = inject(Router);
+  
   private contactService = inject(ContactService);
   private taskService = inject(TaskService);
 
@@ -76,6 +79,7 @@ export class AddTask {
       subtasks: [],
     };
     this.newSubtask = '';
+    this.dueDateError = false;
   }
 
   async createTask(): Promise<void> {
@@ -105,6 +109,7 @@ export class AddTask {
     try {
       this.clear();
       await this.taskService.addTask(newTask);
+      this.router.navigate(['/board']);
     } catch (error) {
       console.error('Task konnte nicht erstellt werden:', error);
     } finally {
@@ -116,12 +121,12 @@ export class AddTask {
   showCategoryDropdown = false;
 
   toggleAssigneeDropdown(): void {
-    if(this.showCategoryDropdown) this.showCategoryDropdown = false;
+    if (this.showCategoryDropdown) this.showCategoryDropdown = false;
     this.showAssigneeDropdown = !this.showAssigneeDropdown;
   }
 
   toggleCategoryDropdown(): void {
-    if(this.showAssigneeDropdown) this.showAssigneeDropdown = false;
+    if (this.showAssigneeDropdown) this.showAssigneeDropdown = false;
     this.showCategoryDropdown = !this.showCategoryDropdown;
   }
 
@@ -182,5 +187,15 @@ export class AddTask {
   deleteEditingSubtask(index: number): void {
     this.form.subtasks.splice(index, 1);
     this.editingSubtaskIndex = null;
+  }
+
+  dueDateError = false;
+
+  validateDueDate(): void {
+    if (this.form.dueDate && this.form.dueDate < this.today) {
+      this.dueDateError = true;
+    } else {
+      this.dueDateError = false;
+    }
   }
 }
