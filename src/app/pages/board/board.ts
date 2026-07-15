@@ -215,6 +215,19 @@ export class Board implements OnInit {
     return task.subtasks.filter((subtask) => subtask.done).length;
   }
 
+  /** Ändert den Status eines Subtasks direkt aus der Task-Detailansicht. */
+  async toggleDetailSubtask(task: Task, subtask: Subtask): Promise<void> {
+    const updatedTask = await this.taskService.updateSubtaskStatus(
+      task.id,
+      subtask.id,
+      !subtask.done,
+    );
+
+    if (updatedTask) {
+      this.selectedTask.set(updatedTask);
+    }
+  }
+
   /** Liefert die auf der Card sichtbaren Assignee-IDs. */
   visibleAssigneeIds(task: Task, maxVisible = 6): string[] {
     return task.assignedContactIds.slice(0, maxVisible);
