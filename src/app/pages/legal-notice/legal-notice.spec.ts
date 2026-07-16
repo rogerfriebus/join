@@ -37,6 +37,10 @@ describe('LegalNotice', () => {
     expect(text).toContain('Imprint');
     expect(text).toContain('Acceptance of terms');
     expect(text).toContain('Scope and ownership of the product');
+    expect(text).toContain('Roger');
+    expect(text).toContain('Kevin');
+    expect(text).toContain('Marco');
+    expect(text).not.toContain('July 26, 2023');
   });
 
   it('zeigt alle rechtlichen Content-Abschnitte', () => {

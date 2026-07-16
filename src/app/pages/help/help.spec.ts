@@ -39,6 +39,8 @@ describe('Help', () => {
     expect(text).toContain('Welcome to the help page for Join');
     expect(text).toContain('Here is a step-by-step guide on how to use Join');
     expect(text).toContain('Enjoy using Join!');
+    expect(text).toContain('project team information in the Legal Notice');
+    expect(text).not.toContain('[Your Contact Email]');
   });
 
   it('zeigt alle fünf Nutzungsschritte', () => {
