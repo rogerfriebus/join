@@ -10,7 +10,7 @@ import { AuthService } from '../../core/services/auth.service';
  *
  * Geprüft wird, dass geschützte Links nur für authentifizierte Nutzer sichtbar
  * sind und ausgeloggte Nutzer auf öffentlichen Seiten den Login-Einstieg
- * sowie die rechtlichen Links in der mobilen Navigation sehen.
+ * sowie Help und die rechtlichen Links in der mobilen Navigation sehen.
  */
 describe('Navbar', () => {
   let component: Navbar;
@@ -64,9 +64,10 @@ describe('Navbar', () => {
     await setup();
 
     const hrefs = queryAll('.navbar__link').map((a) => a.getAttribute('href'));
-    expect(hrefs).toEqual(['/login', '/privacy-policy', '/legal-notice']);
+    expect(hrefs).toEqual(['/login', '/help', '/privacy-policy', '/legal-notice']);
     expect(queryAll('.navbar__text').map((element) => element.textContent?.trim())).toEqual([
       'Log In',
+      'Help',
       'Privacy Policy',
       'Legal Notice',
     ]);

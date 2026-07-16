@@ -7,7 +7,7 @@ import { authGuard } from './core/guards/auth.guard';
  * Tests für die Routing-Konfiguration (Sprint 3: Türkis 6).
  *
  * Stellt sicher, dass die geschützten Bereiche den authGuard tragen und die
- * öffentlichen Seiten (login, legal-notice, privacy-policy) frei erreichbar
+ * öffentlichen Seiten (login, help, legal-notice, privacy-policy) frei erreichbar
  * bleiben – so entsteht über das Routing keine Hintertür in geschützte Bereiche.
  */
 describe('app.routes', () => {
@@ -31,8 +31,8 @@ describe('app.routes', () => {
     return findRoute(path)?.canActivate?.includes(authGuard) ?? false;
   }
 
-  const PROTECTED = ['summary', 'board', 'add-task', 'contacts', 'help'];
-  const PUBLIC = ['login', 'legal-notice', 'privacy-policy'];
+  const PROTECTED = ['summary', 'board', 'add-task', 'contacts'];
+  const PUBLIC = ['login', 'help', 'legal-notice', 'privacy-policy'];
 
   it.each(PROTECTED)('schützt die Route /%s mit dem authGuard', (path) => {
     expect(findRoute(path)).toBeDefined();

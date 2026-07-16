@@ -8,7 +8,7 @@ import { authGuard } from './core/guards/auth.guard';
  * - Alle App-Seiten laufen als Kind-Routen innerhalb der Shell.
  * - Default-Route leitet auf /login um, Wildcard ebenfalls auf /login.
  * - Geschützte Seiten (summary, board, add-task, contacts) sind mit dem
- *   authGuard abgesichert. Öffentlich bleiben login, legal-notice und
+ *   authGuard abgesichert. Öffentlich bleiben login, help, legal-notice und
  *   privacy-policy.
  */
 export const routes: Routes = [
@@ -56,7 +56,6 @@ export const routes: Routes = [
       },
       {
         path: 'help',
-        canActivate: [authGuard],
         loadComponent: () => import('./pages/help/help').then((m) => m.Help),
       },
       {
