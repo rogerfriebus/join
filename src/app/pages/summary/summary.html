@@ -51,12 +51,16 @@
         <div class="summary__bottom-row">
           <a class="summary-card summary-card--small" routerLink="/board" aria-label="Open all tasks on board">
             <strong>{{ stats().total }}</strong>
-            <span>Tasks in Board</span>
+            <span class="summary-card__label">
+              <span class="summary-card__label-line">Tasks</span> <span class="summary-card__label-line">in Board</span>
+            </span>
           </a>
 
           <a class="summary-card summary-card--small" routerLink="/board" aria-label="Open tasks in progress on board">
             <strong>{{ stats().inProgress }}</strong>
-            <span>Tasks in Progress</span>
+            <span class="summary-card__label">
+              <span class="summary-card__label-line">Tasks</span> <span class="summary-card__label-line">in Progress</span>
+            </span>
           </a>
 
           <a class="summary-card summary-card--small" routerLink="/board" aria-label="Open awaiting feedback tasks on board">
