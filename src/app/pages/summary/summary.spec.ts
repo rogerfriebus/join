@@ -119,6 +119,15 @@ describe('Summary', () => {
     expect(text).toContain('Awaiting Feedback');
   });
 
+
+  it('shows fixed line breaks for the board and progress card labels', () => {
+    const labels = fixture.nativeElement.querySelectorAll('.summary-card__label');
+
+    expect(labels.length).toBe(2);
+    expect(labels[0].querySelectorAll('.summary-card__label-line').length).toBe(2);
+    expect(labels[1].querySelectorAll('.summary-card__label-line').length).toBe(2);
+  });
+
   it('shows the amount of urgent tasks', () => {
     expect(fixture.nativeElement.textContent).toContain('2');
     expect(fixture.nativeElement.textContent).toContain('Urgent');
