@@ -95,6 +95,9 @@ export class Board implements OnInit {
   /** Gibt an, ob im Edit-Overlay schon versucht wurde zu speichern. */
   readonly editSubmitted = signal(false);
 
+  /** Gibt an, ob das Fälligkeitsdatum im Edit-Formular bereits geändert wurde. */
+  readonly editDueDateTouched = signal(false);
+
   /** Sichtbarkeit des Assigned-to-Dropdowns im Edit-Overlay. */
   readonly editAssigneeDropdownOpen = signal(false);
 
@@ -416,6 +419,7 @@ export class Board implements OnInit {
   /** Öffnet das Edit-Overlay für einen Task. */
   openTaskEdit(task: Task): void {
     this.editSubmitted.set(false);
+    this.editDueDateTouched.set(false);
     this.editAssigneeDropdownOpen.set(false);
     this.editCategoryDropdownOpen.set(false);
     this.editingEditSubtaskId.set(null);
@@ -437,6 +441,7 @@ export class Board implements OnInit {
   closeTaskEdit(): void {
     this.editTask.set(null);
     this.editSubmitted.set(false);
+    this.editDueDateTouched.set(false);
     this.editAssigneeDropdownOpen.set(false);
     this.editCategoryDropdownOpen.set(false);
     this.editingEditSubtaskId.set(null);
@@ -515,6 +520,7 @@ export class Board implements OnInit {
 
   /** Aktualisiert das Fälligkeitsdatum im Edit-Formular. */
   updateEditDueDate(event: Event): void {
+    this.editDueDateTouched.set(true);
     this.patchEditDraft({ dueDate: this.inputValue(event) });
   }
 
@@ -637,6 +643,16 @@ export class Board implements OnInit {
   editAssignedContacts(): Contact[] {
     const selectedIds = new Set(this.editDraft().assignedContactIds);
     return this.contacts().filter((contact) => Boolean(contact.id && selectedIds.has(contact.id)));
+  }
+
+  /** Begrenzt die sichtbaren Avatare im Edit-Formular wie auf den Board-Cards. */
+  visibleEditAssignedContacts(maxVisible = 6): Contact[] {
+    return this.editAssignedContacts().slice(0, maxVisible);
+  }
+
+  /** Liefert die Anzahl weiterer ausgeblendeter Kontakte im Edit-Formular. */
+  hiddenEditAssigneeCount(maxVisible = 6): number {
+    return Math.max(this.editAssignedContacts().length - maxVisible, 0);
   }
 
   /** Wählt einen Kontakt für Assigned To aus oder entfernt ihn. */

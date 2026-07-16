@@ -224,7 +224,9 @@
                   (click)="editDateInput.showPicker()" />
               </div>
               <small *ngIf="editSubmitted() && !editDraft().dueDate.trim()">This field is required</small>
-              <small *ngIf="editSubmitted() && editDueDateIsPast()">Due date cannot be in the past</small>
+              <small class="error-message" *ngIf="editDueDateTouched() && editDueDateIsPast()">
+                Due date cannot be in the past.
+              </small>
             </div>
           </div>
 
@@ -263,9 +265,15 @@
                 </span>
 
                 <div class="assigned-avatars" *ngIf="editDraft().assignedContactIds.length > 0">
-                  <div class="avatar-chip" *ngFor="let contact of editAssignedContacts()"
-                    [style.background-color]="contact.color || '#ff7a00'">
+                  <div class="avatar-chip" *ngFor="let contact of visibleEditAssignedContacts()"
+                    [style.background-color]="contact.color || '#ff7a00'"
+                    [attr.title]="contact.name">
                     {{ contactInitials(contact) }}
+                  </div>
+
+                  <div class="avatar-chip avatar-chip--more" *ngIf="hiddenEditAssigneeCount() > 0"
+                    [attr.title]="hiddenEditAssigneeCount() + ' more assigned contacts'">
+                    +{{ hiddenEditAssigneeCount() }}
                   </div>
                 </div>
 
