@@ -4,6 +4,7 @@
 
 .board-header {
   display: flex;
+  width: min(100%, 1080px);
   align-items: center;
   justify-content: space-between;
   gap: 32px;
@@ -1095,6 +1096,11 @@
     height: 24px;
     font-size: 10px;
   }
+
+  &.avatar-chip--more {
+    background-color: #2a3647;
+    font-weight: 700;
+  }
 }
 
 .dropdown-panel {
@@ -1150,9 +1156,14 @@
 }
 
 .subtask-container {
-  max-height: 180px;
+  height: 80px;
+  max-height: 80px;
+  flex: 0 0 80px;
+  box-sizing: border-box;
+  overflow-x: hidden;
   overflow-y: auto;
   margin-top: 8px;
+  padding-right: 4px;
   scrollbar-width: thin;
 }
 
@@ -1244,10 +1255,14 @@
 }
 
 .form-footer {
+  position: relative;
+  z-index: 2;
   display: flex;
+  flex-shrink: 0;
   justify-content: space-between;
   align-items: center;
   margin-top: 48px;
+  background-color: #ffffff;
 }
 
 .required-note {

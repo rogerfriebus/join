@@ -307,6 +307,23 @@ describe('Board', () => {
     expect(component.editSubmitted()).toBe(true);
   });
 
+  it('zeigt die Datumsfehlermeldung direkt nach Eingabe eines vergangenen Datums', () => {
+    component.openTaskEdit({ ...TEST_TASKS[0], dueDate: '2099-12-31' });
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.querySelector('.error-message')).toBeNull();
+
+    component.updateEditDueDate({
+      target: { value: '2000-01-01' },
+    } as unknown as Event);
+    fixture.detectChanges();
+
+    const errorMessage = fixture.nativeElement.querySelector('.error-message');
+
+    expect(component.editDueDateTouched()).toBe(true);
+    expect(errorMessage?.textContent.trim()).toBe('Due date cannot be in the past.');
+  });
+
   it('löscht den ausgewählten Task über den TaskService', async () => {
     component.openTaskDetail(TEST_TASKS[0]);
 
@@ -331,6 +348,29 @@ describe('Board', () => {
       '6',
     ]);
     expect(component.hiddenAssigneeCount(taskWithManyAssignees)).toBe(2);
+  });
+
+  it('begrenzt sichtbare Assignees im Edit-Formular und zählt weitere Kontakte', () => {
+    const contacts = Array.from({ length: 8 }, (_, index) => ({
+      id: String(index + 1),
+      name: `Contact ${index + 1}`,
+      email: `contact${index + 1}@example.com`,
+      phone: '',
+      color: '#29abe2',
+      initials: `C${index + 1}`,
+    }));
+
+    Object.defineProperty(component, 'contacts', {
+      value: signal<Contact[]>(contacts).asReadonly(),
+    });
+
+    component.editDraft.update((draft) => ({
+      ...draft,
+      assignedContactIds: contacts.map((contact) => contact.id!),
+    }));
+
+    expect(component.visibleEditAssignedContacts().length).toBe(6);
+    expect(component.hiddenEditAssigneeCount()).toBe(2);
   });
 
   it('zeigt Fallback-Werte für unbekannte Kontakt-IDs', () => {
