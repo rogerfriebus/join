@@ -174,12 +174,12 @@ export class AuthService {
     const displayName = (name ?? '').trim();
     const mail = (email ?? '').trim();
     if (!displayName || !mail || !password) {
-      throw new Error('Name, E-Mail und Passwort sind erforderlich.');
+      throw new Error('Name, E-Mail and Password is required.');
     }
     const key = this.normalizeEmail(mail);
     const registry = this.loadRegistry();
     if (registry[key]) {
-      throw new Error('Diese E-Mail ist bereits registriert.');
+      throw new Error('This E-Mail is already registered.');
     }
     const record: StoredCredential = {
       id: this.createUserId(mail),

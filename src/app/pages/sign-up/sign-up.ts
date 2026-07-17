@@ -44,7 +44,7 @@ export class SignUp {
     if (!this.form.name.trim()) {
       this.nameError = 'Please enter your name';
     } else if (this.form.name.trim().length < 3) {
-      this.nameError = 'Name must be at least 3 characters';
+      this.nameError = 'Name must be at least 3 characters.';
     } else {
       this.nameError = '';
     }
@@ -54,7 +54,7 @@ export class SignUp {
     if (!this.form.email) {
       this.emailError = 'Please enter your email';
     } else if (!this.isEmailValid(this.form.email)) {
-      this.emailError = 'Please enter a valid email address';
+      this.emailError = 'Please enter a valid email address.';
     } else {
       this.emailError = '';
     }
@@ -64,13 +64,12 @@ export class SignUp {
     if (!this.form.password) {
       this.passwordError = 'Please enter a password';
     } else if (this.form.password.length < 8) {
-      this.passwordError = 'Password must be at least 8 characters';
+      this.passwordError = 'Password must be at least 8 characters.';
     } else if (!/\d/.test(this.form.password)) {
-      this.passwordError = 'Password must contain at least one number';
+      this.passwordError = 'Password must contain at least one number.';
     } else {
       this.passwordError = '';
     }
-    // Confirm Password live neu prüfen wenn Passwort sich ändert
     if (this.form.confirmPassword) {
       this.validateConfirmPassword();
     }
@@ -78,7 +77,7 @@ export class SignUp {
 
   validateConfirmPassword(): void {
     if (this.form.confirmPassword !== this.form.password) {
-      this.confirmPasswordError = 'Passwords do not match';
+      this.confirmPasswordError = 'Passwords do not match.';
     } else {
       this.confirmPasswordError = '';
     }
@@ -107,7 +106,7 @@ export class SignUp {
     this.validateConfirmPassword();
 
     if (!this.form.acceptPrivacyPolicy) {
-      this.privacyPolicyError = 'Please accept the Privacy Policy';
+      this.privacyPolicyError = 'Please accept the Privacy Policy.';
     }
 
     return !this.nameError && !this.emailError && !this.passwordError && !this.confirmPasswordError && !this.privacyPolicyError;
@@ -127,7 +126,7 @@ export class SignUp {
       this.router.navigateByUrl(target);
     } catch (error) {
       this.emailError =
-        error instanceof Error ? error.message : 'Registrierung fehlgeschlagen.';
+        error instanceof Error ? error.message : 'Registration failed.';
     }
   }
 
