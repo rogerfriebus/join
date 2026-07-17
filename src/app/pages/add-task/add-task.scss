@@ -123,6 +123,10 @@
     display: flex;
     justify-content: space-between;
     gap: 8px;
+
+    @media (max-width: 792px) {
+        flex-direction: column;
+    }
 }
 
 .priority-btn {
@@ -174,6 +178,10 @@
     &.active.low {
         background: #7ae229;
         border-color: #7ae229;
+    }
+
+    @media (max-width: 792px) {
+        width: 100%;
     }
 }
 

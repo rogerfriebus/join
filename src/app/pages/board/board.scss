@@ -647,6 +647,7 @@
 }
 
 .task-detail__priority--urgent {
+
   .task-detail__priority-icon::before,
   .task-detail__priority-icon::after {
     width: 10px;
@@ -666,6 +667,7 @@
 }
 
 .task-detail__priority--medium {
+
   .task-detail__priority-icon::before,
   .task-detail__priority-icon::after {
     width: 17px;
@@ -684,6 +686,7 @@
 }
 
 .task-detail__priority--low {
+
   .task-detail__priority-icon::before,
   .task-detail__priority-icon::after {
     width: 10px;
@@ -1351,6 +1354,14 @@
   .task-edit {
     max-height: calc(100vh - 32px);
     padding: 32px 24px;
+  }
+
+  .priority-toggle {
+    flex-direction: column;
+  }
+
+  .priority-btn {
+    width: 100%;
   }
 }
 
