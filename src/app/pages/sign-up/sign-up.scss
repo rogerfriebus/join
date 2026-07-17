@@ -8,7 +8,14 @@
 // --- Header ---
 
 .register-header {
-  padding: 40px 40px;
+  display: flex;
+  justify-content: center;
+  padding: 40px;
+
+  .header-inner {
+    width: 100%;
+    max-width: 1440px;
+  }
 
   .logo {
     height: 125px;
