@@ -39,7 +39,10 @@ export class Login implements OnInit {
   introComplete = false;
 
   ngOnInit(): void {
-
+    if (this.authService.isAuthenticated()) {
+      this.authService.logout();
+    }
+    
     setTimeout(() => {
       this.logoAnimating = false;
       this.cdr.detectChanges();
