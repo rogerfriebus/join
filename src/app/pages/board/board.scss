@@ -1392,14 +1392,44 @@
 
   .column-body {
     min-height: 0;
+    margin: -4px;
+    padding: 4px 4px 12px;
+    overflow-x: auto;
+    overflow-y: hidden;
     flex: 0 1 auto;
     flex-direction: row;
-    flex-wrap: wrap;
-    align-items: flex-start;
+    flex-wrap: nowrap;
+    align-items: stretch;
+    overscroll-behavior-inline: contain;
+    scroll-snap-type: x proximity;
+    scrollbar-color: #a8a8a8 transparent;
+    scrollbar-width: thin;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .column-body::-webkit-scrollbar {
+    height: 8px;
+  }
+
+  .column-body::-webkit-scrollbar-track {
+    background: transparent;
+  }
+
+  .column-body::-webkit-scrollbar-thumb {
+    border-radius: 8px;
+    background-color: #a8a8a8;
+  }
+
+  .column-empty {
+    width: 100%;
+    flex: 1 0 100%;
   }
 
   .task-card {
     width: 252px;
+    max-width: none;
+    flex: 0 0 252px;
+    scroll-snap-align: start;
   }
 
 }
@@ -1469,14 +1499,15 @@
   }
 
   .column-body {
-    flex-direction: column;
+    flex-direction: row;
     flex-wrap: nowrap;
     gap: 16px;
   }
 
   .task-card {
     width: 252px;
-    max-width: 100%;
+    max-width: none;
+    flex-basis: 252px;
     cursor: pointer;
   }
 
