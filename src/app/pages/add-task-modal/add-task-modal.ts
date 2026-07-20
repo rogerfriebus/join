@@ -193,4 +193,14 @@ export class AddTaskModal {
       this.dueDateError = false;
     }
   }
+
+  readonly maxVisibleAssignees = 6;
+
+  getVisibleAssignedContacts(): Contact[] {
+    return this.getAssignedContacts().slice(0, this.maxVisibleAssignees);
+  }
+
+  getHiddenAssigneeCount(): number {
+    return Math.max(this.getAssignedContacts().length - this.maxVisibleAssignees, 0);
+  }
 }

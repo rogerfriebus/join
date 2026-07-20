@@ -23,7 +23,7 @@ export class AddTask {
   readonly today: string = new Date().toISOString().split('T')[0];
 
   private router = inject(Router);
-  
+
   private contactService = inject(ContactService);
   private taskService = inject(TaskService);
 
@@ -197,5 +197,15 @@ export class AddTask {
     } else {
       this.dueDateError = false;
     }
+  }
+
+  readonly maxVisibleAssignees = 6;
+
+  getVisibleAssignedContacts(): Contact[] {
+    return this.getAssignedContacts().slice(0, this.maxVisibleAssignees);
+  }
+
+  getHiddenAssigneeCount(): number {
+    return Math.max(this.getAssignedContacts().length - this.maxVisibleAssignees, 0);
   }
 }
