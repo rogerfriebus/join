@@ -102,9 +102,13 @@
                             Select contacts to assign
                         </span>
                         <div class="assigned-avatars" *ngIf="form.assignedTo.length > 0">
-                            <div class="avatar-chip" *ngFor="let contact of getAssignedContacts()"
+                            <div class="avatar-chip" *ngFor="let contact of getVisibleAssignedContacts()"
                                 [style.background-color]="contact.color">
                                 {{ contact.initials ?? getInitials(contact.name) }}
+                            </div>
+
+                            <div class="avatar-chip avatar-chip--more" *ngIf="getHiddenAssigneeCount() > 0">
+                                +{{ getHiddenAssigneeCount() }}
                             </div>
                         </div>
                         <img src="./assets/icons/arrow_drop_down.svg" class="dropdown-arrow" />

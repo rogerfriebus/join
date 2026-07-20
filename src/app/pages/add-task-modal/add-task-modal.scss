@@ -282,6 +282,11 @@
     height: 24px;
     font-size: 10px;
   }
+
+  &.avatar-chip--more {
+    background-color: #2a3647;
+    font-weight: 700;
+  }
 }
 
 .dropdown-panel {

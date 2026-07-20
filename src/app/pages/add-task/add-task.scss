@@ -123,6 +123,10 @@
     display: flex;
     justify-content: space-between;
     gap: 8px;
+
+    @media (max-width: 792px) {
+        flex-direction: column;
+    }
 }
 
 .priority-btn {
@@ -175,6 +179,10 @@
         background: #7ae229;
         border-color: #7ae229;
     }
+
+    @media (max-width: 792px) {
+        width: 100%;
+    }
 }
 
 // --- Dropdowns ---
@@ -222,6 +230,11 @@
         width: 24px;
         height: 24px;
         font-size: 10px;
+    }
+
+    &.avatar-chip--more {
+        background-color: #2a3647;
+        font-weight: 700;
     }
 }
 
