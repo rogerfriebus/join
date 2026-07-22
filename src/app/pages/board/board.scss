@@ -719,10 +719,25 @@
   }
 }
 
-.task-detail__assignees {
+.task-detail__assignees,
+.task-detail__subtasks {
   display: flex;
   flex-direction: column;
   gap: 4px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding-right: 4px;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: #d1d1d1 transparent;
+}
+
+.task-detail__assignees {
+  max-height: 236px;
+}
+
+.task-detail__subtasks {
+  max-height: 140px;
 }
 
 .task-detail__assignee {
@@ -1616,6 +1631,10 @@
       height: 42px;
       flex-basis: 42px;
     }
+  }
+
+  .task-detail__assignees {
+    max-height: 220px;
   }
 
   .task-detail__actions {
