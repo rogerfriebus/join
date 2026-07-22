@@ -7,18 +7,19 @@ import { Contact } from '../../core/models/contact.model';
 import { TaskService } from '../../core/services/task.service';
 import { Task, Subtask, TaskPriority, TaskCategory } from '../../core/models/task.model';
 
-/** Auswahloption für das Kategorie-Dropdown. */
+
+/** Option for the category dropdown. */
 interface CategoryOption {
   id: TaskCategory;
   label: string;
 }
 
 /**
- * Seite zum Erstellen einer neuen Task.
+ * Page for creating a new task.
  *
- * Enthält das vollständige Formular mit Titel, Beschreibung, Fälligkeitsdatum,
- * Priorität, Kontaktzuweisung, Kategorie und Subtasks. Nach erfolgreichem
- * Speichern wird auf das Board navigiert.
+ * Contains the complete form with title, description, due date,
+ * priority, contact assignment, category, and subtasks.
+ * After successfully saving, the user is redirected to the board.
  */
 @Component({
   selector: 'app-add-task',
@@ -28,23 +29,23 @@ interface CategoryOption {
   styleUrl: './add-task.scss',
 })
 export class AddTask {
-  /** Heutiges Datum im Format des nativen Date-Inputs (YYYY-MM-DD). */
+  /** Today's date formatted for the native date input (YYYY-MM-DD). */
   readonly today: string = new Date().toISOString().split('T')[0];
 
   private router = inject(Router);
   private contactService = inject(ContactService);
   private taskService = inject(TaskService);
 
-  /** Alle verfügbaren Kontakte für die Assignee-Auswahl. */
+  /** All available contacts for the assignee selection. */
   readonly contacts: Contact[] = this.contactService.getContacts();
 
-  /** Verfügbare Kategorien für das Kategorie-Dropdown. */
+  /** Available categories for the category dropdown. */
   readonly categories: CategoryOption[] = [
     { id: 'Technical Task', label: 'Technical Task' },
     { id: 'User Story', label: 'User Story' },
   ];
 
-  /** Aktueller Formularzustand. */
+  /** Current form state. */
   form = {
     title: '',
     description: '',
@@ -55,36 +56,36 @@ export class AddTask {
     subtasks: [] as string[],
   };
 
-  /** Eingabewert für eine neue Subtask. */
+  /** Input value for a new subtask. */
   newSubtask = '';
 
-  /** Gibt an, ob der Speichervorgang gerade läuft (verhindert Doppel-Submits). */
+  /** Indicates whether the save process is currently running (prevents duplicate submissions). */
   isSaving = false;
 
-  /** Sichtbarkeit des Assignee-Dropdowns. */
+  /** Visibility state of the assignee dropdown. */
   showAssigneeDropdown = false;
 
-  /** Sichtbarkeit des Kategorie-Dropdowns. */
+  /** Visibility state of the category dropdown. */
   showCategoryDropdown = false;
 
-  /** Index der Subtask, die gerade bearbeitet wird, oder null. */
+  /** Index of the subtask currently being edited, or null. */
   editingSubtaskIndex: number | null = null;
 
-  /** Temporärer Text der aktuell bearbeiteten Subtask. */
+  /** Temporary value of the subtask currently being edited. */
   editingSubtaskValue = '';
 
-  /** Gibt an, ob das Fälligkeitsdatum in der Vergangenheit liegt. */
+  /** Indicates whether the selected due date is in the past. */
   dueDateError = false;
 
-  /** Maximale Anzahl sichtbarer Assignee-Avatare im Dropdown-Feld. */
+  /** Maximum number of visible assignee avatars in the dropdown field. */
   readonly maxVisibleAssignees = 6;
 
-  /** Setzt die Priorität des Formulars. */
+  /** Sets the task priority. */
   setPriority(priority: TaskPriority): void {
     this.form.priority = priority;
   }
 
-  /** Wählt einen Kontakt aus oder entfernt ihn aus der Zuweisung. */
+  /** Selects or removes a contact from the assignee list. */
   toggleAssignee(contactId: string): void {
     const index = this.form.assignedTo.indexOf(contactId);
     if (index === -1) {
@@ -94,17 +95,17 @@ export class AddTask {
     }
   }
 
-  /** Prüft, ob ein Kontakt aktuell zugewiesen ist. */
+  /** Checks whether a contact is currently assigned. */
   isAssigned(contactId: string): boolean {
     return this.form.assignedTo.includes(contactId);
   }
 
-  /** Leitet Initialen aus einem vollständigen Namen ab. */
+  /** Returns the initials derived from a full name. */
   getInitials(name: string): string {
     return name.split(' ').map((p) => p[0]).join('').slice(0, 2).toUpperCase();
   }
 
-  /** Setzt das Formular auf den Ausgangszustand zurück. */
+  /** Resets the form to its initial state. */
   clear(): void {
     this.form = {
       title: '',
@@ -120,8 +121,8 @@ export class AddTask {
   }
 
   /**
-   * Erstellt eine neue Task und navigiert nach Erfolg zum Board.
-   * Bricht ab, wenn Pflichtfelder fehlen oder ein Speichervorgang läuft.
+   * Creates a new task and redirects to the board on success.
+   * Aborts if required fields are missing or a save operation is already in progress.
    */
   async createTask(): Promise<void> {
     if (!this.form.title || !this.form.dueDate || !this.form.category || this.isSaving) {
@@ -152,41 +153,41 @@ export class AddTask {
       await this.taskService.addTask(newTask);
       this.router.navigate(['/board']);
     } catch (error) {
-      console.error('Task konnte nicht erstellt werden:', error);
+      console.error('Task could not be created:', error);
     } finally {
       this.isSaving = false;
     }
   }
 
-  /** Öffnet oder schließt das Assignee-Dropdown (schließt dabei das Kategorie-Dropdown). */
+  /** Toggles the assignee dropdown (and closes the category dropdown if open). */
   toggleAssigneeDropdown(): void {
     if (this.showCategoryDropdown) this.showCategoryDropdown = false;
     this.showAssigneeDropdown = !this.showAssigneeDropdown;
   }
 
-  /** Öffnet oder schließt das Kategorie-Dropdown (schließt dabei das Assignee-Dropdown). */
+  /** Toggles the category dropdown (and closes the assignee dropdown if open). */
   toggleCategoryDropdown(): void {
     if (this.showAssigneeDropdown) this.showAssigneeDropdown = false;
     this.showCategoryDropdown = !this.showCategoryDropdown;
   }
 
-  /** Wählt eine Kategorie aus und schließt das Dropdown. */
+  /** Selects a category and closes the dropdown. */
   selectCategory(category: CategoryOption): void {
     this.form.category = category.id;
     this.showCategoryDropdown = false;
   }
 
-  /** Liefert das lesbare Label der aktuell gewählten Kategorie. */
+  /** Returns the display label of the currently selected category. */
   getCategoryLabel(): string {
     return this.categories.find((c) => c.id === this.form.category)?.label ?? '';
   }
 
-  /** Liefert die vollständigen Kontakt-Objekte aller zugewiesenen Kontakte. */
+  /** Returns the full contact objects of all assigned contacts. */
   getAssignedContacts(): Contact[] {
     return this.contacts.filter((c) => c.id && this.form.assignedTo.includes(c.id));
   }
 
-  /** Schließt alle Dropdowns bei einem Klick außerhalb eines Dropdown-Elements. */
+  /** Closes all dropdowns when clicking outside of a dropdown element. */
   @HostListener('document:click', ['$event'])
   closeDropdownOnOutsideClick(event: MouseEvent): void {
     const target = event.target as HTMLElement;
@@ -196,7 +197,7 @@ export class AddTask {
     }
   }
 
-  /** Fügt die aktuelle Subtask-Eingabe zur Liste hinzu. */
+  /** Adds the current subtask input to the list. */
   addSubtask(): void {
     const value = this.newSubtask.trim();
     if (!value) return;
@@ -204,23 +205,23 @@ export class AddTask {
     this.newSubtask = '';
   }
 
-  /** Leert das Subtask-Eingabefeld. */
+  /** Clears the subtask input field. */
   clearSubtaskInput(): void {
     this.newSubtask = '';
   }
 
-  /** Entfernt eine Subtask anhand ihres Index. */
+  /** Removes a subtask by its index. */
   removeSubtask(index: number): void {
     this.form.subtasks.splice(index, 1);
   }
 
-  /** Startet den Inline-Edit-Modus für eine vorhandene Subtask. */
+  /** Starts inline editing for an existing subtask. */
   startEditSubtask(index: number): void {
     this.editingSubtaskIndex = index;
     this.editingSubtaskValue = this.form.subtasks[index];
   }
 
-  /** Übernimmt den geänderten Text einer Subtask und beendet den Edit-Modus. */
+  /** Applies the edited subtask text and exits edit mode. */
   confirmEditSubtask(index: number): void {
     const value = this.editingSubtaskValue.trim();
     if (value) {
@@ -229,13 +230,13 @@ export class AddTask {
     this.editingSubtaskIndex = null;
   }
 
-  /** Löscht die Subtask, die sich gerade im Edit-Modus befindet. */
+  /** Deletes the subtask currently being edited. */
   deleteEditingSubtask(index: number): void {
     this.form.subtasks.splice(index, 1);
     this.editingSubtaskIndex = null;
   }
 
-  /** Prüft, ob das gewählte Fälligkeitsdatum in der Vergangenheit liegt. */
+  /** Validates whether the selected due date is in the past. */
   validateDueDate(): void {
     if (this.form.dueDate && this.form.dueDate < this.today) {
       this.dueDateError = true;
@@ -244,12 +245,12 @@ export class AddTask {
     }
   }
 
-  /** Liefert die sichtbaren Assignee-Kontakte (begrenzt auf maxVisibleAssignees). */
+  /** Returns the visible assigned contacts (limited to maxVisibleAssignees). */
   getVisibleAssignedContacts(): Contact[] {
     return this.getAssignedContacts().slice(0, this.maxVisibleAssignees);
   }
 
-  /** Liefert die Anzahl der nicht sichtbaren Assignees. */
+  /** Returns the number of hidden assignees. */
   getHiddenAssigneeCount(): number {
     return Math.max(this.getAssignedContacts().length - this.maxVisibleAssignees, 0);
   }

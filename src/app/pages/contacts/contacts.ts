@@ -6,12 +6,13 @@ import { Contact, ContactGroup } from '../../core/models/contact.model';
 import { AddContactDialog } from './dialogs/add-contact-dialog/add-contact-dialog';
 import { EditContactDialog } from './dialogs/edit-contact-dialog/edit-contact-dialog';
 
+
 /**
- * Seite zur Verwaltung von Kontakten.
+ * Contact management page.
  *
- * Zeigt alle Kontakte alphabetisch gruppiert in einer Liste an und erlaubt
- * das Auswählen, Hinzufügen, Bearbeiten und Löschen von Kontakten. Auf
- * mobilen Geräten wird zwischen Listen- und Detailansicht umgeschaltet.
+ * Displays all contacts grouped alphabetically and allows users
+ * to select, add, edit, and delete contacts. On mobile devices,
+ * the component switches between the list and detail views.
  */
 @Component({
   selector: 'app-contacts',
@@ -25,47 +26,47 @@ export class Contacts implements OnInit {
   private authService = inject(AuthService);
   private cdr = inject(ChangeDetectorRef);
 
-  /** Alle Kontakte inklusive des eingeloggten Benutzers als Kontakteintrag. */
+  /** All contacts, including the currently logged-in user as a contact entry. */
   readonly contacts = computed(() =>
     this.contactService.getContactsWithCurrentUser(this.authService.user()),
   );
 
-  /** ID des Kontakteintrags des aktuell eingeloggten Benutzers. */
+  /** Contact ID of the currently logged-in user. */
   readonly currentUserContactId = computed(() =>
     this.contactService.currentUserContactId(this.authService.user()),
   );
 
-  /** Aktuell ausgewählter Kontakt für die Detailansicht, oder null. */
+  /** Currently selected contact for the detail view, or null. */
   selectedContact: Contact | null = null;
 
-  /** Sichtbarkeit des Dialogs zum Hinzufügen eines neuen Kontakts. */
+  /** Controls the visibility of the add contact dialog. */
   showAddDialog = false;
 
-  /** Sichtbarkeit des Dialogs zum Bearbeiten des ausgewählten Kontakts. */
+  /** Controls the visibility of the edit contact dialog. */
   showEditDialog = false;
 
-  /** Sichtbarkeit des mobilen FAB-Menüs. */
+  /** Controls the visibility of the mobile FAB menu. */
   showFabMenu = false;
 
-  /** Aktive Ansicht auf mobilen Geräten: Liste oder Detailansicht. */
+  /** Active mobile view: either the contact list or the detail view. */
   mobileView: 'list' | 'detail' = 'list';
 
-  /** Gibt an, ob das Gerät als mobil eingestuft wird (Breite < 792px). */
+  /** Indicates whether the device is considered mobile (width < 792px). */
   isMobile = window.innerWidth < 792;
 
-  /** Aktualisiert den mobilen Breakpoint bei Größenänderung des Fensters. */
+  /** Updates the mobile breakpoint whenever the window is resized. */
   @HostListener('window:resize')
   onResize(): void {
     this.isMobile = window.innerWidth < 792;
   }
 
-  /** Wechselt auf mobilen Geräten zurück zur Listenansicht und hebt die Auswahl auf. */
+  /** Switches back to the list view on mobile devices and clears the selection. */
   backToList(): void {
     this.mobileView = 'list';
     this.selectedContact = null;
   }
 
-  /** Öffnet oder schließt das mobile FAB-Menü und registriert ggf. einen Outside-Click-Handler. */
+  /** Toggles the mobile FAB menu and registers an outside-click listener if needed. */
   toggleFabMenu(): void {
     this.showFabMenu = !this.showFabMenu;
     if (this.showFabMenu) {
@@ -75,19 +76,19 @@ export class Contacts implements OnInit {
     }
   }
 
-  /** Schließt das FAB-Menü bei einem Klick außerhalb und entfernt den Event-Listener. */
+  /** Closes the FAB menu when clicking outside and removes the event listener. */
   closeFabMenuHandler = (): void => {
     this.showFabMenu = false;
     document.removeEventListener('click', this.closeFabMenuHandler);
   };
 
-  /** Schließt das FAB-Menü programmatisch und entfernt den Event-Listener. */
+  /** Closes the FAB menu programmatically and removes the event listener. */
   closeFabMenu(): void {
     this.showFabMenu = false;
     document.removeEventListener('click', this.closeFabMenuHandler);
   }
 
-  /** Alle Kontakte alphabetisch sortiert und nach Anfangsbuchstaben gruppiert. */
+  /** All contacts sorted alphabetically and grouped by their first letter. */
   readonly groupedContacts = computed<ContactGroup[]>(() => {
     const sorted = [...this.contacts()].sort((a, b) =>
       a.name.localeCompare(b.name),
@@ -109,14 +110,14 @@ export class Contacts implements OnInit {
     }));
   });
 
-  /** Lädt alle Kontakte beim Initialisieren der Seite. */
+  /** Loads all contacts when the component is initialized. */
   async ngOnInit(): Promise<void> {
     await this.contactService.loadContacts();
   }
 
   /**
-   * Wählt einen Kontakt aus und zeigt seine Detailansicht an.
-   * Setzt den Kontakt kurz auf null, um eine Animations-Neuinitialisierung auszulösen.
+   * Selects a contact and displays its detail view.
+   * Temporarily clears the selection to restart the entry animation.
    */
   selectContact(contact: Contact): void {
     this.selectedContact = null;
@@ -131,19 +132,19 @@ export class Contacts implements OnInit {
     }, 50);
   }
 
-  /** Speichert einen neuen Kontakt über den ContactService. */
+  /** Saves a new contact using the ContactService. */
   async addContact(contact: Contact): Promise<void> {
     try {
       await this.contactService.addContact(contact);
     } catch (error) {
-      console.error('Kontakt konnte nicht gespeichert werden.', error);
+      console.error('Contact could not be saved.', error);
     }
   }
 
   /**
-   * Aktualisiert einen bestehenden Kontakt.
-   * Handhabt den Sonderfall, dass der aktuelle Benutzer seinen eigenen
-   * Kontakteintrag bearbeitet (wird als neuer Kontakt angelegt statt aktualisiert).
+   * Updates an existing contact.
+   * Handles the special case where the currently logged-in user edits
+   * their own contact entry (it is created as a new contact instead of updated).
    */
   async saveContact(updated: Contact): Promise<void> {
     try {
@@ -152,34 +153,34 @@ export class Contacts implements OnInit {
         : await this.contactService.updateContact(updated);
       this.selectedContact = result ?? updated;
     } catch (error) {
-      console.error('Kontakt konnte nicht aktualisiert werden.', error);
+      console.error('Contact could not be updated.', error);
     }
   }
 
-  /** Löscht einen Kontakt und hebt die aktuelle Auswahl auf. */
+  /** Deletes a contact and clears the current selection. */
   async deleteContact(contact: Contact): Promise<void> {
     if (!contact.id) return;
     try {
       await this.contactService.deleteContact(contact.id);
       this.selectedContact = null;
     } catch (error) {
-      console.error('Kontakt konnte nicht gelöscht werden.', error);
+      console.error('Contact could not be deleted.', error);
     }
   }
 
-  /** Schließt das FAB-Menü und öffnet den Edit-Dialog für den ausgewählten Kontakt. */
+  /** Closes the FAB menu and opens the edit dialog for the selected contact. */
   openEdit(): void {
     this.showFabMenu = false;
     this.showEditDialog = true;
   }
 
-  /** Schließt das FAB-Menü und löscht den aktuell ausgewählten Kontakt. */
+  /** Closes the FAB menu and deletes the currently selected contact. */
   deleteSelected(): void {
     this.showFabMenu = false;
     if (this.selectedContact) this.deleteContact(this.selectedContact);
   }
 
-  /** Leitet Initialen (max. 2 Zeichen) aus einem vollständigen Namen ab. */
+  /** Returns the initials (up to two characters) derived from a full name. */
   getInitials(name: string): string {
     return name
       .split(' ')

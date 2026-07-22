@@ -5,12 +5,13 @@ import { RouterLink, ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { AuthRedirectService } from '../../core/services/auth-redirect.service';
 
+
 /**
- * Login-Seite der Anwendung.
+ * Login page of the application.
  *
- * Enthält das Login-Formular mit E-Mail und Passwort, einen Gast-Login sowie
- * eine Intro-Animation beim ersten Laden. Ist beim Aufruf bereits ein Benutzer
- * eingeloggt, wird er automatisch ausgeloggt.
+ * Contains the login form with email and password, a guest login option,
+ * and an intro animation on the first load. If a user is already logged in
+ * when opening the page, the user is automatically logged out.
  */
 @Component({
   selector: 'app-login',
@@ -26,33 +27,33 @@ export class Login implements OnInit {
   private authRedirect = inject(AuthRedirectService);
   private cdr = inject(ChangeDetectorRef);
 
-  /** Aktueller Formularzustand. */
+  /** Current form state. */
   form = {
     email: '',
     password: '',
   };
 
-  /** Gibt an, ob das Passwort im Klartext angezeigt wird. */
+  /** Indicates whether the password is displayed as plain text. */
   showPassword = false;
 
-  /** Fehlermeldung für das E-Mail-Feld. */
+  /** Error message for the email field. */
   emailError = '';
 
-  /** Fehlermeldung für das Passwort-Feld. */
+  /** Error message for the password field. */
   passwordError = '';
 
-  /** Globale Fehlermeldung für fehlgeschlagenen Login (z. B. falsches Passwort). */
+  /** Global error message for failed login attempts (e.g. incorrect password). */
   loginError = '';
 
-  /** Gibt an, ob die Logo-Animation noch läuft. */
+  /** Indicates whether the logo animation is still running. */
   logoAnimating = true;
 
-  /** Gibt an, ob die Intro-Animation abgeschlossen ist. */
+  /** Indicates whether the intro animation has been completed. */
   introComplete = false;
 
   /**
-   * Initialisiert die Login-Seite.
-   * Loggt einen ggf. noch eingeloggten Benutzer aus und steuert die Intro-Animation.
+   * Initializes the login page.
+   * Logs out an already authenticated user and controls the intro animation.
    */
   ngOnInit(): void {
     if (this.authService.isAuthenticated()) {
@@ -70,20 +71,20 @@ export class Login implements OnInit {
     }, 1000);
   }
 
-  /** Schaltet die Passwort-Sichtbarkeit um. */
+  /** Toggles password visibility. */
   togglePasswordVisibility(): void {
     this.showPassword = !this.showPassword;
   }
 
-  /** Prüft, ob die eingegebene E-Mail-Adresse dem erwarteten Format entspricht. */
+  /** Checks whether the entered email address matches the expected format. */
   isEmailValid(email: string): boolean {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
     return emailRegex.test(email.trim());
   }
 
   /**
-   * Validiert das Formular und setzt alle Fehlermeldungen zurück.
-   * Gibt true zurück, wenn alle Felder valide sind.
+   * Validates the form and resets all error messages.
+   * Returns true if all fields are valid.
    */
   validateForm(): boolean {
     this.emailError = '';
@@ -106,26 +107,27 @@ export class Login implements OnInit {
     return true;
   }
 
-  /** Meldet den Benutzer mit E-Mail und Passwort an und navigiert bei Erfolg weiter. */
+  /** Logs in the user with email and password and redirects on success. */
   async login(): Promise<void> {
     if (!this.validateForm()) return;
+
     try {
       await this.authService.login(this.form.email, this.form.password);
       this.redirectAfterAuth();
     } catch (error) {
       this.loginError =
-        error instanceof Error ? error.message : 'E-Mail oder Passwort ist falsch.';
+        error instanceof Error ? error.message : 'Email or password is incorrect.';
       this.cdr.detectChanges();
     }
   }
 
-  /** Meldet den Benutzer als Gast an und navigiert weiter. */
+  /** Logs in the user as a guest and redirects afterwards. */
   async guestLogin(): Promise<void> {
     await this.authService.loginAsGuest();
     this.redirectAfterAuth();
   }
 
-  /** Navigiert nach erfolgreicher Authentifizierung zum gespeicherten Ziel. */
+  /** Navigates to the stored destination after successful authentication. */
   private redirectAfterAuth(): void {
     const target = this.authRedirect.getRedirectUrlFromParams(
       this.route.snapshot.queryParamMap,
@@ -133,7 +135,7 @@ export class Login implements OnInit {
     this.router.navigateByUrl(target);
   }
 
-  /** Navigiert zur Registrierungsseite. */
+  /** Navigates to the registration page. */
   goToSignUp(): void {
     this.router.navigate(['/sign-up']);
   }
