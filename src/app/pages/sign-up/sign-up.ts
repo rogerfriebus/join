@@ -5,13 +5,14 @@ import { RouterLink, ActivatedRoute, Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 import { AuthRedirectService } from '../../core/services/auth-redirect.service';
 
+
 /**
- * Registrierungsseite der Anwendung.
+ * Registration page of the application.
  *
- * Enthält das Sign-up-Formular mit Name, E-Mail, Passwort und
- * Datenschutz-Zustimmung. Validiert alle Felder live und beim Absenden.
- * Ist beim Aufruf bereits ein Benutzer eingeloggt, wird er automatisch
- * ausgeloggt.
+ * Contains the sign-up form with name, email, password, and
+ * privacy policy confirmation. Validates all fields live and
+ * during submission. If a user is already logged in when opening
+ * the page, the user is automatically logged out.
  */
 @Component({
   selector: 'app-sign-up',
@@ -26,7 +27,7 @@ export class SignUp implements OnInit {
   private authService = inject(AuthService);
   private authRedirect = inject(AuthRedirectService);
 
-  /** Aktueller Formularzustand. */
+  /** Current form state. */
   form = {
     name: '',
     email: '',
@@ -35,32 +36,32 @@ export class SignUp implements OnInit {
     acceptPrivacyPolicy: false,
   };
 
-  /** Fehlermeldung für das Name-Feld. */
+  /** Error message for the name field. */
   nameError = '';
 
-  /** Fehlermeldung für das E-Mail-Feld. */
+  /** Error message for the email field. */
   emailError = '';
 
-  /** Fehlermeldung für das Passwort-Feld. */
+  /** Error message for the password field. */
   passwordError = '';
 
-  /** Fehlermeldung für das Passwort-Bestätigung-Feld. */
+  /** Error message for the password confirmation field. */
   confirmPasswordError = '';
 
-  /** Fehlermeldung für die Datenschutz-Checkbox. */
+  /** Error message for the privacy policy checkbox. */
   privacyPolicyError = '';
 
-  /** Gibt an, ob das Passwort im Klartext angezeigt wird. */
+  /** Indicates whether the password is displayed as plain text. */
   showPassword = false;
 
-  /** Schaltet die Passwort-Sichtbarkeit um. */
+  /** Toggles password visibility. */
   togglePasswordVisibility(): void {
     this.showPassword = !this.showPassword;
   }
 
   /**
-   * Loggt einen ggf. noch eingeloggten Benutzer beim Aufrufen der
-   * Registrierungsseite automatisch aus.
+   * Automatically logs out an already authenticated user
+   * when opening the registration page.
    */
   ngOnInit(): void {
     if (this.authService.isAuthenticated()) {
@@ -68,7 +69,7 @@ export class SignUp implements OnInit {
     }
   }
 
-  /** Validiert das Name-Feld live und setzt die zugehörige Fehlermeldung. */
+  /** Validates the name field live and updates the corresponding error message. */
   validateName(): void {
     if (!this.form.name.trim()) {
       this.nameError = 'Please enter your name';
@@ -79,7 +80,7 @@ export class SignUp implements OnInit {
     }
   }
 
-  /** Validiert das E-Mail-Feld live und setzt die zugehörige Fehlermeldung. */
+  /** Validates the email field live and updates the corresponding error message. */
   validateEmail(): void {
     if (!this.form.email) {
       this.emailError = 'Please enter your email';
@@ -91,8 +92,8 @@ export class SignUp implements OnInit {
   }
 
   /**
-   * Validiert das Passwort-Feld live und setzt die zugehörige Fehlermeldung.
-   * Löst bei bereits befülltem Bestätigungsfeld auch dessen Validierung aus.
+   * Validates the password field live and updates the corresponding error message.
+   * Also triggers confirmation validation if the confirmation field is already filled.
    */
   validatePassword(): void {
     if (!this.form.password) {
@@ -104,12 +105,13 @@ export class SignUp implements OnInit {
     } else {
       this.passwordError = '';
     }
+
     if (this.form.confirmPassword) {
       this.validateConfirmPassword();
     }
   }
 
-  /** Validiert das Passwort-Bestätigung-Feld live und setzt die zugehörige Fehlermeldung. */
+  /** Validates the password confirmation field live and updates the corresponding error message. */
   validateConfirmPassword(): void {
     if (this.form.confirmPassword !== this.form.password) {
       this.confirmPasswordError = 'Passwords do not match.';
@@ -118,15 +120,15 @@ export class SignUp implements OnInit {
     }
   }
 
-  /** Prüft, ob die eingegebene E-Mail-Adresse dem erwarteten Format entspricht. */
+  /** Checks whether the entered email address matches the expected format. */
   isEmailValid(email: string): boolean {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[a-zA-Z]{2,}$/;
     return emailRegex.test(email.trim());
   }
 
   /**
-   * Gibt true zurück, wenn alle Formularfelder valide und die
-   * Datenschutz-Richtlinie akzeptiert wurde.
+   * Returns true if all form fields are valid and the
+   * privacy policy has been accepted.
    */
   get isFormValid(): boolean {
     return (
@@ -140,8 +142,8 @@ export class SignUp implements OnInit {
   }
 
   /**
-   * Führt eine vollständige Formularvalidierung durch und setzt alle
-   * Fehlermeldungen. Gibt true zurück, wenn das Formular fehlerfrei ist.
+   * Performs a complete form validation and updates all
+   * error messages. Returns true if the form is valid.
    */
   validateForm(): boolean {
     this.validateName();
@@ -163,20 +165,23 @@ export class SignUp implements OnInit {
   }
 
   /**
-   * Registriert den Benutzer und navigiert bei Erfolg zum gespeicherten Ziel.
-   * Setzt bei fehlgeschlagener Registrierung die E-Mail-Fehlermeldung.
+   * Registers the user and navigates to the stored destination on success.
+   * Sets the email error message if registration fails.
    */
   async signUp(): Promise<void> {
     if (!this.validateForm()) return;
+
     try {
       await this.authService.signUp(
         this.form.name.trim(),
         this.form.email.trim(),
         this.form.password,
       );
+
       const target = this.authRedirect.getRedirectUrlFromParams(
         this.route.snapshot.queryParamMap,
       );
+
       this.router.navigateByUrl(target);
     } catch (error) {
       this.emailError =
@@ -184,7 +189,7 @@ export class SignUp implements OnInit {
     }
   }
 
-  /** Navigiert zurück zur Login-Seite. */
+  /** Navigates back to the login page. */
   goBack(): void {
     this.router.navigate(['/login']);
   }
