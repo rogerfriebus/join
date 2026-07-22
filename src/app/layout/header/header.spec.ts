@@ -6,10 +6,10 @@ import { Header } from './header';
 import { AuthService } from '../../core/services/auth.service';
 
 /**
- * Tests für den Header inkl. User-Menü / Logout.
+ * Tests for the header, including the user menu and logout flow.
  *
- * Der AuthService wird über steuerbare Signale gestubbt (isAuthenticated,
- * displayName); der Router ist real (provideRouter) mit gespyter navigate().
+ * AuthService is stubbed with controllable signals for isAuthenticated and
+ * displayName. The router uses provideRouter with a spy on navigate().
  */
 describe('Header', () => {
   let component: Header;

@@ -2,10 +2,10 @@ import { Location } from '@angular/common';
 import { Component, inject } from '@angular/core';
 
 /**
- * Help-Seite mit statischer Einführung in Join.
+ * Help page with a static introduction to Join.
  *
- * Die Seite erklärt kurz den Zweck der App und die wichtigsten Schritte im
- * Board-Workflow. Navigation und Auth-Logik bleiben außerhalb dieser Seite.
+ * Briefly explains the purpose of the application and the main board workflow.
+ * Navigation and authentication logic remain outside this component.
  */
 @Component({
   selector: 'app-help',
@@ -16,7 +16,7 @@ import { Component, inject } from '@angular/core';
 export class Help {
   private readonly location = inject(Location);
 
-  /** Navigiert zurück zur vorherigen App-Seite. */
+  /** Navigates back to the previous application page. */
   goBack(): void {
     this.location.back();
   }

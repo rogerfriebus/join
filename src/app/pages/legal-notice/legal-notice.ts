@@ -2,12 +2,11 @@ import { Location } from '@angular/common';
 import { Component, inject } from '@angular/core';
 
 /**
- * Legal-Notice-Seite.
+ * Public Legal Notice page.
  *
- * Die Seite ist öffentlich erreichbar und wird sowohl vor dem Login als auch
- * innerhalb der App über die bestehende Shell angezeigt. Die Navigation für
- * ausgeloggte Nutzer wird global über die Navbar gesteuert und zeigt dort nur
- * den Login-Einstieg.
+ * The page is available before login and within the application shell. Navigation
+ * for logged-out users is controlled globally by the navbar and exposes only the
+ * permitted public entries.
  */
 @Component({
   selector: 'app-legal-notice',
@@ -18,7 +17,7 @@ import { Component, inject } from '@angular/core';
 export class LegalNotice {
   private readonly location = inject(Location);
 
-  /** Navigiert zurück zur vorherigen Seite. */
+  /** Navigates back to the previous page. */
   goBack(): void {
     this.location.back();
   }

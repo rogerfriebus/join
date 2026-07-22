@@ -2,7 +2,7 @@ import { Component } from '@angular/core';
 import { RouterLink, RouterLinkActive } from '@angular/router';
 
 /**
- * Footer mit rechtlichen Links.
+ * Footer containing the legal links.
  */
 @Component({
   selector: 'app-footer',

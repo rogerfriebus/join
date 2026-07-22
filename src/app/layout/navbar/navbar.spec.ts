@@ -6,11 +6,10 @@ import { Navbar } from './navbar';
 import { AuthService } from '../../core/services/auth.service';
 
 /**
- * Tests für die Navbar (Sprint 3: Türkis 6).
+ * Tests for the navbar (Sprint 3: Turquoise 6).
  *
- * Geprüft wird, dass geschützte Links nur für authentifizierte Nutzer sichtbar
- * sind und ausgeloggte Nutzer auf öffentlichen Seiten den Login-Einstieg
- * sowie Help und die rechtlichen Links in der mobilen Navigation sehen.
+ * Verifies that protected links are visible only to authenticated users and
+ * that logged-out users can access login, Help, and the legal links on mobile.
  */
 describe('Navbar', () => {
   let component: Navbar;
