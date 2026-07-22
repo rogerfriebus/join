@@ -153,6 +153,27 @@ describe('Board', () => {
     expect(columns[0].textContent).toContain('1/2 Subtasks');
   });
 
+  it('renders assignees and subtasks in separate scroll containers', () => {
+    const detailedTask: Task = {
+      ...TEST_TASKS[0],
+      assignedContactIds: ['1', '2', '3', '4', '5'],
+      subtasks: Array.from({ length: 5 }, (_, index) => ({
+        id: `detail-subtask-${index}`,
+        title: `Detail subtask ${index + 1}`,
+        done: false,
+      })),
+    };
+
+    component.openTaskDetail(detailedTask);
+    fixture.detectChanges();
+
+    const assigneeList = fixture.nativeElement.querySelector('.task-detail__assignees');
+    const subtaskList = fixture.nativeElement.querySelector('.task-detail__subtasks');
+
+    expect(assigneeList?.querySelectorAll('.task-detail__assignee').length).toBe(5);
+    expect(subtaskList?.querySelectorAll('.task-detail__subtask').length).toBe(5);
+  });
+
   it('aktualisiert einen Subtask direkt aus der Task-Detailansicht', async () => {
     const updatedTask: Task = {
       ...TEST_TASKS[0],
