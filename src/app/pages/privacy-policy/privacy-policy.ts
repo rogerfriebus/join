@@ -2,12 +2,11 @@ import { Location } from '@angular/common';
 import { Component, inject } from '@angular/core';
 
 /**
- * Privacy-Policy-Seite.
+ * Public Privacy Policy page.
  *
- * Die Seite ist öffentlich erreichbar und wird sowohl vor dem Login als auch
- * innerhalb der App über die bestehende Shell angezeigt. Sie enthält zunächst
- * projektbezogene, statische Datenschutz-Hinweise. Eine final geprüfte
- * Rechtstext-Version kann später ohne Änderung der Seitenstruktur ersetzt werden.
+ * The page is available before login and within the application shell. It contains
+ * project-specific static privacy information that can later be replaced by a
+ * legally reviewed version without changing the page structure.
  */
 @Component({
   selector: 'app-privacy-policy',
@@ -18,7 +17,7 @@ import { Component, inject } from '@angular/core';
 export class PrivacyPolicy {
   private readonly location = inject(Location);
 
-  /** Navigiert zurück zur vorherigen Seite. */
+  /** Navigates back to the previous page. */
   goBack(): void {
     this.location.back();
   }

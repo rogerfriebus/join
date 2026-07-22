@@ -3,11 +3,11 @@ import { Router } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 
 /**
- * Kopfzeile der App (innerhalb der Shell).
+ * Application header displayed inside the shell.
  *
- * Enthält den Help-Button und das User-Menü. Der Avatar zeigt die Initialen
- * des eingeloggten Benutzers (bzw. "G" für Guest). Das Dropdown enthält die
- * Links Help, Legal Notice, Privacy Policy und die Logout-Aktion.
+ * Contains the Help button and user menu. The avatar displays the authenticated
+ * user's initials, or "G" for a guest. The dropdown provides Help, Legal Notice,
+ * Privacy Policy, and logout actions.
  */
 @Component({
   selector: 'app-header',
@@ -19,18 +19,18 @@ export class Header {
   private authService = inject(AuthService);
   private router = inject(Router);
 
-  /** True, wenn ein Benutzer (inkl. Gast) eingeloggt ist. */
+  /** Indicates whether a user, including a guest, is authenticated. */
   readonly isAuthenticated = this.authService.isAuthenticated;
 
-  /** Anzeigename des aktuellen Benutzers ("" wenn niemand eingeloggt). */
+  /** Display name of the current user, or an empty string when logged out. */
   readonly displayName = this.authService.displayName;
 
-  /** Offen-Zustand des User-Dropdowns. */
+  /** Tracks whether the user dropdown is open. */
   readonly menuOpen = signal(false);
 
   /**
-   * Initialen aus dem Anzeigenamen (max. 2 Buchstaben), analog zur
-   * Kontakt-Darstellung. Leerer String, wenn kein Name vorhanden ist.
+   * Builds up to two initials from the display name, matching contact avatars.
+   * Returns an empty string when no display name is available.
    */
   readonly initials = computed(() => {
     const name = this.displayName().trim();
@@ -46,39 +46,39 @@ export class Header {
       .toUpperCase();
   });
 
-  /** Navigiert zur Help-Seite. */
+  /** Navigates to the Help page. */
   async openHelp(): Promise<void> {
     await this.openPage('/help');
   }
 
-  /** Navigiert zur Legal-Notice-Seite. */
+  /** Navigates to the Legal Notice page. */
   async openLegalNotice(): Promise<void> {
     await this.openPage('/legal-notice');
   }
 
-  /** Navigiert zur Privacy-Policy-Seite. */
+  /** Navigates to the Privacy Policy page. */
   async openPrivacyPolicy(): Promise<void> {
     await this.openPage('/privacy-policy');
   }
 
-  /** Öffnet/schließt das User-Dropdown. */
+  /** Toggles the user dropdown. */
   toggleMenu(): void {
     this.menuOpen.update((open) => !open);
   }
 
-  /** Schließt das User-Dropdown. */
+  /** Closes the user dropdown. */
   closeMenu(): void {
     this.menuOpen.set(false);
   }
 
-  /** Loggt den Benutzer aus und navigiert zur Login-Seite. */
+  /** Logs out the current user and navigates to the login page. */
   async logout(): Promise<void> {
     this.closeMenu();
     this.authService.logout();
     await this.router.navigate(['/login']);
   }
 
-  /** Schließt das Menü und navigiert anschließend zur angegebenen Route. */
+  /** Closes the menu and then navigates to the provided route. */
   private async openPage(route: string): Promise<void> {
     this.closeMenu();
     await this.router.navigate([route]);

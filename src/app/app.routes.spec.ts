@@ -4,14 +4,13 @@ import { routes } from './app.routes';
 import { authGuard } from './core/guards/auth.guard';
 
 /**
- * Tests für die Routing-Konfiguration (Sprint 3: Türkis 6).
+ * Tests for the routing configuration (Sprint 3: Turquoise 6).
  *
- * Stellt sicher, dass die geschützten Bereiche den authGuard tragen und die
- * öffentlichen Seiten (login, help, legal-notice, privacy-policy) frei erreichbar
- * bleiben – so entsteht über das Routing keine Hintertür in geschützte Bereiche.
+ * Ensures that protected areas use the authGuard while public pages
+ * (login, help, legal-notice, privacy-policy) remain accessible without it.
  */
 describe('app.routes', () => {
-  /** Sucht eine Route anhand ihres Pfads (auch in children) im Routing-Baum. */
+  /** Finds a route by path, including nested child routes. */
   function findRoute(path: string, tree: readonly Route[] = routes): Route | undefined {
     for (const route of tree) {
       if (route.path === path && route.loadComponent) {

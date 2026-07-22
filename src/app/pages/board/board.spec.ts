@@ -9,8 +9,8 @@ import { Task } from '../../core/models/task.model';
 import { Contact } from '../../core/models/contact.model';
 
 /**
- * Test-Tasks: todo und inProgress sind belegt, awaitFeedback und done sind leer
- * (für den Empty-State-Test).
+ * Test tasks: todo and inProgress contain tasks, while awaitFeedback and done
+ * remain empty for the empty-state test.
  */
 const TEST_TASKS: Task[] = [
   {
@@ -57,7 +57,7 @@ describe('Board', () => {
     deleteTaskSpy = vi.fn().mockResolvedValue(true);
     loadContactsSpy = vi.fn().mockResolvedValue(undefined);
 
-    // Stub statt echter TaskService: keine Supabase-/Netzwerkaufrufe im Test.
+    // Uses a TaskService stub to avoid Supabase and network calls in tests.
     const taskServiceStub = {
       tasks: signal<Task[]>(TEST_TASKS).asReadonly(),
       loadTasks: loadTasksSpy,
@@ -67,7 +67,7 @@ describe('Board', () => {
       deleteTask: deleteTaskSpy,
     };
 
-    // Stub statt echter ContactService: keine Supabase-/Netzwerkaufrufe im Test.
+    // Uses a ContactService stub to avoid Supabase and network calls in tests.
     const contactServiceStub = {
       contacts: signal<Contact[]>([
         {
@@ -134,7 +134,7 @@ describe('Board', () => {
   it('gruppiert Tasks nach Status in die passenden Spalten', () => {
     const columns = fixture.nativeElement.querySelectorAll('.board-column');
 
-    // Reihenfolge: ToDo, In Progress, Awaiting Feedback, Done
+    // Column order: To do, In progress, Await feedback, Done
     expect(columns[0].textContent).toContain('Todo Task');
     expect(columns[1].textContent).toContain('Progress Task');
     expect(columns[0].textContent).not.toContain('Progress Task');
@@ -143,7 +143,7 @@ describe('Board', () => {
   it('zeigt einen Empty-State für leere Spalten', () => {
     const columns = fixture.nativeElement.querySelectorAll('.board-column');
 
-    // Await feedback und Done sind leer
+    // Await feedback and Done are empty
     expect(columns[2].textContent).toContain('No tasks Await feedback');
     expect(columns[3].textContent).toContain('No tasks Done');
   });

@@ -5,8 +5,8 @@ import { Navbar } from '../navbar/navbar';
 import { Footer } from '../footer/footer';
 
 /**
- * Layout-Shell: rahmt die eingeloggten App-Seiten mit Header, Navbar und Footer.
- * Der <router-outlet /> rendert die jeweils aktive Kind-Route.
+ * Application shell that wraps authenticated pages with the header, navbar, and footer.
+ * The <router-outlet /> renders the currently active child route.
  */
 @Component({
   selector: 'app-shell',

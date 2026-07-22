@@ -2,14 +2,13 @@ import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
 
 /**
- * Routing für Join (SPA).
+ * Routing configuration for the Join single-page application.
  *
- * - /login liegt bewusst AUSSERHALB der Shell (kein Header/Navbar/Footer).
- * - Alle App-Seiten laufen als Kind-Routen innerhalb der Shell.
- * - Default-Route leitet auf /login um, Wildcard ebenfalls auf /login.
- * - Geschützte Seiten (summary, board, add-task, contacts) sind mit dem
- *   authGuard abgesichert. Öffentlich bleiben login, help, legal-notice und
- *   privacy-policy.
+ * - /login intentionally lives outside the shell without a header, navbar, or footer.
+ * - All application pages are rendered as child routes inside the shell.
+ * - The default route and wildcard route redirect to /login.
+ * - Protected pages (summary, board, add-task, contacts) use the authGuard.
+ *   Login, help, legal-notice, and privacy-policy remain publicly accessible.
  */
 export const routes: Routes = [
   {

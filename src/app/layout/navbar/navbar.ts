@@ -3,14 +3,12 @@ import { RouterLink, RouterLinkActive } from '@angular/router';
 import { AuthService } from '../../core/services/auth.service';
 
 /**
- * Hauptnavigation der App. Verlinkt die eingeloggten Bereiche.
+ * Main application navigation for authenticated and public areas.
  *
- * Die Links zu den geschützten Bereichen (Summary, Add Task, Board, Contacts)
- * werden nur für authentifizierte Nutzer angezeigt. Auf den öffentlichen Seiten
- * (Help, Privacy Policy, Legal Notice) sieht ein nicht angemeldeter Nutzer den
- * Login-Einstieg und in der mobilen Navigation zusätzlich die öffentlichen Links,
- * aber keine Links in geschützte Bereiche. Der authGuard bleibt zusätzlich der
- * letzte Schutz. Das Brand-Logo führt für Gäste/Ausgeloggte bewusst zu /login.
+ * Links to protected pages (Summary, Add Task, Board, Contacts) are shown only
+ * to authenticated users. Logged-out users see the login entry and, on mobile,
+ * the public Help, Privacy Policy, and Legal Notice links. The authGuard remains
+ * the final protection layer. The brand logo intentionally links guests to /login.
  */
 @Component({
   selector: 'app-navbar',
@@ -21,6 +19,6 @@ import { AuthService } from '../../core/services/auth.service';
 export class Navbar {
   private authService = inject(AuthService);
 
-  /** True, wenn ein Benutzer (inkl. Gast) eingeloggt ist. */
+  /** Indicates whether a user, including a guest, is authenticated. */
   readonly isAuthenticated = this.authService.isAuthenticated;
 }

@@ -14,26 +14,26 @@ import { Contact } from '../../core/models/contact.model';
 import { AddTaskModal } from '../add-task-modal/add-task-modal';
 
 
-/** Konfiguration einer Board-Spalte. */
+/** Configuration for a board column. */
 interface BoardColumn {
   title: string;
   status: TaskStatus;
   emptyText: string;
 }
 
-/** Board-Spalte inklusive gefilterter Tasks. */
+/** Board column including its filtered tasks. */
 interface BoardColumnView extends BoardColumn {
   tasks: Task[];
 }
 
-/** Option für das mobile Move-to-Menü. */
+/** Option displayed in the mobile move-to menu. */
 interface MobileMoveOption {
   status: TaskStatus;
   label: string;
   direction: 'up' | 'down';
 }
 
-/** Lokaler Formularzustand für das Edit-Overlay. */
+/** Local form state for the edit overlay. */
 interface EditTaskDraft {
   title: string;
   description: string;
@@ -77,61 +77,61 @@ export class Board implements OnInit {
   private taskService = inject(TaskService);
   private contactService = inject(ContactService);
 
-  /** Read-only Task-Signal aus der TaskService-Fassade. */
+  /** Read-only task signal exposed by the TaskService facade. */
   readonly tasks = this.taskService.tasks;
 
-  /** Read-only Contact-Signal aus der ContactService-Fassade. */
+  /** Read-only contact signal exposed by the ContactService facade. */
   readonly contacts = this.contactService.contacts;
 
-  /** Aktuell ausgewählter Task für die Detailansicht. */
+  /** Task currently selected for the detail view. */
   readonly selectedTask = signal<Task | null>(null);
 
-  /** Task, der gerade im Edit-Overlay bearbeitet wird. */
+  /** Task currently being edited in the edit overlay. */
   readonly editTask = signal<Task | null>(null);
 
-  /** Formularzustand für das Edit-Overlay. */
+  /** Form state for the edit overlay. */
   readonly editDraft = signal<EditTaskDraft>(createEmptyEditDraft());
 
-  /** Gibt an, ob im Edit-Overlay schon versucht wurde zu speichern. */
+  /** Indicates whether saving has already been attempted in the edit overlay. */
   readonly editSubmitted = signal(false);
 
-  /** Gibt an, ob das Fälligkeitsdatum im Edit-Formular bereits geändert wurde. */
+  /** Indicates whether the due date has been changed in the edit form. */
   readonly editDueDateTouched = signal(false);
 
-  /** Sichtbarkeit des Assigned-to-Dropdowns im Edit-Overlay. */
+  /** Controls visibility of the Assigned To dropdown in the edit overlay. */
   readonly editAssigneeDropdownOpen = signal(false);
 
-  /** Sichtbarkeit des Category-Dropdowns im Edit-Overlay. */
+  /** Controls visibility of the category dropdown in the edit overlay. */
   readonly editCategoryDropdownOpen = signal(false);
 
-  /** ID der Subtask, die im Edit-Overlay gerade bearbeitet wird. */
+  /** ID of the subtask currently being edited in the edit overlay. */
   readonly editingEditSubtaskId = signal<string | null>(null);
 
-  /** Temporärer Text der aktuell bearbeiteten Subtask. */
+  /** Temporary text of the subtask currently being edited. */
   readonly editingEditSubtaskValue = signal('');
 
-  /** Heutiges Datum im Format des nativen Date-Inputs. */
+  /** Current date formatted for the native date input. */
   readonly today = formatDateForInput(new Date());
 
-  /** Task, der gerade per Drag & Drop bewegt wird. */
+  /** Task currently being moved by drag and drop. */
   readonly draggedTask = signal<Task | null>(null);
 
-  /** Status der Spalte, über der gerade gedroppt werden kann. */
+  /** Status of the column currently acting as the drop target. */
   readonly dragTargetStatus = signal<TaskStatus | null>(null);
 
-  /** Geöffnetes mobiles Move-Menü. */
+  /** Currently opened mobile move menu. */
   readonly openedMobileMoveMenuTaskId = signal<string | null>(null);
 
-  /** Aktuelle Suchanfrage für das Board. */
+  /** Current board search query. */
   readonly searchQuery = signal('');
 
-  /** Normalisierte Suchanfrage für Vergleiche. */
+  /** Normalized search query used for comparisons. */
   readonly normalizedSearchQuery = computed(() => this.searchQuery().trim().toLowerCase());
 
-  /** Gibt an, ob aktuell gesucht wird. */
+  /** Indicates whether a search query is active. */
   readonly hasSearchQuery = computed(() => this.normalizedSearchQuery().length > 0);
 
-  /** Kontakte nach ID gemappt, damit assignedContactIds sauber aufgelöst werden können. */
+  /** Contacts mapped by ID so assignedContactIds can be resolved efficiently. */
   readonly contactsById = computed(() => {
     const map = new Map<string, Contact>();
 
@@ -144,14 +144,14 @@ export class Board implements OnInit {
     return map;
   });
 
-  /** Gibt an, ob das gewählte Fälligkeitsdatum in der Vergangenheit liegt. */
+  /** Indicates whether the selected due date is in the past. */
   readonly editDueDateIsPast = computed(() => {
     const dueDate = this.editDraft().dueDate.trim();
 
     return Boolean(dueDate && dueDate < this.today);
   });
 
-  /** Gibt an, ob das Edit-Formular aktuell valide ist. */
+  /** Indicates whether the edit form is currently valid. */
   readonly editFormIsValid = computed(() => {
     const draft = this.editDraft();
 
@@ -163,7 +163,7 @@ export class Board implements OnInit {
     );
   });
 
-  /** Die vier Kanban-Spalten in fester Reihenfolge. */
+  /** The four Kanban columns in their fixed order. */
   readonly columns: readonly BoardColumn[] = [
     { title: 'To do', status: 'todo', emptyText: 'No tasks To do' },
     { title: 'In progress', status: 'inProgress', emptyText: 'No tasks In progress' },
@@ -175,7 +175,7 @@ export class Board implements OnInit {
     { title: 'Done', status: 'done', emptyText: 'No tasks Done' },
   ];
 
-  /** Gefilterte Tasks anhand der aktuellen Suche. */
+  /** Tasks filtered by the current search query. */
   readonly filteredTasks = computed(() => {
     const query = this.normalizedSearchQuery();
 
@@ -186,7 +186,7 @@ export class Board implements OnInit {
     return this.tasks().filter((task) => this.taskMatchesQuery(task, query));
   });
 
-  /** Reaktive Gruppierung der gefilterten Tasks nach Status pro Spalte. */
+  /** Reactive grouping of filtered tasks by status for each column. */
   readonly board = computed<BoardColumnView[]>(() =>
     this.columns.map((column) => ({
       ...column,
@@ -194,27 +194,27 @@ export class Board implements OnInit {
     })),
   );
 
-  /** Gibt an, ob es für die aktuelle Suche überhaupt Treffer gibt. */
+  /** Indicates whether the current search returns any results. */
   readonly hasSearchResults = computed(() =>
     this.board().some((column) => column.tasks.length > 0),
   );
 
-  /** Lädt Tasks und Kontakte beim Öffnen des Boards über die jeweiligen Fassaden. */
+  /** Loads tasks and contacts through their service facades when the board opens. */
   async ngOnInit(): Promise<void> {
     await Promise.all([this.taskService.loadTasks(), this.contactService.loadContacts()]);
   }
 
-  /** Aktualisiert die Suche beim Tippen im Suchfeld. */
+  /** Updates the search query while typing in the search field. */
   updateSearchQuery(event: Event): void {
     this.searchQuery.set(this.inputValue(event));
   }
 
-  /** Entfernt die aktuelle Suche. */
+  /** Clears the current search query. */
   clearSearchQuery(): void {
     this.searchQuery.set('');
   }
 
-  /** Prüft, ob eine Task zur aktuellen Suche passt. */
+  /** Checks whether a task matches the current search query. */
   private taskMatchesQuery(task: Task, query: string): boolean {
     const searchableText = [
       task.title,
@@ -229,7 +229,7 @@ export class Board implements OnInit {
     return searchableText.includes(query);
   }
 
-  /** Empty-State-Text je Spalte. */
+  /** Empty-state text for each column. */
   columnEmptyText(column: BoardColumnView): string {
     if (this.hasSearchQuery()) {
       return 'No matching tasks';
@@ -238,7 +238,7 @@ export class Board implements OnInit {
     return column.emptyText;
   }
 
-  /** Kurze Beschreibungsvorschau für die Karte. */
+  /** Short description preview displayed on the task card. */
   descriptionPreview(description: string | undefined): string {
     if (!description) {
       return '';
@@ -248,12 +248,12 @@ export class Board implements OnInit {
     return description.length > max ? `${description.slice(0, max).trimEnd()}…` : description;
   }
 
-  /** Anzahl erledigter Subtasks eines Tasks. */
+  /** Number of completed subtasks for a task. */
   doneSubtasks(task: Task): number {
     return task.subtasks.filter((subtask) => subtask.done).length;
   }
 
-  /** Ändert den Status eines Subtasks direkt aus der Task-Detailansicht. */
+  /** Updates a subtask status directly from the task detail view. */
   async toggleDetailSubtask(task: Task, subtask: Subtask): Promise<void> {
     const updatedTask = await this.taskService.updateSubtaskStatus(
       task.id,
@@ -266,17 +266,17 @@ export class Board implements OnInit {
     }
   }
 
-  /** Liefert die auf der Card sichtbaren Assignee-IDs. */
+  /** Returns the assignee IDs visible on the task card. */
   visibleAssigneeIds(task: Task, maxVisible = 6): string[] {
     return task.assignedContactIds.slice(0, maxVisible);
   }
 
-  /** Liefert die Anzahl weiterer, versteckter Assignees. */
+  /** Returns the number of additional hidden assignees. */
   hiddenAssigneeCount(task: Task, maxVisible = 6): number {
     return Math.max(task.assignedContactIds.length - maxVisible, 0);
   }
 
-  /** Liefert die Initialen eines zugewiesenen Kontakts. */
+  /** Returns the initials of an assigned contact. */
   assigneeInitials(contactId: string): string {
     const contact = this.contactsById().get(contactId);
 
@@ -291,22 +291,22 @@ export class Board implements OnInit {
     return '?';
   }
 
-  /** Liefert den Namen eines zugewiesenen Kontakts. */
+  /** Returns the name of an assigned contact. */
   assigneeName(contactId: string): string {
     return this.contactsById().get(contactId)?.name ?? 'Unknown contact';
   }
 
-  /** Liefert die Avatar-Farbe eines zugewiesenen Kontakts. */
+  /** Returns the avatar color of an assigned contact. */
   assigneeColor(contactId: string): string {
     return this.contactsById().get(contactId)?.color ?? '#ff7a00';
   }
 
-  /** Liefert Initialen für einen Kontakt im Edit-Overlay. */
+  /** Returns initials for a contact in the edit overlay. */
   contactInitials(contact: Contact): string {
     return contact.initials ?? this.initialsFromName(contact.name);
   }
 
-  /** Baut Initialen aus einem Namen. */
+  /** Builds initials from a name. */
   private initialsFromName(name: string): string {
     return name
       .split(' ')
@@ -317,7 +317,7 @@ export class Board implements OnInit {
       .toUpperCase();
   }
 
-  /** Lesbares Label für die Priority-Anzeige. */
+  /** Returns a readable label for the priority display. */
   priorityLabel(priority: Task['priority']): string {
     switch (priority) {
       case 'urgent':
@@ -331,18 +331,18 @@ export class Board implements OnInit {
     }
   }
 
-  /** Öffnet die Detailansicht für einen Task. */
+  /** Opens the detail view for a task. */
   openTaskDetail(task: Task): void {
     this.closeMobileMoveMenu();
     this.selectedTask.set(task);
   }
 
-  /** Schließt die Detailansicht. */
+  /** Closes the task detail view. */
   closeTaskDetail(): void {
     this.selectedTask.set(null);
   }
 
-  /** Öffnet oder schließt das mobile Move-to-Menü einer Task. */
+  /** Opens or closes the mobile move-to menu for a task. */
   toggleMobileMoveMenu(taskId: string, event: MouseEvent): void {
     event.stopPropagation();
 
@@ -351,12 +351,12 @@ export class Board implements OnInit {
     );
   }
 
-  /** Schließt das mobile Move-to-Menü. */
+  /** Closes the mobile move-to menu. */
   closeMobileMoveMenu(): void {
     this.openedMobileMoveMenuTaskId.set(null);
   }
 
-  /** Liefert die möglichen Mobile-Move-Ziele für eine Task. */
+  /** Returns the available mobile move targets for a task. */
   mobileMoveOptions(task: Task): MobileMoveOption[] {
     const currentIndex = this.columns.findIndex((column) => column.status === task.status);
     const options: MobileMoveOption[] = [];
@@ -387,7 +387,7 @@ export class Board implements OnInit {
     return options;
   }
 
-  /** Lesbare Labels für das Mobile-Move-Menü. */
+  /** Returns readable labels for the mobile move menu. */
   private mobileMoveLabel(status: TaskStatus): string {
     switch (status) {
       case 'todo':
@@ -403,7 +403,7 @@ export class Board implements OnInit {
     }
   }
 
-  /** Verschiebt eine Task über das mobile Move-Menü in einen anderen Status. */
+  /** Moves a task to another status through the mobile move menu. */
   async moveTaskToStatus(task: Task, status: TaskStatus, event: MouseEvent): Promise<void> {
     event.stopPropagation();
 
@@ -416,7 +416,7 @@ export class Board implements OnInit {
     await this.taskService.updateTaskStatus(task.id, status);
   }
 
-  /** Öffnet das Edit-Overlay für einen Task. */
+  /** Opens the edit overlay for a task. */
   openTaskEdit(task: Task): void {
     this.editSubmitted.set(false);
     this.editDueDateTouched.set(false);
@@ -437,7 +437,7 @@ export class Board implements OnInit {
     });
   }
 
-  /** Schließt das Edit-Overlay. */
+  /** Closes the edit overlay. */
   closeTaskEdit(): void {
     this.editTask.set(null);
     this.editSubmitted.set(false);
@@ -449,7 +449,7 @@ export class Board implements OnInit {
     this.editDraft.set(createEmptyEditDraft());
   }
 
-  /** Löscht den aktuell ausgewählten Task. */
+  /** Deletes the currently selected task. */
   async deleteSelectedTask(): Promise<void> {
     const task = this.selectedTask();
 
@@ -465,7 +465,7 @@ export class Board implements OnInit {
     }
   }
 
-  /** Speichert die Änderungen aus dem Edit-Overlay. */
+  /** Saves changes made in the edit overlay. */
   async saveTaskEdit(): Promise<void> {
     this.editSubmitted.set(true);
 
@@ -508,38 +508,38 @@ export class Board implements OnInit {
     }
   }
 
-  /** Aktualisiert den Titel im Edit-Formular. */
+  /** Updates the title in the edit form. */
   updateEditTitle(event: Event): void {
     this.patchEditDraft({ title: this.inputValue(event) });
   }
 
-  /** Aktualisiert die Beschreibung im Edit-Formular. */
+  /** Updates the description in the edit form. */
   updateEditDescription(event: Event): void {
     this.patchEditDraft({ description: this.inputValue(event) });
   }
 
-  /** Aktualisiert das Fälligkeitsdatum im Edit-Formular. */
+  /** Updates the due date in the edit form. */
   updateEditDueDate(event: Event): void {
     this.editDueDateTouched.set(true);
     this.patchEditDraft({ dueDate: this.inputValue(event) });
   }
 
-  /** Aktualisiert die Kategorie im Edit-Formular. */
+  /** Updates the category in the edit form. */
   updateEditCategory(event: Event): void {
     this.patchEditDraft({ category: this.inputValue(event) as TaskCategory | '' });
   }
 
-  /** Setzt die Priority im Edit-Formular. */
+  /** Sets the priority in the edit form. */
   setEditPriority(priority: TaskPriority): void {
     this.patchEditDraft({ priority });
   }
 
-  /** Aktualisiert den Eingabewert für eine neue Subtask. */
+  /** Updates the input value for a new subtask. */
   updateEditNewSubtaskTitle(event: Event): void {
     this.patchEditDraft({ newSubtaskTitle: this.inputValue(event) });
   }
 
-  /** Fügt dem Edit-Formular eine neue Subtask hinzu. */
+  /** Adds a new subtask to the edit form. */
   addEditSubtask(): void {
     const draft = this.editDraft();
     const title = draft.newSubtaskTitle.trim();
@@ -561,23 +561,23 @@ export class Board implements OnInit {
     });
   }
 
-  /** Leert die Eingabe für eine neue Subtask. */
+  /** Clears the new-subtask input. */
   clearEditSubtaskInput(): void {
     this.patchEditDraft({ newSubtaskTitle: '' });
   }
 
-  /** Startet den Text-Edit einer vorhandenen Subtask. */
+  /** Starts editing the text of an existing subtask. */
   startEditSubtaskText(subtask: Subtask): void {
     this.editingEditSubtaskId.set(subtask.id);
     this.editingEditSubtaskValue.set(subtask.title);
   }
 
-  /** Aktualisiert den temporären Text einer bearbeiteten Subtask. */
+  /** Updates the temporary text of the subtask being edited. */
   updateEditingEditSubtaskValue(event: Event): void {
     this.editingEditSubtaskValue.set(this.inputValue(event));
   }
 
-  /** Übernimmt den geänderten Text einer vorhandenen Subtask. */
+  /** Applies the edited text to an existing subtask. */
   confirmEditSubtaskText(subtaskId: string): void {
     const title = this.editingEditSubtaskValue().trim();
 
@@ -593,21 +593,21 @@ export class Board implements OnInit {
     this.editingEditSubtaskValue.set('');
   }
 
-  /** Löscht die Subtask, die gerade im Text-Edit geöffnet ist. */
+  /** Deletes the subtask currently open in text-edit mode. */
   deleteEditingEditSubtask(subtaskId: string): void {
     this.removeEditSubtask(subtaskId);
     this.editingEditSubtaskId.set(null);
     this.editingEditSubtaskValue.set('');
   }
 
-  /** Entfernt eine Subtask aus dem Edit-Formular. */
+  /** Removes a subtask from the edit form. */
   removeEditSubtask(subtaskId: string): void {
     this.patchEditDraft({
       subtasks: this.editDraft().subtasks.filter((subtask) => subtask.id !== subtaskId),
     });
   }
 
-  /** Ändert den Done-Status einer Subtask im Edit-Formular. */
+  /** Changes the completion status of a subtask in the edit form. */
   toggleEditSubtaskDone(subtaskId: string): void {
     this.patchEditDraft({
       subtasks: this.editDraft().subtasks.map((subtask) =>
@@ -616,46 +616,46 @@ export class Board implements OnInit {
     });
   }
 
-  /** Öffnet oder schließt das Assigned-to-Dropdown im Edit-Overlay. */
+  /** Opens or closes the Assigned To dropdown in the edit overlay. */
   toggleEditAssigneeDropdown(): void {
     this.editCategoryDropdownOpen.set(false);
     this.editAssigneeDropdownOpen.update((open) => !open);
   }
 
-  /** Öffnet oder schließt das Category-Dropdown im Edit-Overlay. */
+  /** Opens or closes the category dropdown in the edit overlay. */
   toggleEditCategoryDropdown(): void {
     this.editAssigneeDropdownOpen.set(false);
     this.editCategoryDropdownOpen.update((open) => !open);
   }
 
-  /** Wählt eine Kategorie und schließt das Category-Dropdown. */
+  /** Selects a category and closes the category dropdown. */
   selectEditCategory(category: TaskCategory): void {
     this.patchEditDraft({ category });
     this.editCategoryDropdownOpen.set(false);
   }
 
-  /** Liefert das lesbare Label der ausgewählten Kategorie. */
+  /** Returns the readable label of the selected category. */
   editCategoryLabel(): string {
     return this.editDraft().category || '';
   }
 
-  /** Liefert die im Edit-Overlay ausgewählten Kontakte für die Avatar-Anzeige. */
+  /** Returns contacts selected in the edit overlay for the avatar display. */
   editAssignedContacts(): Contact[] {
     const selectedIds = new Set(this.editDraft().assignedContactIds);
     return this.contacts().filter((contact) => Boolean(contact.id && selectedIds.has(contact.id)));
   }
 
-  /** Begrenzt die sichtbaren Avatare im Edit-Formular wie auf den Board-Cards. */
+  /** Limits visible edit-form avatars in the same way as board cards. */
   visibleEditAssignedContacts(maxVisible = 6): Contact[] {
     return this.editAssignedContacts().slice(0, maxVisible);
   }
 
-  /** Liefert die Anzahl weiterer ausgeblendeter Kontakte im Edit-Formular. */
+  /** Returns the number of additional hidden contacts in the edit form. */
   hiddenEditAssigneeCount(maxVisible = 6): number {
     return Math.max(this.editAssignedContacts().length - maxVisible, 0);
   }
 
-  /** Wählt einen Kontakt für Assigned To aus oder entfernt ihn. */
+  /** Selects or removes a contact in the Assigned To field. */
   toggleEditAssignedContact(contactId: string | undefined): void {
     if (!contactId) {
       return;
@@ -672,12 +672,12 @@ export class Board implements OnInit {
     this.patchEditDraft({ assignedContactIds: [...selectedIds] });
   }
 
-  /** Prüft, ob ein Kontakt im Edit-Formular ausgewählt ist. */
+  /** Checks whether a contact is selected in the edit form. */
   isEditContactSelected(contactId: string | undefined): boolean {
     return Boolean(contactId && this.editDraft().assignedContactIds.includes(contactId));
   }
 
-  /** Label für die Assigned-To-Auswahl. */
+  /** Returns the label for the Assigned To selection. */
   editAssignedLabel(): string {
     const assignedIds = this.editDraft().assignedContactIds;
 
@@ -688,17 +688,17 @@ export class Board implements OnInit {
     return assignedIds.map((contactId) => this.assigneeInitials(contactId)).join(', ');
   }
 
-  /** Patcht den Edit-Draft. */
+  /** Applies a partial update to the edit draft. */
   private patchEditDraft(partial: Partial<EditTaskDraft>): void {
     this.editDraft.update((draft) => ({ ...draft, ...partial }));
   }
 
-  /** Liest den Wert eines Inputs/Selects/Textareas. */
+  /** Reads the value from an input, select, or textarea event. */
   private inputValue(event: Event): string {
     return (event.target as HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement).value;
   }
 
-  /** Startet den Drag-Vorgang für eine Task Card. */
+  /** Starts dragging a task card. */
   startTaskDrag(task: Task, event: DragEvent): void {
     this.draggedTask.set(task);
 
@@ -709,7 +709,7 @@ export class Board implements OnInit {
     }
   }
 
-  /** Markiert eine Spalte als aktuelles Drop-Ziel. */
+  /** Marks a column as the current drop target. */
   setDragTarget(status: TaskStatus): void {
     if (!this.draggedTask()) {
       return;
@@ -718,18 +718,18 @@ export class Board implements OnInit {
     this.dragTargetStatus.set(status);
   }
 
-  /** Entfernt die optische Drop-Markierung. */
+  /** Removes the visual drop-target indicator. */
   clearDragTarget(): void {
     this.dragTargetStatus.set(null);
   }
 
-  /** Beendet den Drag-Vorgang ohne Statusänderung. */
+  /** Ends the drag operation without changing the task status. */
   endTaskDrag(): void {
     this.draggedTask.set(null);
     this.dragTargetStatus.set(null);
   }
 
-  /** Verschiebt eine Task in eine andere Board-Spalte. */
+  /** Moves a task to another board column. */
   async dropTask(status: TaskStatus): Promise<void> {
     const task = this.draggedTask();
 
