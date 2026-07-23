@@ -1,19 +1,19 @@
 import { Injectable } from '@angular/core';
 import { ParamMap } from '@angular/router';
 
-/** Query-Param-Name, unter dem der authGuard die Ursprungs-URL ablegt. */
+/** Query param name under which the authGuard stores the origin URL. */
 export const REDIRECT_PARAM = 'redirectUrl';
 
-/** Standard-Startseite nach Login/Sign-Up/Gast-Login. */
+/** Default landing page after login/sign-up/guest login. */
 export const DEFAULT_REDIRECT_URL = '/summary';
 
 /**
- * Interne Routen, die als Redirect-Ziel nach dem Login erlaubt sind.
+ * Internal routes that are allowed as a redirect target after login.
  *
- * Bewusst eine Allowlist der geschützten App-Seiten (siehe authGuard). Nur
- * diese werden vom Guard überhaupt als redirectUrl gesetzt. Öffentliche Seiten
- * (login, sign-up, legal-notice, privacy-policy) sind KEINE sinnvollen
- * Post-Login-Ziele und fallen daher auf die Startseite zurück.
+ * Deliberately an allowlist of the protected app pages (see authGuard). Only
+ * these are ever set by the guard as redirectUrl. Public pages (login, sign-up,
+ * legal-notice, privacy-policy) are NOT sensible post-login targets and
+ * therefore fall back to the landing page.
  */
 const ALLOWED_REDIRECT_ROUTES: readonly string[] = [
   '/summary',
@@ -23,31 +23,32 @@ const ALLOWED_REDIRECT_ROUTES: readonly string[] = [
 ];
 
 /**
- * Zentrale Redirect-Entscheidung nach erfolgreicher Authentifizierung
- * (Sprint 3: Türkis 3).
+ * Central redirect decision after successful authentication
+ * (Sprint 3: Turquoise 3).
  *
- * Kapselt an EINER Stelle, wohin nach Login/Sign-Up/Gast-Login navigiert wird:
- *  - bevorzugt zur ursprünglich angefragten geschützten Seite (redirectUrl),
- *  - sonst zur Standard-Startseite `/summary`.
+ * Encapsulates in ONE place where navigation goes after login/sign-up/guest
+ * login:
+ *  - preferably to the originally requested protected page (redirectUrl),
+ *  - otherwise to the default landing page `/summary`.
  *
- * Sicherheit: Es werden ausschließlich bekannte, interne Routen zugelassen
- * (Allowlist). Externe URLs (`https://…`), protokoll-relative URLs (`//…`),
- * Backslash-Tricks und öffentliche/Auth-Routen (`/login`, `/privacy-policy`, …)
- * werden verworfen und führen zur Startseite. Damit kann ein manipulierter
- * redirectUrl-Query-Param keine Open-Redirect-Weiterleitung auslösen.
+ * Security: only known, internal routes are allowed (allowlist). External URLs
+ * (`https://…`), protocol-relative URLs (`//…`), backslash tricks and
+ * public/auth routes (`/login`, `/privacy-policy`, …) are discarded and lead to
+ * the landing page. This prevents a manipulated redirectUrl query param from
+ * triggering an open-redirect.
  */
 @Injectable({ providedIn: 'root' })
 export class AuthRedirectService {
   /**
-   * Bestimmt aus einem rohen redirectUrl-Wert (z. B. aus dem Query-Param) das
-   * sichere Navigationsziel.
+   * Determines the safe navigation target from a raw redirectUrl value (e.g.
+   * from the query param).
    *
-   * Regeln:
-   *  - null/leer/nur Whitespace → `/summary`
-   *  - kein root-relativer Pfad (`/…`) oder protokoll-relativ (`//…`) → `/summary`
-   *  - enthält Schema (`://`) oder Backslash → `/summary`
-   *  - Pfad nicht in der Allowlist der geschützten Routen → `/summary`
-   *  - andernfalls: der Wert selbst (inkl. evtl. Query-String) bleibt erhalten
+   * Rules:
+   *  - null/empty/whitespace only → `/summary`
+   *  - not a root-relative path (`/…`) or protocol-relative (`//…`) → `/summary`
+   *  - contains a scheme (`://`) or backslash → `/summary`
+   *  - path not in the allowlist of protected routes → `/summary`
+   *  - otherwise: the value itself (including any query string) is kept
    */
   getRedirectUrl(queryParamValue: string | null | undefined): string {
     const value = (queryParamValue ?? '').trim();
@@ -68,9 +69,9 @@ export class AuthRedirectService {
   }
 
   /**
-   * Liest den redirectUrl-Query-Param aus einer ParamMap (z. B.
-   * `route.snapshot.queryParamMap`) und bestimmt daraus das sichere Ziel.
-   * Fehlt die Map, wird die Startseite geliefert.
+   * Reads the redirectUrl query param from a ParamMap (e.g.
+   * `route.snapshot.queryParamMap`) and determines the safe target from it.
+   * If the map is missing, the landing page is returned.
    */
   getRedirectUrlFromParams(params: ParamMap | null | undefined): string {
     return this.getRedirectUrl(params?.get(REDIRECT_PARAM) ?? null);

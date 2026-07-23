@@ -30,7 +30,7 @@ describe('Help', () => {
     expect(component).toBeTruthy();
   });
 
-  it('zeigt die Help-Überschrift und den Figma-Content', () => {
+  it('displays the Help heading and the Figma content', () => {
     const text = textContent();
 
     expect(text).toContain('Help');
@@ -43,7 +43,7 @@ describe('Help', () => {
     expect(text).not.toContain('[Your Contact Email]');
   });
 
-  it('zeigt alle fünf Nutzungsschritte', () => {
+  it('displays all five usage steps', () => {
     const text = textContent();
 
     expect(text).toContain('Exploring the Board');
@@ -53,7 +53,7 @@ describe('Help', () => {
     expect(text).toContain('Deleting Cards');
   });
 
-  it('navigiert über den Back-Button zurück', () => {
+  it('navigates back via the back button', () => {
     fixture.nativeElement.querySelector('.help__back').click();
 
     expect(backSpy).toHaveBeenCalledTimes(1);

@@ -30,7 +30,7 @@ describe('PrivacyPolicy', () => {
     expect(component).toBeTruthy();
   });
 
-  it('zeigt die Privacy-Policy-Überschrift und den Figma-Content', () => {
+  it('displays the Privacy Policy heading and the Figma content', () => {
     const text = textContent();
 
     expect(text).toContain('Privacy Policy');
@@ -39,13 +39,13 @@ describe('PrivacyPolicy', () => {
     expect(text).toContain('Your data and rights');
   });
 
-  it('zeigt zwei Content-Abschnitte', () => {
+  it('displays two content sections', () => {
     const sections = fixture.nativeElement.querySelectorAll('.privacy-policy__section');
 
     expect(sections.length).toBe(2);
   });
 
-  it('navigiert über den Back-Button zurück', () => {
+  it('navigates back via the back button', () => {
     fixture.nativeElement.querySelector('.privacy-policy__back').click();
 
     expect(backSpy).toHaveBeenCalledTimes(1);

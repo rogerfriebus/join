@@ -30,7 +30,7 @@ describe('LegalNotice', () => {
     expect(component).toBeTruthy();
   });
 
-  it('zeigt die Legal-Notice-Überschrift und den Figma-Content', () => {
+  it('displays the Legal Notice heading and the Figma content', () => {
     const text = textContent();
 
     expect(text).toContain('Legal Notice');
@@ -43,7 +43,7 @@ describe('LegalNotice', () => {
     expect(text).not.toContain('July 26, 2023');
   });
 
-  it('zeigt alle rechtlichen Content-Abschnitte', () => {
+  it('displays all legal content sections', () => {
     const sections = fixture.nativeElement.querySelectorAll(
       '.legal-notice__imprint, .legal-notice__block',
     );
@@ -51,7 +51,7 @@ describe('LegalNotice', () => {
     expect(sections.length).toBe(7);
   });
 
-  it('navigiert über den Back-Button zurück', () => {
+  it('navigates back via the back button', () => {
     fixture.nativeElement.querySelector('.legal-notice__back').click();
 
     expect(backSpy).toHaveBeenCalledTimes(1);

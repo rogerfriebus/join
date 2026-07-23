@@ -1,14 +1,14 @@
 /**
- * Angular Environment-Konfiguration (Default).
+ * Angular environment configuration (default).
  *
- * Demo-Setup für die Developer-Akademie: Für Contacts wird Supabase über
- * die Project URL und den Publishable Key angebunden.
+ * Demo setup for the Developer Akademie: for contacts, Supabase is connected
+ * via the project URL and the publishable key.
  *
- * WICHTIG:
- *  - NUR den Publishable Key verwenden.
- *  - NIEMALS Secret Key, Service Role Key oder Datenbankpasswort hier ablegen.
- *  - Die aktuelle Demo-RLS erlaubt anon-Zugriff auf `contacts`
- *    (bewusst fürs Schulprojekt, nicht produktionsreif).
+ * IMPORTANT:
+ *  - Use ONLY the publishable key.
+ *  - NEVER store a secret key, service role key or database password here.
+ *  - The current demo RLS allows anon access to `contacts`
+ *    (deliberately for the school project, not production-ready).
  */
 export const environment = {
   production: false,

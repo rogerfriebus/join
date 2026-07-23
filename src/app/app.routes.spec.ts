@@ -33,12 +33,12 @@ describe('app.routes', () => {
   const PROTECTED = ['summary', 'board', 'add-task', 'contacts'];
   const PUBLIC = ['login', 'help', 'legal-notice', 'privacy-policy'];
 
-  it.each(PROTECTED)('schützt die Route /%s mit dem authGuard', (path) => {
+  it.each(PROTECTED)('protects the route /%s with the authGuard', (path) => {
     expect(findRoute(path)).toBeDefined();
     expect(isGuarded(path)).toBe(true);
   });
 
-  it.each(PUBLIC)('lässt die Route /%s öffentlich (ohne authGuard)', (path) => {
+  it.each(PUBLIC)('leaves the route /%s public (without authGuard)', (path) => {
     expect(findRoute(path)).toBeDefined();
     expect(isGuarded(path)).toBe(false);
   });

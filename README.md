@@ -1,13 +1,13 @@
 # Join
 
-Join ist ein gemeinsames Teamprojekt der Developer Akademie – eine webbasierte
-Kanban-/Task-Management-App nach Figma-Vorgabe.
+Join is a collaborative team project from the Developer Akademie – a web-based
+kanban/task management app based on a Figma design.
 
-**Join ist ein Angular-Projekt.** Die frühere HTML/CSS/JS-Struktur wurde ersetzt
-und ist nicht mehr Teil des aktuellen Projektstands. Sie bleibt nur über die
-Git-Historie nachvollziehbar.
+**Join is an Angular project.** The former HTML/CSS/JS structure has been replaced
+and is no longer part of the current project state. It remains accessible only
+through the Git history.
 
-Die App ist als **Single Page Application (SPA)** umgesetzt, nicht als Multi Page
+The app is implemented as a **Single Page Application (SPA)**, not as a Multi Page
 Application.
 
 ## Team
@@ -16,39 +16,39 @@ Application.
 - Kevin
 - Marko
 
-## Technische Grundlage
+## Technical Foundation
 
-Empfohlene Versionen (Teamstand):
+Recommended versions (team baseline):
 
 - Angular CLI `21.2.x`
 - Node.js `24.x`
 - npm `11.x`
 
-Stylesheets: SCSS. Kein zusätzliches UI-Framework. Kein SSR.
+Stylesheets: SCSS. No additional UI framework. No SSR.
 
 ## Setup
 
-Abhängigkeiten installieren:
+Install dependencies:
 
 ```bash
 npm install
 ```
 
-Entwicklungsserver starten:
+Start the development server:
 
 ```bash
 ng serve
 ```
 
-## Lokaler Start
+## Local Start
 
-Nach `ng serve` läuft die App lokal unter:
+After `ng serve`, the app runs locally at:
 
 ```text
 http://localhost:4200
 ```
 
-## Projektstruktur (Auszug)
+## Project Structure (Excerpt)
 
 ```text
 join/
@@ -72,7 +72,7 @@ join/
 │           ├── contacts/
 │           ├── legal-notice/
 │           └── privacy-policy/
-├── docs/                              (Team-Doku: Regeln, Git-Workflow, Setup)
+├── docs/                              (team docs: rules, Git workflow, setup)
 ├── angular.json
 ├── package.json
 └── README.md
@@ -80,8 +80,8 @@ join/
 
 ## Routing
 
-Login ist eine Angular-Route/Komponente (keine Root-`index.html`-Seite).
-`src/index.html` ist nur noch der App-Einstieg.
+Login is an Angular route/component (not a root `index.html` page).
+`src/index.html` is now only the app entry point.
 
 - `/login`
 - `/summary`
@@ -90,35 +90,35 @@ Login ist eine Angular-Route/Komponente (keine Root-`index.html`-Seite).
 - `/contacts`
 - `/legal-notice`
 - `/privacy-policy`
-- Default-Route → `/login`
-- Wildcard-Route → `/login`
+- Default route → `/login`
+- Wildcard route → `/login`
 
 ## Supabase Cloud
 
-Join nutzt **Supabase Cloud**. In diesem Schritt ist Supabase nur strukturell
-vorbereitet. Es werden **keine Secrets / keine echten Keys** ins Repository
-geschrieben. Details:
+Join uses **Supabase Cloud**. At this stage, Supabase is only prepared
+structurally. **No secrets / no real keys** are written to the repository.
+Details:
 
 ```text
 docs/supabase-setup.md
 ```
 
-## Sprint 1 – Ziel
+## Sprint 1 – Goal
 
-- Projektstruktur (Angular SPA)
-- Git-Repository / Teamworkflow
-- Supabase Cloud vorbereiten
-- Dummy-Daten-Konzept
+- Project structure (Angular SPA)
+- Git repository / team workflow
+- Prepare Supabase Cloud
+- Dummy data concept
 - Header / Navbar / Footer
-- Contacts-Seite
+- Contacts page
 - Contacts User Stories 1–4
 
-Die Aufgabenverteilung wird zusätzlich im Trello Board des Teams gepflegt.
+The task distribution is additionally maintained in the team's Trello board.
 
-## Teamworkflow (VS Code / GitHub)
+## Team Workflow (VS Code / GitHub)
 
-Wir arbeiten **nicht direkt auf `main`**. Änderungen laufen über Feature-Branches
-und Pull Requests. Der genaue Ablauf und die Regeln stehen hier:
+We do **not work directly on `main`**. Changes go through feature branches
+and pull requests. The exact procedure and rules are described here:
 
 ```text
 docs/git-workflow.md
@@ -127,8 +127,8 @@ docs/task-split.md
 docs/supabase-setup.md
 ```
 
-## Hinweis zur alten Struktur
+## Note on the Old Structure
 
-Die ursprüngliche HTML/CSS/JS-Variante wurde durch das Angular-Projekt ersetzt.
-Die alten Dateien sind nicht mehr Teil des aktuellen Projektstands und bleiben
-ausschließlich über die Git-Historie nachvollziehbar.
+The original HTML/CSS/JS variant has been replaced by the Angular project.
+The old files are no longer part of the current project state and remain
+accessible exclusively through the Git history.

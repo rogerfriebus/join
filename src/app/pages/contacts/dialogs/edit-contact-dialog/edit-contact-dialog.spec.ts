@@ -7,9 +7,9 @@ describe('EditContactDialog', () => {
   let component: EditContactDialog;
   let fixture: ComponentFixture<EditContactDialog>;
 
-  // EditContactDialog hat einen required @Input `contact`, der in ngOnInit
-  // gelesen wird. Im Test muss dieser vor der ersten Change Detection gesetzt
-  // werden, sonst läuft ngOnInit auf undefined.
+  // EditContactDialog has a required @Input `contact` that is read in ngOnInit.
+  // In the test it must be set before the first change detection run, otherwise
+  // ngOnInit runs against undefined.
   const contact: Contact = {
     id: '1',
     name: 'Anja Schulz',

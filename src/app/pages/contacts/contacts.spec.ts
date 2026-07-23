@@ -5,9 +5,9 @@ import { Contacts } from './contacts';
 import { AuthService, AuthUser } from '../../core/services/auth.service';
 
 /**
- * Gemockter Supabase-Client: Die Contacts-Seite ruft in ngOnInit über die
- * ContactService-Fassade loadContacts() auf. Mit diesem Mock erfolgt KEIN
- * echter Netzwerkaufruf; loadContacts() liefert einen leeren Datensatz.
+ * Mocked Supabase client: in ngOnInit the Contacts page calls loadContacts()
+ * via the ContactService facade. With this mock there is NO real network call;
+ * loadContacts() returns an empty data set.
  */
 vi.mock('@supabase/supabase-js', () => {
   const builder: Record<string, unknown> = {};
@@ -41,7 +41,7 @@ describe('Contacts', () => {
     expect(component).toBeTruthy();
   });
 
-  it('zeigt den eingeloggten User als Kontakt in der Liste', async () => {
+  it('shows the logged-in user as a contact in the list', async () => {
     user.set({ id: 'u1', name: 'Nina Test', email: 'nina.test@example.com', isGuest: false });
     await setup();
 
@@ -50,7 +50,7 @@ describe('Contacts', () => {
     expect(component.currentUserContactId()).toBe('auth-u1');
   });
 
-  it('erzeugt im ausgeloggten Zustand keinen kaputten Eintrag', async () => {
+  it('does not create a broken entry when logged out', async () => {
     user.set(null);
     await setup();
 

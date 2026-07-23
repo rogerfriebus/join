@@ -2,12 +2,12 @@ import { TaskService } from './task.service';
 import { Task } from '../models/task.model';
 
 /**
- * Gemockter Supabase-Client für Tasks/Subtasks.
+ * Mocked Supabase client for tasks/subtasks.
  *
- * Alle Query-Methoden sind verkettbar; das Builder-Objekt ist "thenable" und
- * löst je nach zuletzt adressierter Tabelle (`from(table)`) das konfigurierte
- * Ergebnis auf – OHNE echten Netzwerkaufruf. So lassen sich Load-, Write- und
- * Mapping-Pfade testen, ohne Supabase wirklich zu kontaktieren.
+ * All query methods are chainable; the builder object is "thenable" and
+ * resolves to the configured result based on the table last addressed
+ * (`from(table)`) - WITHOUT a real network call. This makes it possible to test
+ * the load, write and mapping paths without actually contacting Supabase.
  */
 const supabaseMock = vi.hoisted(() => {
   const calls: { method: string; table: string; args: unknown[] }[] = [];
@@ -61,7 +61,7 @@ describe('TaskService', () => {
 
   const draft: Task = {
     id: '',
-    title: 'Neuer Demo-Task',
+    title: 'New demo task',
     dueDate: '2026-08-01',
     priority: 'medium',
     category: 'Technical Task',
@@ -70,39 +70,39 @@ describe('TaskService', () => {
     subtasks: [],
   };
 
-  // ---- synchrone Lesezugriffe (arbeiten auf dem Demo-/Signal-Bestand) -------
+  // ---- synchronous reads (operate on the demo/signal store) ---------------
 
   describe('getTasks', () => {
-    it('liefert eine Liste', () => {
+    it('returns a list', () => {
       expect(Array.isArray(service.getTasks())).toBe(true);
     });
 
-    it('enthält mindestens 5 Tasks (Demo-Fallback)', () => {
+    it('contains at least 5 tasks (demo fallback)', () => {
       expect(service.getTasks().length).toBeGreaterThanOrEqual(5);
     });
   });
 
   describe('getTaskById', () => {
-    it('findet einen bestehenden Task', () => {
+    it('finds an existing task', () => {
       const first = service.getTasks()[0];
       expect(service.getTaskById(first.id)).toEqual(first);
     });
 
-    it('gibt undefined bei unbekannter ID zurück', () => {
+    it('returns undefined for an unknown ID', () => {
       expect(service.getTaskById('does-not-exist')).toBeUndefined();
     });
   });
 
-  // ---- Supabase-Fassade -----------------------------------------------------
+  // ---- Supabase facade ------------------------------------------------------
 
   describe('loadTasks', () => {
-    it('lädt Tasks und Subtasks, mappt snake_case→camelCase und aktualisiert das Signal', async () => {
+    it('loads tasks and subtasks, maps snake_case to camelCase and updates the signal', async () => {
       supabaseMock.setTableResult('tasks', {
         data: [
           {
             id: 'sbT',
             title: 'Cloud Task',
-            description: 'Aus Supabase geladen',
+            description: 'Loaded from Supabase',
             due_date: '2026-09-01',
             priority: 'urgent',
             category: 'User Story',
@@ -128,7 +128,7 @@ describe('TaskService', () => {
       expect(tasks[0]).toEqual({
         id: 'sbT',
         title: 'Cloud Task',
-        description: 'Aus Supabase geladen',
+        description: 'Loaded from Supabase',
         dueDate: '2026-09-01',
         priority: 'urgent',
         category: 'User Story',
@@ -140,7 +140,7 @@ describe('TaskService', () => {
       });
     });
 
-    it('behält den Demo-Fallback bei einem Supabase-Fehler und wirft nicht', async () => {
+    it('keeps the demo fallback on a Supabase error and does not throw', async () => {
       const before = service.getTasks().length;
       supabaseMock.setTableResult('tasks', { data: null, error: { message: 'offline' } });
 
@@ -152,7 +152,7 @@ describe('TaskService', () => {
   describe('addTask', () => {
     const savedRow = {
       id: 't7',
-      title: 'Neuer Demo-Task',
+      title: 'New demo task',
       description: null,
       due_date: '2026-08-01',
       priority: 'medium',
@@ -167,25 +167,25 @@ describe('TaskService', () => {
       supabaseMock.setTableResult('tasks', { data: savedRow, error: null });
     });
 
-    it('speichert in Supabase und fügt den Task dem Bestand hinzu', async () => {
+    it('saves to Supabase and adds the task to the store', async () => {
       const before = service.getTasks().length;
       await service.addTask({ ...draft });
       expect(service.getTasks().length).toBe(before + 1);
     });
 
-    it('gibt den gespeicherten Task zurück und macht ihn auffindbar', async () => {
+    it('returns the saved task and makes it findable', async () => {
       const added = await service.addTask({ ...draft });
       expect(added.id).toBe('t7');
       expect(service.getTaskById('t7')).toEqual(added);
     });
 
-    it('erzeugt eine ID im Upsert-Payload, wenn keine vorhanden ist', async () => {
+    it('generates an ID in the upsert payload when none is present', async () => {
       await service.addTask({ ...draft, id: '' });
       const upsertCall = supabaseMock.calls.find((c) => c.method === 'upsert');
       expect((upsertCall?.args[0] as { id?: string })?.id).toBeTruthy();
     });
 
-    it('übernimmt eine vorhandene ID im Upsert-Payload', async () => {
+    it('keeps an existing ID in the upsert payload', async () => {
       await service.addTask({ ...draft, id: 'custom-id' });
       const upsertCall = supabaseMock.calls.find((c) => c.method === 'upsert');
       expect((upsertCall?.args[0] as { id?: string })?.id).toBe('custom-id');
@@ -193,12 +193,12 @@ describe('TaskService', () => {
   });
 
   describe('updateTask', () => {
-    it('aktualisiert Task in Supabase und Bestand', async () => {
+    it('updates the task in Supabase and the store', async () => {
       const first = service.getTasks()[0];
       supabaseMock.setTableResult('tasks', {
         data: {
           id: first.id,
-          title: 'Geänderter Titel',
+          title: 'Updated title',
           description: first.description ?? null,
           due_date: first.dueDate,
           priority: first.priority,
@@ -211,18 +211,18 @@ describe('TaskService', () => {
         error: null,
       });
 
-      const updated = await service.updateTask({ ...first, title: 'Geänderter Titel' });
-      expect(updated?.title).toBe('Geänderter Titel');
-      expect(service.getTaskById(first.id)?.title).toBe('Geänderter Titel');
+      const updated = await service.updateTask({ ...first, title: 'Updated title' });
+      expect(updated?.title).toBe('Updated title');
+      expect(service.getTaskById(first.id)?.title).toBe('Updated title');
     });
 
-    it('gibt undefined ohne ID zurück (ohne Supabase-Aufruf)', async () => {
+    it('returns undefined without an ID (without a Supabase call)', async () => {
       const result = await service.updateTask({ ...draft, id: '' });
       expect(result).toBeUndefined();
       expect(supabaseMock.calls.length).toBe(0);
     });
 
-    it('gibt undefined bei unbekanntem Task zurück', async () => {
+    it('returns undefined for an unknown task', async () => {
       supabaseMock.setTableResult('tasks', { data: null, error: null });
       const result = await service.updateTask({ ...draft, id: 'does-not-exist' });
       expect(result).toBeUndefined();
@@ -230,7 +230,7 @@ describe('TaskService', () => {
   });
 
   describe('deleteTask', () => {
-    it('löscht über Supabase und aktualisiert den Bestand', async () => {
+    it('deletes via Supabase and updates the store', async () => {
       const first = service.getTasks()[0];
       const before = service.getTasks().length;
       supabaseMock.setTableResult('tasks', { data: [{ id: first.id }], error: null });
@@ -240,7 +240,7 @@ describe('TaskService', () => {
       expect(service.getTaskById(first.id)).toBeUndefined();
     });
 
-    it('gibt false zurück, wenn keine Zeile gelöscht wurde', async () => {
+    it('returns false when no row was deleted', async () => {
       const before = service.getTasks().length;
       supabaseMock.setTableResult('tasks', { data: [], error: null });
 
@@ -250,7 +250,7 @@ describe('TaskService', () => {
   });
 
   describe('updateTaskStatus', () => {
-    it('ändert den Status in Supabase und Bestand', async () => {
+    it('changes the status in Supabase and the store', async () => {
       const first = service.getTasks()[0];
       supabaseMock.setTableResult('tasks', {
         data: {
@@ -273,7 +273,7 @@ describe('TaskService', () => {
       expect(service.getTaskById(first.id)?.status).toBe('done');
     });
 
-    it('gibt undefined bei unbekannter ID zurück', async () => {
+    it('returns undefined for an unknown ID', async () => {
       supabaseMock.setTableResult('tasks', { data: null, error: null });
       expect(await service.updateTaskStatus('does-not-exist', 'done')).toBeUndefined();
     });
@@ -284,7 +284,7 @@ describe('TaskService', () => {
       return service.getTasks().find((task) => task.subtasks.length > 0)!;
     }
 
-    it('ändert den done-Wert in Supabase und Bestand', async () => {
+    it('changes the done value in Supabase and the store', async () => {
       const task = taskWithSubtask();
       const subtask = task.subtasks[0];
       supabaseMock.setTableResult('subtasks', {
@@ -299,13 +299,13 @@ describe('TaskService', () => {
       ).toBe(!subtask.done);
     });
 
-    it('gibt undefined bei unbekanntem Task zurück (ohne Supabase-Aufruf)', async () => {
+    it('returns undefined for an unknown task (without a Supabase call)', async () => {
       const result = await service.updateSubtaskStatus('does-not-exist', 'sub', true);
       expect(result).toBeUndefined();
       expect(supabaseMock.calls.length).toBe(0);
     });
 
-    it('gibt undefined bei unbekanntem Subtask zurück (ohne Supabase-Aufruf)', async () => {
+    it('returns undefined for an unknown subtask (without a Supabase call)', async () => {
       const task = taskWithSubtask();
       const result = await service.updateSubtaskStatus(task.id, 'does-not-exist', true);
       expect(result).toBeUndefined();

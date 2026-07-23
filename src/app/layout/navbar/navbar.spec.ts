@@ -49,7 +49,7 @@ describe('Navbar', () => {
     expect(component).toBeTruthy();
   });
 
-  it('zeigt die geschützten Links für authentifizierte Nutzer', async () => {
+  it('shows the protected links for authenticated users', async () => {
     isAuthenticated.set(true);
     await setup();
 
@@ -58,7 +58,7 @@ describe('Navbar', () => {
     expect(hrefs).toEqual(['/summary', '/add-task', '/board', '/contacts']);
   });
 
-  it('zeigt für nicht authentifizierte Nutzer die öffentlichen Links', async () => {
+  it('shows the public links for unauthenticated users', async () => {
     isAuthenticated.set(false);
     await setup();
 
@@ -72,14 +72,14 @@ describe('Navbar', () => {
     ]);
   });
 
-  it('führt das Brand-Logo für Ausgeloggte auf /login', async () => {
+  it('points the brand logo to /login for logged-out users', async () => {
     isAuthenticated.set(false);
     await setup();
 
     expect(query('.navbar__brand')?.getAttribute('href')).toBe('/login');
   });
 
-  it('führt das Brand-Logo für Eingeloggte auf /summary', async () => {
+  it('points the brand logo to /summary for logged-in users', async () => {
     isAuthenticated.set(true);
     await setup();
 

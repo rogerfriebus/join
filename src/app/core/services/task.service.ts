@@ -11,11 +11,11 @@ import {
 import { DUMMY_TASKS } from '../data/task-dummy-data';
 import { environment } from '../../../environments/environment';
 
-/** Namen der Supabase-Tabellen für Tasks. */
+/** Names of the Supabase tables for tasks. */
 const TASKS_TABLE = 'tasks';
 const SUBTASKS_TABLE = 'subtasks';
 
-/** Form einer Task-Zeile in Supabase (snake_case). Siehe supabase/sql/tasks-setup.sql. */
+/** Shape of a task row in Supabase (snake_case). See supabase/sql/tasks-setup.sql. */
 interface TaskRow {
   id: string;
   title: string;
@@ -29,7 +29,7 @@ interface TaskRow {
   updated_at: string | null;
 }
 
-/** Form einer Subtask-Zeile in Supabase (snake_case). */
+/** Shape of a subtask row in Supabase (snake_case). */
 interface SubtaskRow {
   id: string;
   task_id: string;
@@ -40,21 +40,21 @@ interface SubtaskRow {
   updated_at: string | null;
 }
 
-/** Payload für tasks-Insert/Update (snake_case). */
+/** Payload for tasks insert/update (snake_case). */
 type TaskRowPayload = Pick<
   TaskRow,
   'id' | 'title' | 'description' | 'due_date' | 'priority' | 'category' | 'status' | 'assigned_contact_ids'
 >;
 
-/** Payload für subtasks-Insert (snake_case). */
+/** Payload for subtasks insert (snake_case). */
 type SubtaskRowPayload = Pick<SubtaskRow, 'id' | 'task_id' | 'title' | 'done' | 'position'>;
 
-/** Mappt eine Subtask-Zeile auf das Frontend-Modell. */
+/** Maps a subtask row to the frontend model. */
 function mapRowToSubtask(row: SubtaskRow): Subtask {
   return { id: row.id, title: row.title, done: row.done };
 }
 
-/** Mappt eine Task-Zeile (+ zugehörige Subtasks) auf das Frontend-Modell. */
+/** Maps a task row (+ its subtasks) to the frontend model. */
 function mapRowToTask(row: TaskRow, subtasks: Subtask[]): Task {
   return {
     id: row.id,
@@ -71,7 +71,7 @@ function mapRowToTask(row: TaskRow, subtasks: Subtask[]): Task {
   };
 }
 
-/** Mappt das Frontend-Modell auf ein tasks-Payload (snake_case). */
+/** Maps the frontend model to a tasks payload (snake_case). */
 function mapTaskToRowPayload(task: Task): TaskRowPayload {
   return {
     id: task.id,
@@ -85,7 +85,7 @@ function mapTaskToRowPayload(task: Task): TaskRowPayload {
   };
 }
 
-/** Mappt einen Subtask auf ein subtasks-Payload (snake_case) inkl. task_id/position. */
+/** Maps a subtask to a subtasks payload (snake_case) including task_id/position. */
 function mapSubtaskToRowPayload(subtask: Subtask, taskId: string, position: number): SubtaskRowPayload {
   return {
     id: subtask.id,
@@ -97,32 +97,32 @@ function mapSubtaskToRowPayload(subtask: Subtask, taskId: string, position: numb
 }
 
 /**
- * Zentraler Service für Tasks (Sprint 2: Board & Add Task).
+ * Central service for tasks (Sprint 2: Board & Add Task).
  *
- * Der Service ist die zentrale Fassade für die Task-Datenlogik. Er hält den
- * Bestand als Angular Signal und bietet zusätzlich eine Supabase-Anbindung für
- * Tasks und Subtasks. UI-Komponenten nutzen ausschließlich die fachlichen
- * Methoden (loadTasks/addTask/updateTask/deleteTask/updateTaskStatus/
- * updateSubtaskStatus) und kennen keine Supabase-spezifischen Methoden.
+ * The service is the central facade for the task data logic. It holds the set
+ * as an Angular signal and additionally offers a Supabase integration for tasks
+ * and subtasks. UI components use exclusively the domain methods
+ * (loadTasks/addTask/updateTask/deleteTask/updateTaskStatus/
+ * updateSubtaskStatus) and know no Supabase-specific methods.
  *
- * Demo-Setup (Developer-Akademie):
- *  - Supabase wird über Project URL + Publishable Key aus den environment-Dateien
- *    angebunden. Es werden BEWUSST keine Secret/Service-Role-Keys verwendet.
- *  - Die Demo-RLS erlaubt anon-Zugriff auf tasks/subtasks (nicht produktionsreif).
- *  - Die Demo-Tasks bleiben als Fallback erhalten, falls Supabase nicht erreichbar ist.
+ * Demo setup (Developer Akademie):
+ *  - Supabase is connected via project URL + publishable key from the
+ *    environment files. NO secret/service-role keys are used, deliberately.
+ *  - The demo RLS allows anon access to tasks/subtasks (not production-ready).
+ *  - The demo tasks are kept as a fallback in case Supabase is unreachable.
  */
 @Injectable({ providedIn: 'root' })
 export class TaskService {
   /**
-   * Supabase-Client, lazy erzeugt. `createClient` öffnet keine Verbindung und
-   * führt keinen Netzwerkaufruf aus, bevor eine Query gestartet wird.
+   * Supabase client, created lazily. `createClient` opens no connection and
+   * makes no network call before a query is started.
    */
   private supabaseClient: SupabaseClient | null = null;
 
   /**
-   * Interner Task-Bestand. Initialisiert mit einer unabhängigen Kopie der
-   * Demo-Tasks (Fallback), damit die geteilten DUMMY_TASKS nicht mutiert werden
-   * und jede Service-Instanz (z. B. pro Test) frisch startet.
+   * Internal task set. Initialized with an independent copy of the demo tasks
+   * (fallback) so that the shared DUMMY_TASKS are not mutated and each service
+   * instance (e.g. per test) starts fresh.
    */
   private readonly tasksSignal = signal<Task[]>(
     DUMMY_TASKS.map((task) => ({
@@ -133,45 +133,44 @@ export class TaskService {
   );
 
   /**
-   * Öffentlicher, read-only Zugriff auf den aktuellen Task-Bestand.
-   * UI-Komponenten lesen Tasks ausschließlich hierüber (reaktiv).
+   * Public, read-only access to the current task set.
+   * UI components read tasks exclusively through it (reactively).
    */
   readonly tasks = this.tasksSignal.asReadonly();
 
-  /** Liefert den aktuellen Task-Bestand (Snapshot). */
+  /** Returns the current task set (snapshot). */
   getTasks(): Task[] {
     return this.tasksSignal();
   }
 
-  /** Liefert einen einzelnen Task anhand der id oder undefined, wenn nicht gefunden. */
+  /** Returns a single task by id, or undefined if not found. */
   getTaskById(id: string): Task | undefined {
     return this.tasksSignal().find((task) => task.id === id);
   }
 
   // ---------------------------------------------------------------------------
-  // Fachliche Fassade (von der UI genutzt)
+  // Domain facade (used by the UI)
   // ---------------------------------------------------------------------------
 
   /**
-   * Lädt Tasks (inkl. Subtasks) aus Supabase und aktualisiert das Signal.
-   * Bei einem Fehler bleibt der bestehende (Demo-)Bestand als Fallback erhalten
-   * und der Fehler wird geloggt – die Methode wirft also bewusst nicht.
+   * Loads tasks (including subtasks) from Supabase and updates the signal.
+   * On an error the existing (demo) set is kept as a fallback and the error is
+   * logged – so the method deliberately does not throw.
    */
   async loadTasks(): Promise<void> {
     try {
       await this.loadTasksFromSupabase();
     } catch (error) {
       console.error(
-        'Tasks konnten nicht aus Supabase geladen werden – Demo-Fallback bleibt aktiv.',
+        'Could not load tasks from Supabase – demo fallback stays active.',
         error,
       );
     }
   }
 
   /**
-   * Legt einen Task an: speichert ihn (inkl. Subtasks) in Supabase und
-   * aktualisiert danach den sichtbaren Bestand. Gibt den gespeicherten Task
-   * zurück.
+   * Creates a task: saves it (including subtasks) in Supabase and then updates
+   * the visible set. Returns the saved task.
    */
   async addTask(task: Task): Promise<Task> {
     const saved = await this.addTaskToSupabase(task);
@@ -180,8 +179,8 @@ export class TaskService {
   }
 
   /**
-   * Aktualisiert einen Task in Supabase und danach den sichtbaren Bestand.
-   * Liefert undefined ohne id oder bei unbekanntem Task.
+   * Updates a task in Supabase and then the visible set.
+   * Returns undefined without an id or for an unknown task.
    */
   async updateTask(task: Task): Promise<Task | undefined> {
     if (!task.id) {
@@ -197,8 +196,8 @@ export class TaskService {
   }
 
   /**
-   * Löscht einen Task in Supabase (Subtasks via FK-Cascade) und aktualisiert
-   * danach den sichtbaren Bestand. Gibt true bei Erfolg zurück.
+   * Deletes a task in Supabase (subtasks via FK cascade) and then updates the
+   * visible set. Returns true on success.
    */
   async deleteTask(id: string): Promise<boolean> {
     const deleted = await this.deleteTaskFromSupabase(id);
@@ -209,8 +208,8 @@ export class TaskService {
   }
 
   /**
-   * Ändert nur den Status eines Tasks in Supabase und im sichtbaren Bestand.
-   * Liefert undefined bei unbekannter id.
+   * Changes only the status of a task in Supabase and in the visible set.
+   * Returns undefined for an unknown id.
    */
   async updateTaskStatus(id: string, status: TaskStatus): Promise<Task | undefined> {
     const updated = await this.updateTaskStatusInSupabase(id, status);
@@ -223,8 +222,8 @@ export class TaskService {
   }
 
   /**
-   * Ändert nur den done-Wert eines Subtasks in Supabase und im sichtbaren
-   * Bestand. Liefert undefined bei unbekanntem Task oder Subtask.
+   * Changes only the done value of a subtask in Supabase and in the visible
+   * set. Returns undefined for an unknown task or subtask.
    */
   async updateSubtaskStatus(
     taskId: string,
@@ -241,10 +240,10 @@ export class TaskService {
   }
 
   // ---------------------------------------------------------------------------
-  // Supabase-Zugriff (intern – nicht direkt aus UI-Komponenten aufrufen)
+  // Supabase access (internal – do not call directly from UI components)
   // ---------------------------------------------------------------------------
 
-  /** Lazy erzeugter Supabase-Client (Project URL + Publishable Key, kein Secret). */
+  /** Lazily created Supabase client (project URL + publishable key, no secret). */
   private getClient(): SupabaseClient {
     if (!this.supabaseClient) {
       this.supabaseClient = createClient(
@@ -256,8 +255,8 @@ export class TaskService {
   }
 
   /**
-   * Lädt Tasks und Subtasks aus Supabase, ordnet die Subtasks ihren Tasks zu
-   * (sortiert nach position) und aktualisiert den internen Signal-Bestand.
+   * Loads tasks and subtasks from Supabase, assigns the subtasks to their tasks
+   * (sorted by position) and updates the internal signal set.
    */
   async loadTasksFromSupabase(): Promise<Task[]> {
     const taskResult = await this.getClient()
@@ -266,7 +265,7 @@ export class TaskService {
       .order('id', { ascending: true });
 
     if (taskResult.error) {
-      throw new Error(`Tasks konnten nicht geladen werden: ${taskResult.error.message}`);
+      throw new Error(`Could not load tasks: ${taskResult.error.message}`);
     }
 
     const subtaskResult = await this.getClient()
@@ -275,7 +274,7 @@ export class TaskService {
       .order('position', { ascending: true });
 
     if (subtaskResult.error) {
-      throw new Error(`Subtasks konnten nicht geladen werden: ${subtaskResult.error.message}`);
+      throw new Error(`Could not load subtasks: ${subtaskResult.error.message}`);
     }
 
     const subtasksByTask = this.groupSubtasksByTask((subtaskResult.data ?? []) as SubtaskRow[]);
@@ -288,8 +287,8 @@ export class TaskService {
   }
 
   /**
-   * Speichert einen neuen Task (inkl. Subtasks) in Supabase und gibt den
-   * gespeicherten Task zurück. Fehlt eine id, wird eine erzeugt.
+   * Saves a new task (including subtasks) in Supabase and returns the saved
+   * task. If an id is missing, one is generated.
    */
   async addTaskToSupabase(task: Task): Promise<Task> {
     const id = task.id || this.generateId();
@@ -303,7 +302,7 @@ export class TaskService {
       .single();
 
     if (error) {
-      throw new Error(`Task konnte nicht gespeichert werden: ${error.message}`);
+      throw new Error(`Could not save task: ${error.message}`);
     }
 
     await this.replaceSubtasks(id, subtasks);
@@ -311,9 +310,9 @@ export class TaskService {
   }
 
   /**
-   * Aktualisiert einen Task in Supabase und synchronisiert seine Subtasks
-   * (pragmatisch: alte Subtasks löschen, neue einfügen). Liefert undefined,
-   * wenn keine id gesetzt ist oder kein passender Datensatz existiert.
+   * Updates a task in Supabase and synchronizes its subtasks (pragmatically:
+   * delete old subtasks, insert new ones). Returns undefined when no id is set
+   * or no matching record exists.
    */
   async updateTaskInSupabase(task: Task): Promise<Task | undefined> {
     if (!task.id) {
@@ -329,7 +328,7 @@ export class TaskService {
       .maybeSingle();
 
     if (error) {
-      throw new Error(`Task konnte nicht aktualisiert werden: ${error.message}`);
+      throw new Error(`Could not update task: ${error.message}`);
     }
     if (!data) {
       return undefined;
@@ -340,8 +339,8 @@ export class TaskService {
   }
 
   /**
-   * Löscht einen Task in Supabase. Zugehörige Subtasks werden per FK-Cascade
-   * entfernt. Gibt true zurück, wenn ein Datensatz gelöscht wurde.
+   * Deletes a task in Supabase. Associated subtasks are removed via FK cascade.
+   * Returns true when a record was deleted.
    */
   async deleteTaskFromSupabase(id: string): Promise<boolean> {
     const { data, error } = await this.getClient()
@@ -351,14 +350,14 @@ export class TaskService {
       .select('id');
 
     if (error) {
-      throw new Error(`Task konnte nicht gelöscht werden: ${error.message}`);
+      throw new Error(`Could not delete task: ${error.message}`);
     }
     return (data?.length ?? 0) > 0;
   }
 
   /**
-   * Aktualisiert ausschließlich den Status eines Tasks in Supabase. Liefert
-   * den aktualisierten Task (mit aktuellen Subtasks) oder undefined.
+   * Updates exclusively the status of a task in Supabase. Returns the updated
+   * task (with current subtasks) or undefined.
    */
   async updateTaskStatusInSupabase(id: string, status: TaskStatus): Promise<Task | undefined> {
     const { data, error } = await this.getClient()
@@ -369,7 +368,7 @@ export class TaskService {
       .maybeSingle();
 
     if (error) {
-      throw new Error(`Task-Status konnte nicht aktualisiert werden: ${error.message}`);
+      throw new Error(`Could not update task status: ${error.message}`);
     }
     if (!data) {
       return undefined;
@@ -380,8 +379,8 @@ export class TaskService {
   }
 
   /**
-   * Aktualisiert ausschließlich den done-Wert eines Subtasks in Supabase.
-   * Liefert den aktualisierten Parent-Task oder undefined (unbekannter Task/Subtask).
+   * Updates exclusively the done value of a subtask in Supabase.
+   * Returns the updated parent task or undefined (unknown task/subtask).
    */
   async updateSubtaskStatusInSupabase(
     taskId: string,
@@ -401,7 +400,7 @@ export class TaskService {
       .maybeSingle();
 
     if (error) {
-      throw new Error(`Subtask-Status konnte nicht aktualisiert werden: ${error.message}`);
+      throw new Error(`Could not update subtask status: ${error.message}`);
     }
     if (!data) {
       return undefined;
@@ -416,10 +415,10 @@ export class TaskService {
   }
 
   // ---------------------------------------------------------------------------
-  // Hilfsfunktionen
+  // Helper functions
   // ---------------------------------------------------------------------------
 
-  /** Ersetzt alle Subtasks eines Tasks (löschen + neu einfügen). */
+  /** Replaces all subtasks of a task (delete + re-insert). */
   private async replaceSubtasks(taskId: string, subtasks: Subtask[]): Promise<void> {
     const { error: deleteError } = await this.getClient()
       .from(SUBTASKS_TABLE)
@@ -427,7 +426,7 @@ export class TaskService {
       .eq('task_id', taskId);
 
     if (deleteError) {
-      throw new Error(`Subtasks konnten nicht ersetzt werden: ${deleteError.message}`);
+      throw new Error(`Could not replace subtasks: ${deleteError.message}`);
     }
 
     if (subtasks.length === 0) {
@@ -442,11 +441,11 @@ export class TaskService {
       .insert(payload);
 
     if (insertError) {
-      throw new Error(`Subtasks konnten nicht gespeichert werden: ${insertError.message}`);
+      throw new Error(`Could not save subtasks: ${insertError.message}`);
     }
   }
 
-  /** Gruppiert Subtask-Zeilen nach task_id (Reihenfolge bleibt erhalten). */
+  /** Groups subtask rows by task_id (order is preserved). */
   private groupSubtasksByTask(rows: SubtaskRow[]): Map<string, Subtask[]> {
     const map = new Map<string, Subtask[]>();
     for (const row of rows) {
@@ -457,7 +456,7 @@ export class TaskService {
     return map;
   }
 
-  /** Ergänzt sinnvolle Default-Werte für einen (neuen) Task. */
+  /** Adds sensible default values for a (new) task. */
   private applyTaskDefaults(task: Task, id: string): Task {
     return {
       ...task,
@@ -470,14 +469,14 @@ export class TaskService {
   }
 
   /**
-   * Stellt sicher, dass jeder Subtask eine eindeutige, task-bezogene id besitzt.
+   * Ensures that every subtask has a unique, task-scoped id.
    *
-   * Neu vergeben wird die id (`${taskId}-s${index + 1}`), wenn sie
-   *  - leer ist,
-   *  - mit `tmp-` beginnt (temporäre UI-Platzhalter-id) oder
-   *  - nicht mit `${taskId}-` beginnt (fremde id eines anderen Tasks).
-   * So können keine globalen/fremden ids in die subtasks-Tabelle gelangen und
-   * den Primärschlüssel `subtasks.id` verletzen (Duplicate-Key/409).
+   * The id (`${taskId}-s${index + 1}`) is reassigned when it
+   *  - is empty,
+   *  - starts with `tmp-` (temporary UI placeholder id) or
+   *  - does not start with `${taskId}-` (foreign id of another task).
+   * This prevents global/foreign ids from ending up in the subtasks table and
+   * violating the primary key `subtasks.id` (duplicate key/409).
    */
   private ensureSubtaskIds(subtasks: Subtask[], taskId: string): Subtask[] {
     return subtasks.map((subtask, index) => {
@@ -492,9 +491,9 @@ export class TaskService {
   }
 
   /**
-   * Erzeugt eine eindeutige id im Schema `t<n>`. Erkennt den numerischen Anteil
-   * bestehender IDs (t1, t2, …), nutzt die höchste Nummer + 1 und stellt sicher,
-   * dass die erzeugte id noch nicht vergeben ist.
+   * Generates a unique id in the scheme `t<n>`. Detects the numeric part of
+   * existing IDs (t1, t2, …), uses the highest number + 1 and ensures that the
+   * generated id is not already taken.
    */
   private generateId(): string {
     const numbers = this.tasksSignal()

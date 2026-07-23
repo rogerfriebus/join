@@ -1,28 +1,26 @@
 /**
- * Datenmodell für Tasks (Sprint 2: Board & Add Task).
+ * Data model for tasks (board & Add Task).
  *
- * Diese Datei definiert die zentralen Typen für Tasks und Subtasks sowie die
- * erlaubten Status-, Prioritäts- und Kategoriewerte. Sie bildet die technische
- * Grundlage, auf der Board und Add Task später aufbauen.
- *
- * In diesem Schritt wird BEWUSST keine Supabase-/Backend-Anbindung gebaut.
+ * This file defines the central types for tasks and subtasks as well as the
+ * allowed status, priority and category values. It is the technical foundation
+ * the board and Add Task build on.
  */
 
 /**
- * Status einer Task – entspricht den vier Spalten des Kanban-Boards:
+ * Status of a task – matches the four columns of the kanban board:
  * ToDo, In Progress, Awaiting Feedback, Done.
  */
 export type TaskStatus = 'todo' | 'inProgress' | 'awaitFeedback' | 'done';
 
-/** Priorität einer Task. Default im Add-Task-Formular ist später `medium`. */
+/** Priority of a task. The default in the Add Task form is `medium`. */
 export type TaskPriority = 'urgent' | 'medium' | 'low';
 
-/** Kategorie einer Task (Pflichtfeld in Add Task). */
+/** Category of a task (required field in Add Task). */
 export type TaskCategory = 'Technical Task' | 'User Story';
 
 /**
- * Alle gültigen Statuswerte als zur Laufzeit nutzbare Liste
- * (z. B. für Validierung, Iteration über Board-Spalten oder Tests).
+ * All valid status values as a runtime-usable list
+ * (e.g. for validation, iterating over board columns or tests).
  */
 export const TASK_STATUSES: readonly TaskStatus[] = [
   'todo',
@@ -31,58 +29,58 @@ export const TASK_STATUSES: readonly TaskStatus[] = [
   'done',
 ];
 
-/** Alle gültigen Prioritäten als zur Laufzeit nutzbare Liste. */
+/** All valid priorities as a runtime-usable list. */
 export const TASK_PRIORITIES: readonly TaskPriority[] = ['urgent', 'medium', 'low'];
 
-/** Alle gültigen Kategorien als zur Laufzeit nutzbare Liste. */
+/** All valid categories as a runtime-usable list. */
 export const TASK_CATEGORIES: readonly TaskCategory[] = ['Technical Task', 'User Story'];
 
-/** Standard-Priorität für neue Tasks (gemäß Sprint-2-Vorgabe). */
+/** Default priority for new tasks. */
 export const DEFAULT_TASK_PRIORITY: TaskPriority = 'medium';
 
 /**
- * Eine Subtask gehört zu genau einer Task und dient der Fortschrittsanzeige
- * (erledigte / gesamte Subtasks).
+ * A subtask belongs to exactly one task and drives the progress indicator
+ * (completed / total subtasks).
  */
 export interface Subtask {
-  /** Eindeutige id der Subtask. */
+  /** Unique id of the subtask. */
   id: string;
-  /** Kurzbeschreibung der Subtask. Pflichtfeld. */
+  /** Short description of the subtask. Required field. */
   title: string;
-  /** Erledigt-Status der Subtask. */
+  /** Completion status of the subtask. */
   done: boolean;
 }
 
 /**
- * Eine Task im Join-Board.
+ * A task in the Join board.
  *
- * Spiegelt die Sprint-2-Anforderungen wider: Kategorie, Titel,
- * Beschreibungsvorschau, zugewiesene Kontakte, Priorität, Status und Subtasks.
+ * Holds category, title, description preview, assigned contacts, priority,
+ * status and subtasks.
  */
 export interface Task {
-  /** Eindeutige id der Task. */
+  /** Unique id of the task. */
   id: string;
-  /** Titel der Task. Pflichtfeld. */
+  /** Title of the task. Required field. */
   title: string;
-  /** Optionale Beschreibung (für die Beschreibungsvorschau im Board). */
+  /** Optional description (for the description preview on the board). */
   description?: string;
-  /** Fälligkeitsdatum als ISO-kompatibler String (z. B. "2026-07-15"). Pflichtfeld. */
+  /** Due date as an ISO-compatible string (e.g. "2026-07-15"). Required field. */
   dueDate: string;
-  /** Priorität der Task. */
+  /** Priority of the task. */
   priority: TaskPriority;
-  /** Kategorie der Task. */
+  /** Category of the task. */
   category: TaskCategory;
-  /** Aktuelle Board-Spalte der Task. */
+  /** Current board column of the task. */
   status: TaskStatus;
   /**
-   * IDs der zugewiesenen Kontakte. Referenziert vorhandene Contacts über deren
-   * id (siehe ContactService). Bewusst nur IDs – keine User-/Auth-Logik.
+   * IDs of the assigned contacts. References existing contacts via their id
+   * (see ContactService). Deliberately IDs only – no user/auth logic.
    */
   assignedContactIds: string[];
-  /** Subtasks der Task (leeres Array, wenn keine vorhanden). */
+  /** Subtasks of the task (empty array if none). */
   subtasks: Subtask[];
-  /** Erstellungszeitpunkt (ISO-String), optional. */
+  /** Creation timestamp (ISO string), optional. */
   createdAt?: string;
-  /** Letzter Änderungszeitpunkt (ISO-String), optional. */
+  /** Last modification timestamp (ISO string), optional. */
   updatedAt?: string;
 }
