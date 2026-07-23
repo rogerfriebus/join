@@ -1,31 +1,31 @@
-# Setup-Checkliste
+# Setup Checklist
 
-## Einmalig durch Roger
+## One-Time by Roger
 
-- [ ] Repository auf GitHub erstellen
-- [ ] Lokales Projekt erstellen
-- [ ] Startdateien einfügen
-- [ ] Ersten Commit auf `main` pushen
-- [ ] Kevin und Marko als Collaborators einladen
-- [ ] Gemeinsame Regeln besprechen
+- [ ] Create repository on GitHub
+- [ ] Create local project
+- [ ] Add starter files
+- [ ] Push first commit to `main`
+- [ ] Invite Kevin and Marko as collaborators
+- [ ] Discuss shared rules
 
-## Durch jedes Teammitglied
+## By Each Team Member
 
-- [ ] Einladung auf GitHub annehmen
-- [ ] Repository per SSH klonen
-- [ ] Projekt in VS Code öffnen
-- [ ] `npm install` ausführen
-- [ ] App mit `ng serve` testen (`http://localhost:4200`)
-- [ ] Eigenen Feature-Branch erstellen
+- [ ] Accept invitation on GitHub
+- [ ] Clone repository via SSH
+- [ ] Open project in VS Code
+- [ ] Run `npm install`
+- [ ] Test the app with `ng serve` (`http://localhost:4200`)
+- [ ] Create your own feature branch
 
-## Vor Abgabe
+## Before Submission
 
-- [ ] Figma-Vorgabe geprüft
-- [ ] Responsive Design geprüft
-- [ ] Links geprüft
-- [ ] Login / Registrierung geprüft
-- [ ] Board geprüft
-- [ ] Add Task geprüft
-- [ ] Contacts geprüft
-- [ ] Legal Notice / Privacy Policy geprüft
-- [ ] Keine unnötigen Dateien im Repo
+- [ ] Figma design checked
+- [ ] Responsive design checked
+- [ ] Links checked
+- [ ] Login / registration checked
+- [ ] Board checked
+- [ ] Add Task checked
+- [ ] Contacts checked
+- [ ] Legal Notice / Privacy Policy checked
+- [ ] No unnecessary files in the repo

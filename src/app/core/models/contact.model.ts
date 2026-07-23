@@ -1,26 +1,26 @@
 /**
- * Datenmodell für einen Kontakt.
+ * Data model for a contact.
  *
- * Spiegelt die geplante Supabase-Tabelle `contacts` wider (siehe
- * docs/supabase-setup.md). In der DB sind die Felder snake_case
- * (created_at / updated_at); im Frontend nutzen wir camelCase.
+ * Mirrors the planned Supabase table `contacts` (see docs/supabase-setup.md).
+ * In the DB the fields are snake_case (created_at / updated_at); in the frontend
+ * we use camelCase.
  */
 export interface Contact {
-  /** UUID, in Supabase Primary Key. Bei neuen, noch nicht gespeicherten Kontakten optional. */
+  /** UUID, primary key in Supabase. Optional for new, not yet saved contacts. */
   id?: string;
-  /** Vollständiger Name (Vor- und Nachname). Pflichtfeld. */
+  /** Full name (first and last name). Required field. */
   name: string;
-  /** E-Mail-Adresse. Pflichtfeld. */
+  /** Email address. Required field. */
   email: string;
-  /** Telefonnummer (nur Ziffern, optional führendes +). Pflichtfeld. */
+  /** Phone number (digits only, optional leading +). Required field. */
   phone: string;
-  /** Avatar-Farbe (Hex), für die spätere Contacts-UI. Optional, ggf. ableitbar. */
+  /** Avatar color (hex), for the later contacts UI. Optional, derivable if needed. */
   color?: string;
-  /** Initialen (z. B. "AS"), für die spätere Contacts-UI. Optional, ggf. ableitbar. */
+  /** Initials (e.g. "AS"), for the later contacts UI. Optional, derivable if needed. */
   initials?: string;
-  /** Erstellungszeitpunkt (ISO-String), wird von Supabase gesetzt. */
+  /** Creation timestamp (ISO string), set by Supabase. */
   createdAt?: string;
-  /** Letzter Änderungszeitpunkt (ISO-String), wird von Supabase gesetzt. */
+  /** Last modification timestamp (ISO string), set by Supabase. */
   updatedAt?: string;
 }
 

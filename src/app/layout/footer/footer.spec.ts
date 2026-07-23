@@ -23,7 +23,7 @@ describe('Footer', () => {
     expect(component).toBeTruthy();
   });
 
-  it('verlinkt auf Privacy Policy und Legal Notice', () => {
+  it('links to Privacy Policy and Legal Notice', () => {
     const links = Array.from(
       fixture.nativeElement.querySelectorAll('.footer__link'),
     ) as HTMLAnchorElement[];

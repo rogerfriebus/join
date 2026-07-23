@@ -1,38 +1,38 @@
 
-# Git-Workflow für das Join-Projekt
+# Git Workflow for the Join Project
 
-Diese Anleitung beschreibt, wie wir im Team mit GitHub und VS Code arbeiten.
-Join ist ein Angular-Projekt; der hier beschriebene VS-Code-Workflow bleibt
-unverändert gültig.
+This guide describes how we work as a team with GitHub and VS Code.
+Join is an Angular project; the VS Code workflow described here remains
+valid unchanged.
 
-Ziel ist: Wir vermeiden Chaos, überschreiben uns nicht gegenseitig und übernehmen Änderungen kontrolliert in die gemeinsame Projektversion.
+The goal is: we avoid chaos, don't overwrite each other, and integrate changes into the shared project version in a controlled way.
 
-## Grundregel
+## Basic Rule
 
-Wir arbeiten nicht direkt auf `main`.
+We do not work directly on `main`.
 
-`main` ist unsere stabile gemeinsame Version. Neue Änderungen werden zuerst in einem eigenen Branch vorbereitet und danach per Pull Request in `main` übernommen.
+`main` is our stable shared version. New changes are first prepared in a dedicated branch and then merged into `main` via a pull request.
 
-Das gilt auch mit Angular. Angular trennt die Arbeit zwar fachlich über
-Komponenten, Seiten und Services – Branches schützen `main` aber zusätzlich
-organisatorisch. Die ausführliche Einordnung steht in
-`docs/team-rules.md` (Abschnitt „Angular und Branches").
+This also applies with Angular. While Angular separates work at the technical
+level through components, pages, and services, branches additionally protect
+`main` organizationally. The detailed explanation is in
+`docs/team-rules.md` (section "Angular and Branches").
 
-## Standardablauf in VS Code
+## Standard Procedure in VS Code
 
-### 1. Auf `main` starten
+### 1. Start on `main`
 
-Unten links in VS Code muss `main` stehen.
+The bottom left of VS Code must show `main`.
 
-Falls dort ein anderer Branch steht, zuerst auf `main` wechseln.
+If a different branch is shown there, switch to `main` first.
 
-Danach `main` synchronisieren, damit der aktuelle Stand von GitHub lokal vorhanden ist.
+Then sync `main` so that the current state from GitHub is available locally.
 
-### 2. Neuen Branch erstellen
+### 2. Create a New Branch
 
-Für jede Aufgabe wird ein eigener Branch erstellt.
+A dedicated branch is created for each task.
 
-Beispiele:
+Examples:
 
 ```text
 feature/login
@@ -43,102 +43,102 @@ feature/contacts
 docs/update-git-workflow
 ```
 
-Branch-Namen beschreiben die Aufgabe, nicht die Person.
+Branch names describe the task, not the person.
 
-Gut:
+Good:
 
 ```text
 feature/contacts
 ```
 
-Nicht gut:
+Not good:
 
 ```text
 feature/contacts-marko
 ```
 
-### 3. Dateien ändern
+### 3. Change Files
 
-Danach werden die passenden Dateien bearbeitet.
+Next, edit the relevant files.
 
-Beispiele:
+Examples:
 
 ```text
 src/app/pages/board/
 ```
 
-oder:
+or:
 
 ```text
 src/app/pages/contacts/
 ```
 
-Wichtig: Gemeinsame Dateien (z. B. `package.json`, `package-lock.json`,
-`angular.json`, `src/app/app.routes.ts`) werden nur nach Absprache geändert.
+Important: Shared files (e.g. `package.json`, `package-lock.json`,
+`angular.json`, `src/app/app.routes.ts`) are only changed after coordination.
 
-### 4. Änderung committen
+### 4. Commit the Change
 
-In VS Code links auf „Quellcodeverwaltung“ gehen.
+In VS Code, go to "Source Control" on the left.
 
-Dort sieht man die geänderten Dateien.
+There you can see the changed files.
 
-Eine kurze Commit-Nachricht eintragen, zum Beispiel:
+Enter a short commit message, for example:
 
 ```text
 Update login button text
 ```
 
-Dann auf `Commit` klicken.
+Then click `Commit`.
 
-### 5. Branch veröffentlichen
+### 5. Publish the Branch
 
-Nach dem Commit auf `Branch veröffentlichen` oder `Sync Changes` klicken.
+After the commit, click `Publish Branch` or `Sync Changes`.
 
-Damit wird der Branch zu GitHub hochgeladen.
+This uploads the branch to GitHub.
 
-### 6. Pull Request erstellen
+### 6. Create a Pull Request
 
-In VS Code über „GitHub Pull Requests“ einen Pull Request erstellen.
+In VS Code, create a pull request via "GitHub Pull Requests".
 
-Die Richtung muss sein:
+The direction must be:
 
 ```text
 feature/... → main
 ```
 
-Also: Der Feature-Branch wird in `main` übernommen.
+That is: the feature branch is merged into `main`.
 
-### 7. Pull Request prüfen
+### 7. Review the Pull Request
 
-Vor dem Merge prüfen:
+Before merging, check:
 
-* Stimmt die Richtung `feature/... → main`?
-* Sind nur die erwarteten Dateien geändert?
-* Gibt es keine Konflikte?
-* Ist die Änderung verständlich beschrieben?
+* Is the direction `feature/... → main` correct?
+* Are only the expected files changed?
+* Are there no conflicts?
+* Is the change clearly described?
 
-### 8. Pull Request mergen
+### 8. Merge the Pull Request
 
-Wenn alles passt, wird der Pull Request gemerged.
+If everything is fine, the pull request is merged.
 
-Danach ist die Änderung offiziell in `main`.
+After that, the change is officially in `main`.
 
-### 9. Branch löschen
+### 9. Delete the Branch
 
-Nach dem Merge kann der Branch gelöscht werden.
+After the merge, the branch can be deleted.
 
-Dabei können sowohl der lokale Branch als auch der Remote-Branch auf GitHub gelöscht werden.
+Both the local branch and the remote branch on GitHub can be deleted.
 
-### 10. Zurück auf `main`
+### 10. Back to `main`
 
-Nach dem Merge wieder auf `main` wechseln und synchronisieren.
+After the merge, switch back to `main` and sync.
 
-Danach ist der eigene lokale Stand wieder sauber.
+Your own local state is then clean again.
 
-## Merksatz
+## Key Takeaway
 
 ```text
-main ist die stabile gemeinsame Version.
-feature/... ist ein Arbeitszweig für eine konkrete Aufgabe.
-Änderungen kommen über Pull Request zurück nach main.
+main is the stable shared version.
+feature/... is a working branch for a specific task.
+Changes come back to main via pull request.
 ```

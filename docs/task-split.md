@@ -1,22 +1,22 @@
-# Aufgabenaufteilung Join
+# Task Distribution Join
 
-Diese Datei ist ein Vorschlag und kann im Team angepasst werden. Sie ergänzt das
-Trello Board, in dem die Aufgaben laufend gepflegt werden.
+This file is a proposal and can be adjusted by the team. It complements the
+Trello board, where the tasks are maintained on an ongoing basis.
 
-Join ist ein **Angular-Projekt** (SPA).
+Join is an **Angular project** (SPA).
 
-## Sprint 1 – Vorschlag
+## Sprint 1 – Proposal
 
 ### Roger
 
-- Angular-Projekt-Setup
-- Supabase-Struktur (Vorbereitung, ohne Secrets)
-- Dokumentation (`README.md`, `docs/*`)
-- Code-Reviews / Pull Requests
+- Angular project setup
+- Supabase structure (preparation, without secrets)
+- Documentation (`README.md`, `docs/*`)
+- Code reviews / pull requests
 
 ### Kevin
 
-- Layout-Shell (`src/app/layout/shell/`)
+- Layout shell (`src/app/layout/shell/`)
 - Header (`src/app/layout/header/`)
 - Navbar (`src/app/layout/navbar/`)
 - Footer (`src/app/layout/footer/`)
@@ -24,16 +24,16 @@ Join ist ein **Angular-Projekt** (SPA).
 ### Marko
 
 - Contacts UI (`src/app/pages/contacts/`)
-- Kontaktliste
-- Detailansicht
+- Contact list
+- Detail view
 
-### Gemeinsame Integration
+### Shared Integration
 
 - Contact Form (Add / Edit)
-- Formular-Validierung
-- CRUD gegen Supabase
+- Form validation
+- CRUD against Supabase
 
-## Gemeinsame Dateien mit Abstimmung
+## Shared Files Requiring Coordination
 
 ```text
 package.json

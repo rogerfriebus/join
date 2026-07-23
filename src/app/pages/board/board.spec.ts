@@ -16,7 +16,7 @@ const TEST_TASKS: Task[] = [
   {
     id: 'a',
     title: 'Todo Task',
-    description: 'Beschreibung Todo',
+    description: 'Todo description',
     dueDate: '2026-07-01',
     priority: 'urgent',
     category: 'Technical Task',
@@ -118,20 +118,20 @@ describe('Board', () => {
     expect(component).toBeTruthy();
   });
 
-  it('ruft loadTasks beim Init über den TaskService auf', () => {
+  it('calls loadTasks on init via the TaskService', () => {
     expect(loadTasksSpy).toHaveBeenCalled();
   });
 
-  it('ruft loadContacts beim Init über den ContactService auf', () => {
+  it('calls loadContacts on init via the ContactService', () => {
     expect(loadContactsSpy).toHaveBeenCalled();
   });
 
-  it('rendert vier Board-Spalten', () => {
+  it('renders four board columns', () => {
     const columns = fixture.nativeElement.querySelectorAll('.board-column');
     expect(columns.length).toBe(4);
   });
 
-  it('gruppiert Tasks nach Status in die passenden Spalten', () => {
+  it('groups tasks by status into the matching columns', () => {
     const columns = fixture.nativeElement.querySelectorAll('.board-column');
 
     // Column order: To do, In progress, Await feedback, Done
@@ -140,7 +140,7 @@ describe('Board', () => {
     expect(columns[0].textContent).not.toContain('Progress Task');
   });
 
-  it('zeigt einen Empty-State für leere Spalten', () => {
+  it('shows an empty state for empty columns', () => {
     const columns = fixture.nativeElement.querySelectorAll('.board-column');
 
     // Await feedback and Done are empty
@@ -148,7 +148,7 @@ describe('Board', () => {
     expect(columns[3].textContent).toContain('No tasks Done');
   });
 
-  it('zeigt Subtask-Fortschritt auf der Karte', () => {
+  it('shows subtask progress on the card', () => {
     const columns = fixture.nativeElement.querySelectorAll('.board-column');
     expect(columns[0].textContent).toContain('1/2 Subtasks');
   });
@@ -174,7 +174,7 @@ describe('Board', () => {
     expect(subtaskList?.querySelectorAll('.task-detail__subtask').length).toBe(5);
   });
 
-  it('aktualisiert einen Subtask direkt aus der Task-Detailansicht', async () => {
+  it('updates a subtask directly from the task detail view', async () => {
     const updatedTask: Task = {
       ...TEST_TASKS[0],
       subtasks: TEST_TASKS[0].subtasks.map((subtask) =>
@@ -191,7 +191,7 @@ describe('Board', () => {
     expect(component.selectedTask()).toEqual(updatedTask);
   });
 
-  it('aktualisiert den Task-Status beim Drop in eine andere Spalte', async () => {
+  it('updates the task status when dropped into another column', async () => {
     const dragEvent = {
       dataTransfer: {
         setData: vi.fn(),
@@ -206,7 +206,7 @@ describe('Board', () => {
     expect(updateTaskStatusSpy).toHaveBeenCalledWith('a', 'done');
   });
 
-  it('filtert Tasks anhand der Suche', () => {
+  it('filters tasks based on the search query', () => {
     component.updateSearchQuery({
       target: { value: 'progress' },
     } as unknown as Event);
@@ -216,7 +216,7 @@ describe('Board', () => {
     expect(component.board()[1].tasks[0].title).toBe('Progress Task');
   });
 
-  it('erkennt, wenn eine Suche keine Treffer liefert', () => {
+  it('detects when a search returns no matches', () => {
     component.updateSearchQuery({
       target: { value: 'xyz' },
     } as unknown as Event);
@@ -225,7 +225,7 @@ describe('Board', () => {
     expect(component.hasSearchResults()).toBe(false);
   });
 
-  it('zeigt bei Suche einen passenden Empty-State-Text pro leerer Spalte', () => {
+  it('shows a matching empty-state text per empty column during a search', () => {
     component.updateSearchQuery({
       target: { value: 'progress' },
     } as unknown as Event);
@@ -235,7 +235,7 @@ describe('Board', () => {
     expect(component.columnEmptyText(firstColumn)).toBe('No matching tasks');
   });
 
-  it('öffnet das Edit-Overlay mit den vorhandenen Task-Daten', () => {
+  it('opens the edit overlay with the existing task data', () => {
     component.openTaskEdit(TEST_TASKS[0]);
 
     expect(component.editTask()).toEqual(TEST_TASKS[0]);
@@ -244,7 +244,7 @@ describe('Board', () => {
     expect(component.editDraft().subtasks.length).toBe(2);
   });
 
-  it('hebt bereits ausgewählte Kontakte im Edit-Dropdown hervor', () => {
+  it('highlights already selected contacts in the edit dropdown', () => {
     component.openTaskEdit(TEST_TASKS[0]);
     component.toggleEditAssigneeDropdown();
     fixture.detectChanges();
@@ -256,7 +256,7 @@ describe('Board', () => {
     expect(contacts[2].classList.contains('checked')).toBe(false);
   });
 
-  it('speichert geänderte Task-Daten über den TaskService', async () => {
+  it('saves changed task data via the TaskService', async () => {
     component.openTaskEdit(TEST_TASKS[0]);
 
     component.updateEditTitle({
@@ -279,7 +279,7 @@ describe('Board', () => {
     );
   });
 
-  it('übernimmt einen offenen Subtask-Text-Edit beim Speichern des Tasks', async () => {
+  it('applies an open subtask text edit when saving the task', async () => {
     component.openTaskEdit(TEST_TASKS[0]);
     component.updateEditDueDate({
       target: { value: '2099-12-31' },
@@ -301,7 +301,7 @@ describe('Board', () => {
     expect(component.editingEditSubtaskId()).toBeNull();
   });
 
-  it('speichert keine ungültige Edit-Task ohne Titel', async () => {
+  it('does not save an invalid edited task without a title', async () => {
     component.openTaskEdit(TEST_TASKS[0]);
 
     component.updateEditTitle({
@@ -314,7 +314,7 @@ describe('Board', () => {
     expect(component.editSubmitted()).toBe(true);
   });
 
-  it('speichert keine Edit-Task mit einem Datum in der Vergangenheit', async () => {
+  it('does not save an edited task with a date in the past', async () => {
     component.openTaskEdit(TEST_TASKS[0]);
 
     component.updateEditDueDate({
@@ -328,7 +328,7 @@ describe('Board', () => {
     expect(component.editSubmitted()).toBe(true);
   });
 
-  it('zeigt die Datumsfehlermeldung direkt nach Eingabe eines vergangenen Datums', () => {
+  it('shows the date error message immediately after entering a past date', () => {
     component.openTaskEdit({ ...TEST_TASKS[0], dueDate: '2099-12-31' });
     fixture.detectChanges();
 
@@ -345,7 +345,7 @@ describe('Board', () => {
     expect(errorMessage?.textContent.trim()).toBe('Due date cannot be in the past.');
   });
 
-  it('löscht den ausgewählten Task über den TaskService', async () => {
+  it('deletes the selected task via the TaskService', async () => {
     component.openTaskDetail(TEST_TASKS[0]);
 
     await component.deleteSelectedTask();
@@ -354,7 +354,7 @@ describe('Board', () => {
     expect(component.selectedTask()).toBeNull();
   });
 
-  it('begrenzt sichtbare Assignees auf der Task-Card und zählt weitere Kontakte', () => {
+  it('limits visible assignees on the task card and counts additional contacts', () => {
     const taskWithManyAssignees: Task = {
       ...TEST_TASKS[0],
       assignedContactIds: ['1', '2', '3', '4', '5', '6', '7', '8'],
@@ -371,7 +371,7 @@ describe('Board', () => {
     expect(component.hiddenAssigneeCount(taskWithManyAssignees)).toBe(2);
   });
 
-  it('begrenzt sichtbare Assignees im Edit-Formular und zählt weitere Kontakte', () => {
+  it('limits visible assignees in the edit form and counts additional contacts', () => {
     const contacts = Array.from({ length: 8 }, (_, index) => ({
       id: String(index + 1),
       name: `Contact ${index + 1}`,
@@ -394,7 +394,7 @@ describe('Board', () => {
     expect(component.hiddenEditAssigneeCount()).toBe(2);
   });
 
-  it('zeigt Fallback-Werte für unbekannte Kontakt-IDs', () => {
+  it('shows fallback values for unknown contact IDs', () => {
     expect(component.assigneeInitials('unknown')).toBe('?');
     expect(component.assigneeName('unknown')).toBe('Unknown contact');
     expect(component.assigneeColor('unknown')).toBe('#ff7a00');

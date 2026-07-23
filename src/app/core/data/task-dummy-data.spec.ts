@@ -6,16 +6,16 @@ import {
 } from '../models/task.model';
 
 describe('DUMMY_TASKS', () => {
-  it('enthält mindestens 5 Tasks', () => {
-    expect(DUMMY_TASKS.length).toBeGreaterThanOrEqual(5);
+  it('contains exactly 5 tasks', () => {
+    expect(DUMMY_TASKS.length).toBe(5);
   });
 
-  it('hat eindeutige Task-IDs', () => {
+  it('has unique task IDs', () => {
     const ids = DUMMY_TASKS.map((task) => task.id);
     expect(new Set(ids).size).toBe(ids.length);
   });
 
-  it('jede Task hat die Pflichtfelder id, title, dueDate, priority, category, status', () => {
+  it('gives every task the required fields id, title, dueDate, priority, category, status', () => {
     for (const task of DUMMY_TASKS) {
       expect(task.id).toBeTruthy();
       expect(task.title).toBeTruthy();
@@ -26,31 +26,31 @@ describe('DUMMY_TASKS', () => {
     }
   });
 
-  it('verwendet nur gültige Statuswerte', () => {
+  it('uses only valid status values', () => {
     for (const task of DUMMY_TASKS) {
       expect(TASK_STATUSES).toContain(task.status);
     }
   });
 
-  it('verwendet nur gültige Prioritäten', () => {
+  it('uses only valid priorities', () => {
     for (const task of DUMMY_TASKS) {
       expect(TASK_PRIORITIES).toContain(task.priority);
     }
   });
 
-  it('verwendet nur gültige Kategorien', () => {
+  it('uses only valid categories', () => {
     for (const task of DUMMY_TASKS) {
       expect(TASK_CATEGORIES).toContain(task.category);
     }
   });
 
-  it('hält dueDate als parsebares Datum', () => {
+  it('keeps dueDate as a parsable date', () => {
     for (const task of DUMMY_TASKS) {
       expect(Number.isNaN(Date.parse(task.dueDate))).toBe(false);
     }
   });
 
-  it('hat für jede Subtask id, title und einen boolean done', () => {
+  it('gives every subtask an id, a title and a boolean done', () => {
     for (const task of DUMMY_TASKS) {
       for (const subtask of task.subtasks) {
         expect(subtask.id).toBeTruthy();
@@ -60,38 +60,38 @@ describe('DUMMY_TASKS', () => {
     }
   });
 
-  it('hat projektweit eindeutige Subtask-IDs', () => {
+  it('has project-wide unique subtask IDs', () => {
     const subtaskIds = DUMMY_TASKS.flatMap((task) => task.subtasks.map((s) => s.id));
     expect(new Set(subtaskIds).size).toBe(subtaskIds.length);
   });
 
-  it('deckt alle vier Statuswerte mindestens einmal ab', () => {
+  it('covers all four status values at least once', () => {
     const used = new Set(DUMMY_TASKS.map((task) => task.status));
     for (const status of TASK_STATUSES) {
       expect(used.has(status)).toBe(true);
     }
   });
 
-  it('deckt alle drei Prioritäten mindestens einmal ab', () => {
+  it('covers all three priorities at least once', () => {
     const used = new Set(DUMMY_TASKS.map((task) => task.priority));
     for (const priority of TASK_PRIORITIES) {
       expect(used.has(priority)).toBe(true);
     }
   });
 
-  it('deckt beide Kategorien mindestens einmal ab', () => {
+  it('covers both categories at least once', () => {
     const used = new Set(DUMMY_TASKS.map((task) => task.category));
     for (const category of TASK_CATEGORIES) {
       expect(used.has(category)).toBe(true);
     }
   });
 
-  it('enthält Tasks mit und ohne Subtasks', () => {
+  it('contains tasks with and without subtasks', () => {
     expect(DUMMY_TASKS.some((task) => task.subtasks.length > 0)).toBe(true);
     expect(DUMMY_TASKS.some((task) => task.subtasks.length === 0)).toBe(true);
   });
 
-  it('assignedContactIds ist immer ein Array von Strings', () => {
+  it('always has assignedContactIds as an array of strings', () => {
     for (const task of DUMMY_TASKS) {
       expect(Array.isArray(task.assignedContactIds)).toBe(true);
       for (const id of task.assignedContactIds) {

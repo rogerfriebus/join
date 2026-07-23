@@ -113,7 +113,7 @@
         width: 24px;
         height: 24px;
         cursor: pointer;
-        pointer-events: auto; // wieder klickbar machen
+        pointer-events: auto; // make it clickable again
     }
 }
 
@@ -162,7 +162,7 @@
     }
 
     &.active {
-        color: #fff; // SVG + Text werden weiß durch currentColor
+        color: #fff; // SVG + text turn white via currentColor
     }
 
     &.active.urgent {
@@ -446,7 +446,7 @@ input[type="date"] {
     position: relative;
 
     &::-webkit-calendar-picker-indicator {
-        opacity: 0; // natives Icon unsichtbar machen, bleibt aber klickbar
+        opacity: 0; // hide the native icon but keep it clickable
         cursor: pointer;
     }
 }

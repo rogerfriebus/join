@@ -28,7 +28,7 @@ describe('Login', () => {
     expect(component).toBeTruthy();
   });
 
-  it('zeigt eine Fehlermeldung und navigiert nicht bei falschem Passwort', async () => {
+  it('shows an error message and does not navigate on a wrong password', async () => {
     await auth.signUp('Anna Schulz', 'anna@example.com', 'secret');
     auth.logout();
     const nav = vi.spyOn(router, 'navigateByUrl');
@@ -36,11 +36,11 @@ describe('Login', () => {
     component.form = { email: 'anna@example.com', password: 'wrong' };
     await component.login();
 
-    expect(component.loginError).toBe('E-Mail oder Passwort ist falsch.');
+    expect(component.loginError).toBe('Email or password is incorrect.');
     expect(nav).not.toHaveBeenCalled();
   });
 
-  it('navigiert bei erfolgreichem Login über den AuthRedirectService', async () => {
+  it('navigates on a successful login via the AuthRedirectService', async () => {
     await auth.signUp('Anna Schulz', 'anna@example.com', 'secret');
     auth.logout();
     const nav = vi.spyOn(router, 'navigateByUrl');
@@ -52,7 +52,7 @@ describe('Login', () => {
     expect(nav).toHaveBeenCalledWith('/summary');
   });
 
-  it('navigiert beim Guest-Login über den AuthRedirectService', async () => {
+  it('navigates on guest login via the AuthRedirectService', async () => {
     const nav = vi.spyOn(router, 'navigateByUrl');
 
     await component.guestLogin();

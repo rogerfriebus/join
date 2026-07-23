@@ -12,17 +12,17 @@ import { authGuard } from './auth.guard';
 import { AuthService } from '../services/auth.service';
 
 /**
- * Tests für den authGuard (Sprint 3: Türkis 2).
+ * Tests for the authGuard (Sprint 3: Turquoise 2).
  *
- * Der Guard wird als funktionaler Guard über einen Injection-Context
- * ausgeführt. Der AuthService wird über ein isAuthenticated-Signal gestubbt;
- * der Router ist real (provideRouter), damit createUrlTree einen echten
- * UrlTree für die Redirect-Prüfung liefert.
+ * The guard runs as a functional guard within an injection context. The
+ * AuthService is stubbed via an isAuthenticated signal; the router is real
+ * (provideRouter), so that createUrlTree returns a real UrlTree for the redirect
+ * check.
  */
 describe('authGuard', () => {
   const isAuthenticated = signal(false);
 
-  /** Führt den Guard im Injection-Context aus. */
+  /** Runs the guard within the injection context. */
   function runGuard(url = '/board'): boolean | UrlTree {
     const route = {} as ActivatedRouteSnapshot;
     const state = { url } as RouterStateSnapshot;
@@ -45,20 +45,20 @@ describe('authGuard', () => {
     });
   });
 
-  it('erlaubt den Zugriff, wenn isAuthenticated true ist', () => {
+  it('allows access when isAuthenticated is true', () => {
     isAuthenticated.set(true);
 
     expect(runGuard()).toBe(true);
   });
 
-  it('verweigert den Zugriff, wenn isAuthenticated false ist', () => {
+  it('denies access when isAuthenticated is false', () => {
     const result = runGuard();
 
     expect(result).not.toBe(true);
     expect(result).toBeInstanceOf(UrlTree);
   });
 
-  it('leitet nicht authentifizierte Zugriffe auf /login um', () => {
+  it('redirects unauthenticated access to /login', () => {
     const router = TestBed.inject(Router);
     const result = runGuard('/board') as UrlTree;
 
@@ -69,15 +69,15 @@ describe('authGuard', () => {
     );
   });
 
-  it('merkt sich die ursprüngliche URL als redirectUrl', () => {
+  it('remembers the original URL as redirectUrl', () => {
     const result = runGuard('/contacts') as UrlTree;
 
     expect(result.toString()).toContain('/login');
     expect(result.toString()).toContain('redirectUrl=%2Fcontacts');
   });
 
-  it('behandelt einen Gast (isAuthenticated true) als authentifiziert', () => {
-    // loginAsGuest() setzt im AuthService isAuthenticated → true.
+  it('treats a guest (isAuthenticated true) as authenticated', () => {
+    // loginAsGuest() sets isAuthenticated to true in the AuthService.
     isAuthenticated.set(true);
 
     expect(runGuard()).toBe(true);

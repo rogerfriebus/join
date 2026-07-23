@@ -57,18 +57,18 @@ describe('Header', () => {
     expect(component).toBeTruthy();
   });
 
-  it('zeigt die Initialen des displayName im Avatar', () => {
+  it('shows the initials of the displayName in the avatar', () => {
     expect(query('.header__avatar')?.textContent?.trim()).toBe('AS');
   });
 
-  it('zeigt "G" für einen Gast', () => {
+  it('shows "G" for a guest', () => {
     displayName.set('Guest');
     fixture.detectChanges();
 
     expect(query('.header__avatar')?.textContent?.trim()).toBe('G');
   });
 
-  it('zeigt im Desktop-Submenu nur die Legal-Links und Logout', () => {
+  it('shows only the legal links and logout in the desktop submenu', () => {
     query('.header__avatar')!.click();
     fixture.detectChanges();
 
@@ -79,21 +79,21 @@ describe('Header', () => {
     ]);
   });
 
-  it('hält Help als mobilen Submenu-Eintrag vor', () => {
+  it('keeps Help available as a mobile submenu item', () => {
     query('.header__avatar')!.click();
     fixture.detectChanges();
 
     expect(query('.header__menu-item--mobile-only')?.textContent?.trim()).toBe('Help');
   });
 
-  it('navigiert über den Help-Button zur Help-Seite', async () => {
+  it('navigates to the Help page via the Help button', async () => {
     query('.header__help')!.click();
     await fixture.whenStable();
 
     expect(navigateSpy).toHaveBeenCalledWith(['/help']);
   });
 
-  it('navigiert aus dem mobilen Submenu zur Help-Seite', async () => {
+  it('navigates to the Help page from the mobile submenu', async () => {
     query('.header__avatar')!.click();
     fixture.detectChanges();
 
@@ -104,7 +104,7 @@ describe('Header', () => {
     expect(navigateSpy).toHaveBeenCalledWith(['/help']);
   });
 
-  it('navigiert aus dem Submenu zur Legal-Notice-Seite', async () => {
+  it('navigates to the Legal Notice page from the submenu', async () => {
     query('.header__avatar')!.click();
     fixture.detectChanges();
 
@@ -115,7 +115,7 @@ describe('Header', () => {
     expect(navigateSpy).toHaveBeenCalledWith(['/legal-notice']);
   });
 
-  it('navigiert aus dem Submenu zur Privacy-Policy-Seite', async () => {
+  it('navigates to the Privacy Policy page from the submenu', async () => {
     query('.header__avatar')!.click();
     fixture.detectChanges();
 
@@ -126,7 +126,7 @@ describe('Header', () => {
     expect(navigateSpy).toHaveBeenCalledWith(['/privacy-policy']);
   });
 
-  it('rendert kein User-Menü, wenn niemand eingeloggt ist', () => {
+  it('does not render a user menu when nobody is logged in', () => {
     isAuthenticated.set(false);
     fixture.detectChanges();
 
@@ -134,7 +134,7 @@ describe('Header', () => {
     expect(query('.header__menu')).toBeNull();
   });
 
-  it('ruft beim Logout AuthService.logout() und navigiert zu /login', async () => {
+  it('calls AuthService.logout() on logout and navigates to /login', async () => {
     query('.header__avatar')!.click();
     fixture.detectChanges();
 
@@ -145,7 +145,7 @@ describe('Header', () => {
     expect(navigateSpy).toHaveBeenCalledWith(['/login']);
   });
 
-  it('schließt das Menü nach dem Logout', async () => {
+  it('closes the menu after logout', async () => {
     query('.header__avatar')!.click();
     fixture.detectChanges();
     expect(component.menuOpen()).toBe(true);

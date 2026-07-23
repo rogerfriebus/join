@@ -1,49 +1,48 @@
 import { Injectable, Signal, computed, signal } from '@angular/core';
 
 /**
- * Ein authentifizierter Benutzer (eingeloggt oder Gast).
+ * An authenticated user (logged in or guest).
  *
- * Bewusst schlank gehalten: In diesem Sprint-Slice (Türkis 1) werden nur die
- * Felder abgebildet, die Login/Guards/Summary später benötigen. Es gibt KEINE
- * echte Passwort-/Token-Verwaltung – die Demo-Auth ist lokal.
+ * Deliberately kept lean: in this sprint slice (Turquoise 1) only the fields
+ * that login/guards/summary will need later are modelled. There is NO real
+ * password/token management – the demo auth is local.
  */
 export interface AuthUser {
-  /** Eindeutige id des Benutzers (Gast: `guest`). */
+  /** Unique id of the user (guest: `guest`). */
   id: string;
-  /** Anzeigename des Benutzers. */
+  /** Display name of the user. */
   name: string;
-  /** E-Mail-Adresse, optional (Gäste haben keine). */
+  /** Email address, optional (guests have none). */
   email?: string;
-  /** Kennzeichnet einen Gast-Login. */
+  /** Marks a guest login. */
   isGuest: boolean;
 }
 
 /**
- * Momentaufnahme des Auth-Zustands (Snapshot).
+ * Snapshot of the auth state.
  *
- * `isAuthenticated` ist redundant zu `user !== null`, wird aber bewusst
- * mitgeführt, damit Konsumenten (Guards/UI) einen stabilen Zustands-Contract
- * bekommen.
+ * `isAuthenticated` is redundant with `user !== null`, but is carried along
+ * deliberately so that consumers (guards/UI) get a stable state contract.
  */
 export interface AuthState {
   user: AuthUser | null;
   isAuthenticated: boolean;
 }
 
-/** localStorage-Schlüssel für den optionalen Session-Fallback. */
+/** localStorage key for the optional session fallback. */
 const STORAGE_KEY = 'join.auth.user';
 
-/** localStorage-Schlüssel für die lokale User-Registry (Sign-up-Konten). */
+/** localStorage key for the local user registry (sign-up accounts). */
 const USERS_STORAGE_KEY = 'join.auth.users';
 
-/** Fester Gast-Benutzer (kein persistenter Datensatz nötig). */
+/** Fixed guest user (no persistent record needed). */
 const GUEST_USER: AuthUser = { id: 'guest', name: 'Guest', isGuest: true };
 
 /**
- * Ein in der lokalen Registry gespeichertes Konto (Sign-up-Datensatz).
+ * An account stored in the local registry (sign-up record).
  *
- * Enthält bewusst NUR die für den Demo-Login nötigen Felder. Das Passwort wird
- * ausschließlich als (Demo-)Hash abgelegt – nie im Klartext.
+ * Deliberately contains ONLY the fields required for the demo login. The
+ * password is stored exclusively as a (demo) hash – never in plaintext.
  */
 interface StoredCredential {
   id: string;
@@ -53,13 +52,13 @@ interface StoredCredential {
 }
 
 /**
- * Demo-Hash für Passwörter.
+ * Demo hash for passwords.
  *
- * ACHTUNG: Dies ist BEWUSST KEIN kryptographisch sicherer Hash. Er dient nur
- * dazu, das Passwort im Schulprojekt nicht im Klartext in den localStorage zu
- * schreiben. Für Produktion ist ein echtes Auth-Backend (z. B. Supabase Auth)
- * erforderlich. Der Algorithmus ist eine FNV-1a-Variante (32-bit) und liefert
- * einen synchronen, deterministischen Hex-String – gut testbar, ohne Library.
+ * NOTE: This is DELIBERATELY NOT a cryptographically secure hash. Its only
+ * purpose is to avoid writing the password to localStorage in plaintext in
+ * this school project. For production a real auth backend (e.g. Supabase Auth)
+ * is required. The algorithm is an FNV-1a variant (32-bit) and returns a
+ * synchronous, deterministic hex string – easy to test, without a library.
  */
 function demoHash(input: string): string {
   let hash = 0x811c9dc5;
@@ -71,46 +70,46 @@ function demoHash(input: string): string {
 }
 
 /**
- * Zentraler Auth-Service (Sprint 3: Türkis 1 – Grundlage).
+ * Central auth service (Sprint 3: Turquoise 1 – foundation).
  *
- * Stellt den Login-Status, den aktuellen Benutzer und die fachlichen Methoden
- * (login/signUp/loginAsGuest/logout) als klare Schnittstelle bereit. UI und
- * spätere Guards konsumieren ausschließlich diese Fassade.
+ * Exposes the login status, the current user and the domain methods
+ * (login/signUp/loginAsGuest/logout) as a clear interface. UI and later guards
+ * consume exclusively this facade.
  *
- * Demo-Setup (Developer-Akademie):
- *  - Die Auth-Logik ist BEWUSST lokal/demo-tauglich: keine Tokens, keine
- *    Supabase-Auth-Anbindung. Konten werden in einer lokalen Registry
- *    (localStorage) gehalten; das Passwort wird nur als Demo-Hash gespeichert,
- *    nie im Klartext – das ist NICHT produktionssicher.
- *  - login() prüft E-Mail + Passwort gegen diese Registry (kein Auto-Anlegen
- *    unbekannter Konten mehr).
- *  - Der aktuelle Zustand wird zusätzlich in localStorage gespiegelt, damit ein
- *    Reload die Session behält. Der Zugriff ist gekapselt und fehlertolerant.
- *  - Struktur und API sind so gewählt, dass Pink/Login und Türkis/Guards sie
- *    ohne Umbau verwenden können.
+ * Demo setup (Developer Akademie):
+ *  - The auth logic is DELIBERATELY local/demo-grade: no tokens, no Supabase
+ *    auth integration. Accounts are held in a local registry (localStorage);
+ *    the password is stored only as a demo hash, never in plaintext – this is
+ *    NOT production-safe.
+ *  - login() checks email + password against this registry (no more
+ *    auto-creation of unknown accounts).
+ *  - The current state is additionally mirrored to localStorage so that a
+ *    reload keeps the session. Access is encapsulated and fault-tolerant.
+ *  - Structure and API are chosen so that Pink/Login and Turquoise/Guards can
+ *    use them without rework.
  */
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   /**
-   * Interner Auth-Bestand. Wird beim Service-Start – falls vorhanden – aus dem
-   * localStorage wiederhergestellt (Session-Fallback).
+   * Internal auth state. On service start it is restored – if present – from
+   * localStorage (session fallback).
    */
   private readonly userSignal = signal<AuthUser | null>(this.restoreUser());
 
-  /** Aktueller Benutzer (read-only), oder null wenn niemand eingeloggt ist. */
+  /** Current user (read-only), or null when nobody is logged in. */
   readonly user: Signal<AuthUser | null> = this.userSignal.asReadonly();
 
-  /** True, sobald ein Benutzer (inkl. Gast) eingeloggt ist. */
+  /** True as soon as a user (including guest) is logged in. */
   readonly isAuthenticated: Signal<boolean> = computed(() => this.userSignal() !== null);
 
-  /** True, wenn der aktuelle Benutzer ein Gast ist. */
+  /** True when the current user is a guest. */
   readonly isGuest: Signal<boolean> = computed(() => this.userSignal()?.isGuest ?? false);
 
   /**
-   * Anzeigename für die UI:
-   *  - der Benutzer-Name, wenn gesetzt,
-   *  - "Guest" für Gäste,
-   *  - leerer String, wenn niemand eingeloggt ist.
+   * Display name for the UI:
+   *  - the user name, if set,
+   *  - "Guest" for guests,
+   *  - empty string when nobody is logged in.
    */
   readonly displayName: Signal<string> = computed(() => {
     const user = this.userSignal();
@@ -123,37 +122,37 @@ export class AuthService {
     return user.name || 'Guest';
   });
 
-  /** Liefert einen Snapshot des aktuellen Auth-Zustands. */
+  /** Returns a snapshot of the current auth state. */
   getState(): AuthState {
     const user = this.userSignal();
     return { user, isAuthenticated: user !== null };
   }
 
-  /** Liefert den aktuellen Benutzer (Snapshot) oder null. */
+  /** Returns the current user (snapshot) or null. */
   getUser(): AuthUser | null {
     return this.userSignal();
   }
 
   /**
-   * Meldet einen Benutzer an. Prüft E-Mail + Passwort gegen die lokale Registry
-   * (Demo-Auth): Es muss ein per Sign-up angelegtes Konto existieren und der
-   * Passwort-Hash übereinstimmen. Der Anzeigename kommt aus der Registry.
+   * Logs a user in. Checks email + password against the local registry
+   * (demo auth): an account created via sign-up must exist and the password
+   * hash must match. The display name comes from the registry.
    *
-   * Wirft einen Error, wenn Pflichtwerte fehlen, kein Konto existiert oder das
-   * Passwort falsch ist.
+   * Throws an Error when required values are missing, no account exists or the
+   * password is wrong.
    */
   async login(email: string, password: string): Promise<AuthUser> {
     const mail = (email ?? '').trim();
     if (!mail || !password) {
-      throw new Error('E-Mail und Passwort sind erforderlich.');
+      throw new Error('Email and password are required.');
     }
     const record = this.loadRegistry()[this.normalizeEmail(mail)];
     if (!record || record.passwordHash !== this.hashPassword(password)) {
-      throw new Error('E-Mail oder Passwort ist falsch.');
+      throw new Error('Email or password is incorrect.');
     }
     const user: AuthUser = {
       id: record.id,
-      // Name aus der Registry; nameFromEmail nur als Fallback für Altbestand.
+      // Name from the registry; nameFromEmail only as a fallback for legacy data.
       name: record.name?.trim() || this.nameFromEmail(record.email || mail),
       email: record.email || mail,
       isGuest: false,
@@ -163,23 +162,23 @@ export class AuthService {
   }
 
   /**
-   * Registriert einen Benutzer und meldet ihn direkt an. Legt einen
-   * Registry-Eintrag mit Name, E-Mail und Passwort-Hash an (Passwort NICHT im
-   * Klartext). Der aktuelle AuthUser übernimmt den eingegebenen Namen.
+   * Registers a user and logs them in directly. Creates a registry entry with
+   * name, email and password hash (password NOT in plaintext). The current
+   * AuthUser takes on the entered name.
    *
-   * Wirft einen Error, wenn Pflichtwerte fehlen oder die E-Mail bereits
-   * registriert ist.
+   * Throws an Error when required values are missing or the email is already
+   * registered.
    */
   async signUp(name: string, email: string, password: string): Promise<AuthUser> {
     const displayName = (name ?? '').trim();
     const mail = (email ?? '').trim();
     if (!displayName || !mail || !password) {
-      throw new Error('Name, E-Mail and Password is required.');
+      throw new Error('Name, email and password are required.');
     }
     const key = this.normalizeEmail(mail);
     const registry = this.loadRegistry();
     if (registry[key]) {
-      throw new Error('This E-Mail is already registered.');
+      throw new Error('This email is already registered.');
     }
     const record: StoredCredential = {
       id: this.createUserId(mail),
@@ -200,57 +199,57 @@ export class AuthService {
     return user;
   }
 
-  /** Meldet einen Gast an (ohne E-Mail/Passwort). */
+  /** Logs a guest in (without email/password). */
   async loginAsGuest(): Promise<AuthUser> {
     const guest: AuthUser = { ...GUEST_USER };
     this.setUser(guest);
     return guest;
   }
 
-  /** Meldet den aktuellen Benutzer ab und verwirft den Session-Fallback. */
+  /** Logs the current user out and discards the session fallback. */
   logout(): void {
     this.userSignal.set(null);
     this.clearStoredUser();
   }
 
   // ---------------------------------------------------------------------------
-  // Interne Hilfen
+  // Internal helpers
   // ---------------------------------------------------------------------------
 
-  /** Setzt den Benutzer im Signal und spiegelt ihn in den Session-Fallback. */
+  /** Sets the user in the signal and mirrors it into the session fallback. */
   private setUser(user: AuthUser): void {
     this.userSignal.set(user);
     this.persistUser(user);
   }
 
-  /** Baut eine stabile, demo-taugliche id aus der E-Mail. */
+  /** Builds a stable, demo-grade id from the email. */
   private createUserId(email: string): string {
     return `user-${email.toLowerCase()}`;
   }
 
-  /** Leitet aus einer E-Mail einen einfachen Anzeigenamen ab (Teil vor dem @). */
+  /** Derives a simple display name from an email (the part before the @). */
   private nameFromEmail(email: string): string {
     const localPart = email.split('@')[0]?.trim();
     return localPart || email;
   }
 
-  /** Normalisiert eine E-Mail als stabilen Registry-Schlüssel (trim + lowercase). */
+  /** Normalizes an email into a stable registry key (trim + lowercase). */
   private normalizeEmail(email: string): string {
     return email.trim().toLowerCase();
   }
 
   /**
-   * Bildet den (Demo-)Passwort-Hash. Ein fester Präfix macht deutlich, dass es
-   * sich um einen abgeleiteten Hash und nicht um eine reine Kodierung handelt.
+   * Builds the (demo) password hash. A fixed prefix makes clear that this is a
+   * derived hash and not a plain encoding.
    */
   private hashPassword(password: string): string {
     return demoHash(`join::${password}`);
   }
 
   /**
-   * Lädt die lokale User-Registry aus dem localStorage (fehlertolerant).
-   * Liefert bei fehlendem/kaputtem Eintrag oder ohne localStorage ein leeres
-   * Objekt.
+   * Loads the local user registry from localStorage (fault-tolerant).
+   * Returns an empty object when the entry is missing/corrupt or localStorage
+   * is unavailable.
    */
   private loadRegistry(): Record<string, StoredCredential> {
     try {
@@ -267,19 +266,19 @@ export class AuthService {
     }
   }
 
-  /** Spiegelt die User-Registry in den localStorage (fehlertolerant). */
+  /** Mirrors the user registry into localStorage (fault-tolerant). */
   private saveRegistry(registry: Record<string, StoredCredential>): void {
     try {
       this.getStorage()?.setItem(USERS_STORAGE_KEY, JSON.stringify(registry));
     } catch {
-      // Registry-Persistenz ist demo-lokal – Fehler dürfen Sign-up nicht brechen.
+      // Registry persistence is demo-local – errors must not break sign-up.
     }
   }
 
   /**
-   * Stellt den Benutzer aus dem localStorage wieder her (Session-Fallback).
-   * Fehlertolerant: Bei fehlendem/kaputtem Eintrag oder ohne localStorage wird
-   * null zurückgegeben.
+   * Restores the user from localStorage (session fallback).
+   * Fault-tolerant: returns null when the entry is missing/corrupt or
+   * localStorage is unavailable.
    */
   private restoreUser(): AuthUser | null {
     const raw = this.safeStorageGet();
@@ -302,25 +301,25 @@ export class AuthService {
     }
   }
 
-  /** Spiegelt den Benutzer in den localStorage (fehlertolerant). */
+  /** Mirrors the user into localStorage (fault-tolerant). */
   private persistUser(user: AuthUser): void {
     try {
       this.getStorage()?.setItem(STORAGE_KEY, JSON.stringify(user));
     } catch {
-      // Session-Fallback ist optional – Fehler dürfen den Login nicht brechen.
+      // Session fallback is optional – errors must not break the login.
     }
   }
 
-  /** Entfernt den Benutzer aus dem localStorage (fehlertolerant). */
+  /** Removes the user from localStorage (fault-tolerant). */
   private clearStoredUser(): void {
     try {
       this.getStorage()?.removeItem(STORAGE_KEY);
     } catch {
-      // bewusst ignoriert (siehe persistUser)
+      // deliberately ignored (see persistUser)
     }
   }
 
-  /** Liest den Roh-Eintrag aus dem localStorage (fehlertolerant). */
+  /** Reads the raw entry from localStorage (fault-tolerant). */
   private safeStorageGet(): string | null {
     try {
       return this.getStorage()?.getItem(STORAGE_KEY) ?? null;
@@ -330,8 +329,8 @@ export class AuthService {
   }
 
   /**
-   * Liefert den localStorage, falls in der aktuellen Umgebung verfügbar
-   * (z. B. nicht in reinen Server-/Nicht-Browser-Kontexten).
+   * Returns localStorage if available in the current environment
+   * (e.g. not in pure server/non-browser contexts).
    */
   private getStorage(): Storage | null {
     try {

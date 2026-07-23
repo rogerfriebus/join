@@ -1,12 +1,12 @@
 import { AuthService } from './auth.service';
 
 /**
- * Tests für den AuthService (Sprint 3: Login-Fix).
+ * Tests for the AuthService (Sprint 3: login fix).
  *
- * Die Auth-Logik ist demo-lokal: Konten liegen in einer localStorage-Registry
- * (`join.auth.users`), das Passwort wird nur als Demo-Hash gespeichert (nie im
- * Klartext). Getestet werden Registrierung, Passwortprüfung beim Login, der
- * Erhalt des Sign-up-Namens sowie der Session-Fallback und logout.
+ * The auth logic is demo-local: accounts live in a localStorage registry
+ * (`join.auth.users`), and the password is only stored as a demo hash (never in
+ * plain text). This covers registration, password verification on login, the
+ * preservation of the sign-up name, as well as the session fallback and logout.
  */
 describe('AuthService', () => {
   let service: AuthService;
@@ -19,8 +19,8 @@ describe('AuthService', () => {
     service = new AuthService();
   });
 
-  describe('Initialzustand', () => {
-    it('ist initial nicht authentifiziert', () => {
+  describe('Initial state', () => {
+    it('is not authenticated initially', () => {
       expect(service.user()).toBeNull();
       expect(service.isAuthenticated()).toBe(false);
       expect(service.isGuest()).toBe(false);
@@ -29,7 +29,7 @@ describe('AuthService', () => {
   });
 
   describe('signUp', () => {
-    it('setzt User, isAuthenticated und den eingegebenen Namen', async () => {
+    it('sets the user, isAuthenticated and the entered name', async () => {
       const user = await service.signUp('Anna Schulz', 'anna@example.com', 'secret');
 
       expect(user.name).toBe('Anna Schulz');
@@ -39,7 +39,7 @@ describe('AuthService', () => {
       expect(service.displayName()).toBe('Anna Schulz');
     });
 
-    it('legt einen Registry-Eintrag im localStorage an', async () => {
+    it('creates a registry entry in localStorage', async () => {
       await service.signUp('Anna Schulz', 'anna@example.com', 'secret');
 
       const registry = JSON.parse(localStorage.getItem(USERS_KEY) ?? '{}');
@@ -48,7 +48,7 @@ describe('AuthService', () => {
       expect(registry['anna@example.com'].email).toBe('anna@example.com');
     });
 
-    it('speichert das Passwort nicht im Klartext', async () => {
+    it('does not store the password in plain text', async () => {
       await service.signUp('Anna Schulz', 'anna@example.com', 'secret');
 
       const raw = localStorage.getItem(USERS_KEY) ?? '';
@@ -59,30 +59,30 @@ describe('AuthService', () => {
       expect(registry['anna@example.com'].password).toBeUndefined();
     });
 
-    it('wirft, wenn die E-Mail bereits registriert ist', async () => {
+    it('throws when the email is already registered', async () => {
       await service.signUp('Anna Schulz', 'anna@example.com', 'secret');
 
       await expect(
         service.signUp('Anna Zweite', 'ANNA@example.com', 'other'),
-      ).rejects.toThrow('Diese E-Mail ist bereits registriert.');
+      ).rejects.toThrow('This email is already registered.');
     });
 
-    it('wirft bei fehlendem Namen', async () => {
+    it('throws when the name is missing', async () => {
       await expect(service.signUp('', 'anna@example.com', 'secret')).rejects.toThrow(
-        'Name, E-Mail und Passwort sind erforderlich.',
+        'Name, email and password are required.',
       );
       expect(service.isAuthenticated()).toBe(false);
     });
 
-    it('wirft bei fehlender E-Mail', async () => {
+    it('throws when the email is missing', async () => {
       await expect(service.signUp('Anna Schulz', '', 'secret')).rejects.toThrow(
-        'Name, E-Mail und Passwort sind erforderlich.',
+        'Name, email and password are required.',
       );
     });
 
-    it('wirft bei fehlendem Passwort', async () => {
+    it('throws when the password is missing', async () => {
       await expect(service.signUp('Anna Schulz', 'anna@example.com', '')).rejects.toThrow(
-        'Name, E-Mail und Passwort sind erforderlich.',
+        'Name, email and password are required.',
       );
     });
   });
@@ -93,7 +93,7 @@ describe('AuthService', () => {
       service.logout();
     });
 
-    it('meldet mit korrektem Passwort an und setzt den Zustand', async () => {
+    it('logs in with the correct password and sets the state', async () => {
       const user = await service.login('anna@example.com', 'secret');
 
       expect(user.isGuest).toBe(false);
@@ -103,55 +103,55 @@ describe('AuthService', () => {
       expect(service.isGuest()).toBe(false);
     });
 
-    it('verwendet den Sign-up-Namen, nicht den E-Mail-Präfix', async () => {
+    it('uses the sign-up name, not the email prefix', async () => {
       await service.login('anna@example.com', 'secret');
       expect(service.displayName()).toBe('Anna Schulz');
     });
 
-    it('ist unabhängig von der Groß-/Kleinschreibung der E-Mail', async () => {
+    it('is case-insensitive with respect to the email', async () => {
       await service.login('ANNA@example.com', 'secret');
       expect(service.isAuthenticated()).toBe(true);
       expect(service.displayName()).toBe('Anna Schulz');
     });
 
-    it('wirft bei falschem Passwort und bleibt abgemeldet', async () => {
+    it('throws on a wrong password and stays logged out', async () => {
       await expect(service.login('anna@example.com', 'wrong')).rejects.toThrow(
-        'E-Mail oder Passwort ist falsch.',
+        'Email or password is incorrect.',
       );
       expect(service.isAuthenticated()).toBe(false);
     });
 
-    it('wirft bei unbekannter E-Mail', async () => {
+    it('throws for an unknown email', async () => {
       await expect(service.login('unknown@example.com', 'secret')).rejects.toThrow(
-        'E-Mail oder Passwort ist falsch.',
+        'Email or password is incorrect.',
       );
       expect(service.isAuthenticated()).toBe(false);
     });
 
-    it('erzeugt für eine unbekannte E-Mail KEIN neues Konto', async () => {
+    it('does NOT create a new account for an unknown email', async () => {
       await expect(service.login('ghost@example.com', 'whatever')).rejects.toThrow();
 
       const registry = JSON.parse(localStorage.getItem(USERS_KEY) ?? '{}');
       expect(registry['ghost@example.com']).toBeUndefined();
     });
 
-    it('wirft bei fehlender E-Mail', async () => {
+    it('throws when the email is missing', async () => {
       await expect(service.login('', 'secret')).rejects.toThrow(
-        'E-Mail und Passwort sind erforderlich.',
+        'Email and password are required.',
       );
       expect(service.isAuthenticated()).toBe(false);
     });
 
-    it('wirft bei fehlendem Passwort', async () => {
+    it('throws when the password is missing', async () => {
       await expect(service.login('anna@example.com', '')).rejects.toThrow(
-        'E-Mail und Passwort sind erforderlich.',
+        'Email and password are required.',
       );
       expect(service.isAuthenticated()).toBe(false);
     });
   });
 
   describe('loginAsGuest', () => {
-    it('setzt einen Gast-User und isGuest', async () => {
+    it('sets a guest user and isGuest', async () => {
       const guest = await service.loginAsGuest();
 
       expect(guest.isGuest).toBe(true);
@@ -160,14 +160,14 @@ describe('AuthService', () => {
       expect(service.displayName()).toBe('Guest');
     });
 
-    it('legt keinen Registry-Eintrag an', async () => {
+    it('does not create a registry entry', async () => {
       await service.loginAsGuest();
       expect(localStorage.getItem(USERS_KEY)).toBeNull();
     });
   });
 
   describe('logout', () => {
-    it('setzt den AuthState zurück, behält aber die Registry', async () => {
+    it('resets the auth state but keeps the registry', async () => {
       await service.signUp('Anna Schulz', 'anna@example.com', 'secret');
       expect(service.isAuthenticated()).toBe(true);
 
@@ -178,14 +178,14 @@ describe('AuthService', () => {
       expect(service.isGuest()).toBe(false);
       expect(service.displayName()).toBe('');
       expect(localStorage.getItem(SESSION_KEY)).toBeNull();
-      // Registry bleibt erhalten -> erneuter Login weiterhin möglich.
+      // Registry is preserved -> logging in again is still possible.
       expect(localStorage.getItem(USERS_KEY)).not.toBeNull();
       await expect(service.login('anna@example.com', 'secret')).resolves.toBeTruthy();
     });
   });
 
   describe('getState / getUser', () => {
-    it('liefert einen konsistenten Snapshot', async () => {
+    it('returns a consistent snapshot', async () => {
       expect(service.getState()).toEqual({ user: null, isAuthenticated: false });
       expect(service.getUser()).toBeNull();
 
@@ -196,8 +196,8 @@ describe('AuthService', () => {
     });
   });
 
-  describe('Session-Fallback (localStorage)', () => {
-    it('stellt einen eingeloggten User nach Neustart wieder her', async () => {
+  describe('Session fallback (localStorage)', () => {
+    it('restores a logged-in user after a restart', async () => {
       await service.signUp('Anna Schulz', 'anna@example.com', 'secret');
 
       const restored = new AuthService();
@@ -207,7 +207,7 @@ describe('AuthService', () => {
       expect(restored.displayName()).toBe('Anna Schulz');
     });
 
-    it('stellt nach logout keinen User mehr her', async () => {
+    it('no longer restores a user after logout', async () => {
       await service.signUp('Anna Schulz', 'anna@example.com', 'secret');
       service.logout();
 
@@ -217,7 +217,7 @@ describe('AuthService', () => {
       expect(restored.user()).toBeNull();
     });
 
-    it('bleibt bei kaputtem localStorage-Eintrag nicht authentifiziert', () => {
+    it('stays unauthenticated when the localStorage entry is corrupt', () => {
       localStorage.setItem(SESSION_KEY, '{ not valid json');
 
       const restored = new AuthService();

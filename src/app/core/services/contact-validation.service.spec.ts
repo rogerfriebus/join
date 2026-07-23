@@ -8,69 +8,69 @@ describe('ContactValidationService', () => {
   });
 
   describe('validateName', () => {
-    it('lehnt einen leeren Namen ab', () => {
-      expect(service.validateName('')).toBe('Bitte einen Namen eingeben.');
+    it('rejects an empty name', () => {
+      expect(service.validateName('')).toBe('Please enter a name.');
     });
 
-    it('lehnt einen reinen Vornamen ab', () => {
-      expect(service.validateName('Anna')).toBe('Bitte Vor- und Nachname eingeben.');
+    it('rejects a first name only', () => {
+      expect(service.validateName('Anna')).toBe('Please enter first and last name.');
     });
 
-    it('akzeptiert Vor- und Nachname', () => {
+    it('accepts a first and last name', () => {
       expect(service.validateName('Anna Schulz')).toBeNull();
     });
 
-    it('lehnt einen Namen mit Zahl ab', () => {
-      expect(service.validateName('Anna 123')).toBe('Der Name darf keine Zahlen enthalten.');
+    it('rejects a name containing a number', () => {
+      expect(service.validateName('Anna 123')).toBe('The name must not contain any numbers.');
     });
 
-    it('akzeptiert einen Namen mit Bindestrich', () => {
+    it('accepts a name with a hyphen', () => {
       expect(service.validateName('Anna-Lena Schulz')).toBeNull();
     });
   });
 
   describe('validateEmail', () => {
-    it('lehnt eine leere E-Mail ab', () => {
-      expect(service.validateEmail('')).toBe('Bitte eine E-Mail-Adresse eingeben.');
+    it('rejects an empty email', () => {
+      expect(service.validateEmail('')).toBe('Please enter an email address.');
     });
 
-    it('akzeptiert eine einfache gültige E-Mail', () => {
+    it('accepts a simple valid email', () => {
       expect(service.validateEmail('anna.schulz@example.com')).toBeNull();
     });
 
-    it('lehnt eine E-Mail ohne @ ab', () => {
-      expect(service.validateEmail('anna.schulz')).toBe('Bitte eine gültige E-Mail-Adresse eingeben.');
+    it('rejects an email without @', () => {
+      expect(service.validateEmail('anna.schulz')).toBe('Please enter a valid email address.');
     });
 
-    it('lehnt eine E-Mail ohne Domain ab', () => {
-      expect(service.validateEmail('anna@')).toBe('Bitte eine gültige E-Mail-Adresse eingeben.');
+    it('rejects an email without a domain', () => {
+      expect(service.validateEmail('anna@')).toBe('Please enter a valid email address.');
     });
   });
 
   describe('validatePhone', () => {
-    it('lehnt eine leere Telefonnummer ab', () => {
-      expect(service.validatePhone('')).toBe('Bitte eine Telefonnummer eingeben.');
+    it('rejects an empty phone number', () => {
+      expect(service.validatePhone('')).toBe('Please enter a phone number.');
     });
 
-    it('akzeptiert eine Telefonnummer mit Ziffern', () => {
+    it('accepts a phone number with digits', () => {
       expect(service.validatePhone('030123456')).toBeNull();
     });
 
-    it('akzeptiert eine Telefonnummer mit führendem + und Leerzeichen', () => {
+    it('accepts a phone number with a leading + and spaces', () => {
       expect(service.validatePhone('+49 151 1234567')).toBeNull();
     });
 
-    it('lehnt eine Telefonnummer mit Buchstaben ab', () => {
-      expect(service.validatePhone('abc')).toBe('Bitte eine gültige Telefonnummer eingeben.');
+    it('rejects a phone number containing letters', () => {
+      expect(service.validatePhone('abc')).toBe('Please enter a valid phone number.');
     });
 
-    it('lehnt eine zu kurze Telefonnummer ab', () => {
-      expect(service.validatePhone('+49 12')).toBe('Bitte eine gültige Telefonnummer eingeben.');
+    it('rejects a phone number that is too short', () => {
+      expect(service.validatePhone('+49 12')).toBe('Please enter a valid phone number.');
     });
   });
 
   describe('validateContactInput', () => {
-    it('liefert ein leeres Fehlerobjekt für gültige Eingaben', () => {
+    it('returns an empty error object for valid input', () => {
       const errors = service.validateContactInput({
         name: 'Anna Schulz',
         email: 'anna.schulz@example.com',
@@ -79,15 +79,15 @@ describe('ContactValidationService', () => {
       expect(errors).toEqual({});
     });
 
-    it('liefert Fehler je ungültigem Feld', () => {
+    it('returns an error for each invalid field', () => {
       const errors = service.validateContactInput({
         name: 'Anna',
         email: 'anna@',
         phone: 'abc',
       });
-      expect(errors.name).toBe('Bitte Vor- und Nachname eingeben.');
-      expect(errors.email).toBe('Bitte eine gültige E-Mail-Adresse eingeben.');
-      expect(errors.phone).toBe('Bitte eine gültige Telefonnummer eingeben.');
+      expect(errors.name).toBe('Please enter first and last name.');
+      expect(errors.email).toBe('Please enter a valid email address.');
+      expect(errors.phone).toBe('Please enter a valid phone number.');
     });
   });
 });

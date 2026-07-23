@@ -1,10 +1,10 @@
 import { Injectable } from '@angular/core';
 
 /**
- * Validierungsfehler je Contact-Feld.
+ * Validation errors per contact field.
  *
- * Ein Feld ist nur dann gesetzt, wenn für dieses Feld ein Fehler vorliegt.
- * Ein leeres Objekt bedeutet: Eingaben sind gültig.
+ * A field is only set when there is an error for that field.
+ * An empty object means: the inputs are valid.
  */
 export interface ContactValidationErrors {
   name?: string;
@@ -12,7 +12,7 @@ export interface ContactValidationErrors {
   phone?: string;
 }
 
-/** Roh-Eingabe eines Contact-Formulars (vor dem Speichern). */
+/** Raw input of a contact form (before saving). */
 export interface ContactInput {
   name: string;
   email: string;
@@ -20,77 +20,77 @@ export interface ContactInput {
 }
 
 /**
- * Zentrale Validierungslogik für Contact-Formulare (Add/Edit).
+ * Central validation logic for contact forms (Add/Edit).
  *
- * Liefert pro Feld entweder `null` (gültig) oder eine verständliche
- * Fehlermeldung als String. Die UI bindet diese Meldungen später unter
- * dem jeweiligen Input ein (keine HTML5-Standardvalidation als Hauptlösung).
+ * Returns per field either `null` (valid) or an understandable error message as
+ * a string. The UI later binds these messages below the respective input (no
+ * HTML5 standard validation as the primary solution).
  *
- * Bewusst KEINE CRUD-/Supabase-Logik – nur reine Validierung.
+ * Deliberately NO CRUD/Supabase logic – pure validation only.
  */
 @Injectable({ providedIn: 'root' })
 export class ContactValidationService {
   /**
-   * Name: Pflichtfeld, Vor- und Nachname (mind. zwei Wörter), keine Zahlen.
-   * Erlaubt sind Buchstaben, Leerzeichen, Bindestrich und Apostroph.
+   * Name: required field, first and last name (at least two words), no numbers.
+   * Allowed are letters, spaces, hyphen and apostrophe.
    */
   validateName(name: string): string | null {
     const value = (name ?? '').trim();
     if (!value) {
-      return 'Bitte einen Namen eingeben.';
+      return 'Please enter a name.';
     }
     if (/\d/.test(value)) {
-      return 'Der Name darf keine Zahlen enthalten.';
+      return 'The name must not contain any numbers.';
     }
     if (/[^\p{L}\s'-]/u.test(value)) {
-      return 'Der Name enthält ungültige Zeichen.';
+      return 'The name contains invalid characters.';
     }
     const parts = value.split(/\s+/).filter((part) => part.length > 0);
     if (parts.length < 2) {
-      return 'Bitte Vor- und Nachname eingeben.';
+      return 'Please enter first and last name.';
     }
     return null;
   }
 
   /**
-   * E-Mail: Pflichtfeld, einfache Regex-Prüfung auf übliches Format
+   * Email: required field, simple regex check for the usual format
    * (local@domain.tld).
    */
   validateEmail(email: string): string | null {
     const value = (email ?? '').trim();
     if (!value) {
-      return 'Bitte eine E-Mail-Adresse eingeben.';
+      return 'Please enter an email address.';
     }
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailPattern.test(value)) {
-      return 'Bitte eine gültige E-Mail-Adresse eingeben.';
+      return 'Please enter a valid email address.';
     }
     return null;
   }
 
   /**
-   * Phone: Pflichtfeld, nur Ziffern mit optional führendem `+` und
-   * Leerzeichen zur Lesbarkeit. Mindestens 6 Ziffern.
+   * Phone: required field, digits only with an optional leading `+` and spaces
+   * for readability. At least 6 digits.
    */
   validatePhone(phone: string): string | null {
     const value = (phone ?? '').trim();
     if (!value) {
-      return 'Bitte eine Telefonnummer eingeben.';
+      return 'Please enter a phone number.';
     }
-    // Erlaubt: ein optionales führendes '+', danach Ziffern und Leerzeichen.
+    // Allowed: an optional leading '+', then digits and spaces.
     if (!/^\+?[\d\s]+$/.test(value)) {
-      return 'Bitte eine gültige Telefonnummer eingeben.';
+      return 'Please enter a valid phone number.';
     }
     const digits = value.replace(/\s/g, '').replace(/^\+/, '');
     if (digits.length < 6) {
-      return 'Bitte eine gültige Telefonnummer eingeben.';
+      return 'Please enter a valid phone number.';
     }
     return null;
   }
 
   /**
-   * Validiert eine komplette Formular-Eingabe und liefert die Fehler je Feld.
-   * Ein leeres Objekt bedeutet: alle Felder sind gültig.
+   * Validates a complete form input and returns the errors per field.
+   * An empty object means: all fields are valid.
    */
   validateContactInput(input: ContactInput): ContactValidationErrors {
     const errors: ContactValidationErrors = {};

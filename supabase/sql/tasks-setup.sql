@@ -1,23 +1,23 @@
 -- ============================================================================
--- Join – Supabase Setup: Tasks & Subtasks (Sprint 2)
+-- Join – Supabase setup: tasks & subtasks
 -- ============================================================================
--- Dieses Skript ist idempotent und wird MANUELL über den Supabase SQL Editor
--- ausgeführt. Es enthält:
---   1. Tabellen `tasks` und `subtasks`
---   2. Optionalen updated_at-Trigger
---   3. Demo-Daten passend zu src/app/core/data/task-dummy-data.ts
---   4. Demo-RLS-Policies (offen für anon, analog zur Contacts-Demo)
+-- This script is idempotent and is run MANUALLY via the Supabase SQL editor.
+-- It contains:
+--   1. Tables `tasks` and `subtasks`
+--   2. Optional updated_at trigger
+--   3. Demo data matching src/app/core/data/task-dummy-data.ts
+--   4. Demo RLS policies (open for anon, like the contacts demo)
 --
--- WICHTIG (Demo / Developer-Akademie):
---   - Die RLS-Policies sind BEWUSST offen für anon und NICHT produktionsreif.
---   - Es werden KEINE echten personenbezogenen Daten verwendet.
---   - Keine Secret Keys / Service Role Keys / Passwörter in dieser Datei.
---   - `tasks.id` bleibt text (z. B. 't1'), konsistent zum Angular-Task-Modell.
---   - `assigned_contact_ids` referenziert die Contacts-Demo-IDs als text[].
+-- IMPORTANT (demo / Developer Akademie):
+--   - The RLS policies are DELIBERATELY open for anon and NOT production-ready.
+--   - NO real personal data is used.
+--   - No secret keys / service role keys / passwords in this file.
+--   - `tasks.id` stays text (e.g. 't1'), consistent with the Angular task model.
+--   - `assigned_contact_ids` references the contacts demo IDs as text[].
 -- ============================================================================
 
 -- ----------------------------------------------------------------------------
--- 1. Tabellen
+-- 1. Tables
 -- ----------------------------------------------------------------------------
 create table if not exists tasks (
   id text primary key,
@@ -45,7 +45,7 @@ create table if not exists subtasks (
 create index if not exists idx_subtasks_task_id on subtasks(task_id);
 
 -- ----------------------------------------------------------------------------
--- 2. updated_at-Trigger (optional, hält updated_at automatisch aktuell)
+-- 2. updated_at trigger (optional, keeps updated_at current automatically)
 -- ----------------------------------------------------------------------------
 create or replace function update_updated_at_column()
 returns trigger as $$
@@ -68,27 +68,24 @@ create trigger set_subtasks_updated_at
   execute function update_updated_at_column();
 
 -- ----------------------------------------------------------------------------
--- 3. Demo-Daten (passend zu task-dummy-data.ts) – idempotent via upsert
+-- 3. Demo data (matching task-dummy-data.ts) – idempotent via upsert
 -- ----------------------------------------------------------------------------
 insert into tasks (id, title, description, due_date, priority, category, status, assigned_contact_ids) values
-  ('t1', 'Kanban Board Grundlayout finalisieren',
-   'Vier Spalten (ToDo, In Progress, Awaiting Feedback, Done) mit Platzhalter-Karten aufbauen.',
-   '2026-07-15', 'urgent', 'Technical Task', 'todo', array['1','2']),
-  ('t2', 'Add Task Formular validieren',
-   'Pflichtfelder Titel, Due Date und Kategorie prüfen und Fehlermeldungen anzeigen.',
-   '2026-07-10', 'medium', 'User Story', 'inProgress', array['3','4','5']),
-  ('t3', 'Contacts Integration im Board prüfen',
-   'Zugewiesene Kontakte als Initialen-Avatare auf den Task-Karten anzeigen.',
-   '2026-07-08', 'low', 'Technical Task', 'awaitFeedback', array['6']),
-  ('t4', 'Responsive Board Verhalten testen',
-   'Board auf Tablet- und Mobilbreiten testen und Scroll-/Umbruchverhalten sicherstellen.',
-   '2026-06-30', 'medium', 'User Story', 'done', array['7','8']),
-  ('t5', 'Deployment Build für Mentor vorbereiten',
-   'Produktions-Build erstellen und Abgabe-Stand für das Mentor-Review bereitstellen.',
-   '2026-07-20', 'low', 'User Story', 'todo', array[]::text[]),
-  ('t6', 'Drag-and-Drop zwischen Board-Spalten konzipieren',
-   'Technisches Konzept für das Verschieben von Tasks zwischen den vier Spalten erarbeiten.',
-   '2026-07-12', 'urgent', 'Technical Task', 'inProgress', array['9','10','11'])
+  ('t1', 'Design landing page hero section',
+   'Create the hero layout with headline, call-to-action and a responsive image for the marketing landing page.',
+   '2026-08-05', 'urgent', 'User Story', 'todo', array['1','2']),
+  ('t2', 'Implement user authentication flow',
+   'Build sign-up, login and logout with form validation and clear error messages.',
+   '2026-07-30', 'medium', 'Technical Task', 'inProgress', array['3','4','5']),
+  ('t3', 'Set up CI/CD pipeline',
+   'Configure automated build, test and deployment steps so changes ship to staging on every merge.',
+   '2026-08-12', 'low', 'Technical Task', 'awaitFeedback', array['6']),
+  ('t4', 'Write onboarding user guide',
+   'Document the core workflows so new users can get started with the board without extra support.',
+   '2026-07-15', 'medium', 'User Story', 'done', array['7','8']),
+  ('t5', 'Conduct usability testing session',
+   'Run a moderated test with five participants and collect feedback on the task creation flow.',
+   '2026-08-20', 'low', 'User Story', 'todo', array[]::text[])
 on conflict (id) do update set
   title = excluded.title,
   description = excluded.description,
@@ -100,15 +97,13 @@ on conflict (id) do update set
   updated_at = now();
 
 insert into subtasks (id, task_id, title, done, position) values
-  ('t1-s1', 't1', 'Spalten-Komponente erstellen', false, 0),
-  ('t1-s2', 't1', 'Responsives Grid definieren', false, 1),
-  ('t2-s1', 't2', 'Titel-Validierung', true, 0),
-  ('t2-s2', 't2', 'Due-Date-Validierung', false, 1),
-  ('t2-s3', 't2', 'Kategorie-Validierung', false, 2),
-  ('t4-s1', 't4', 'Breakpoints definieren', true, 0),
-  ('t4-s2', 't4', 'Mobile Ansicht prüfen', true, 1),
-  ('t6-s1', 't6', 'CDK DragDrop evaluieren', true, 0),
-  ('t6-s2', 't6', 'Statuswechsel beim Drop definieren', false, 1)
+  ('t1-s1', 't1', 'Draft wireframe in Figma', true, 0),
+  ('t1-s2', 't1', 'Define responsive breakpoints', false, 1),
+  ('t2-s1', 't2', 'Set up authentication service', true, 0),
+  ('t2-s2', 't2', 'Add form validation', true, 1),
+  ('t2-s3', 't2', 'Handle session persistence', false, 2),
+  ('t4-s1', 't4', 'Outline guide structure', true, 0),
+  ('t4-s2', 't4', 'Add annotated screenshots', true, 1)
 on conflict (id) do update set
   task_id = excluded.task_id,
   title = excluded.title,
@@ -117,7 +112,7 @@ on conflict (id) do update set
   updated_at = now();
 
 -- ----------------------------------------------------------------------------
--- 4. Demo-RLS-Policies (BEWUSST offen für anon – NICHT produktionsreif)
+-- 4. Demo RLS policies (DELIBERATELY open for anon – NOT production-ready)
 -- ----------------------------------------------------------------------------
 alter table tasks enable row level security;
 alter table subtasks enable row level security;

@@ -1,32 +1,32 @@
-# Team-Regeln für das Join-Projekt
+# Team Rules for the Join Project
 
-Join ist ein **Angular-Projekt** (SPA). Diese Regeln helfen uns, im Team sauber
-zusammenzuarbeiten und Merge-Konflikte zu vermeiden.
+Join is an **Angular project** (SPA). These rules help us collaborate cleanly
+as a team and avoid merge conflicts.
 
-## Angular und Branches
+## Angular and Branches
 
-Angular hilft uns, die Arbeit besser aufzuteilen, weil Funktionen in
-Komponenten, Seiten, Services und Layout-Bereiche getrennt werden können.
+Angular helps us divide the work better, because functionality can be separated
+into components, pages, services, and layout areas.
 
-Trotzdem arbeiten wir weiterhin mit Branches.
+Nevertheless, we continue to work with branches.
 
-Warum?
+Why?
 
-- `main` bleibt unsere stabile gemeinsame Version.
-- Ein Feature-Branch schützt `main` vor unfertigen Änderungen.
-- Pull Requests machen Änderungen sichtbar und prüfbar.
-- Auch in Angular gibt es gemeinsame Dateien, die mehrere Teammitglieder
-  betreffen können.
+- `main` remains our stable shared version.
+- A feature branch protects `main` from unfinished changes.
+- Pull requests make changes visible and reviewable.
+- Even in Angular there are shared files that can affect multiple team
+  members.
 
-Kurz gesagt: **Angular trennt die Arbeit fachlich, Git-Branches schützen `main`
-organisatorisch.** Das eine ersetzt das andere nicht.
+In short: **Angular separates the work at the technical level, Git branches
+protect `main` organizationally.** One does not replace the other.
 
-Die Aussage „Wenn wir mit Angular arbeiten, brauchen wir keine Branches, weil
-jeder in seinem eigenen Bereich arbeitet" ist nur halb richtig: Die fachliche
-Aufteilung über Komponenten stimmt – sie macht Branches und Pull Requests aber
-nicht überflüssig.
+The claim "When we work with Angular, we don't need branches because
+everyone works in their own area" is only half true: the technical
+separation via components is correct – but it does not make branches and pull
+requests unnecessary.
 
-Beispiele für gemeinsame Dateien:
+Examples of shared files:
 
 ```text
 package.json
@@ -39,16 +39,16 @@ src/app/shared/*
 src/app/layout/*
 ```
 
-## 1. Nicht direkt auf `main` arbeiten
+## 1. Don't Work Directly on `main`
 
-`main` ist unsere stabile gemeinsame Projektversion. Neue Änderungen werden
-immer zuerst in einem eigenen Feature-Branch vorbereitet.
+`main` is our stable shared project version. New changes are
+always prepared first in a dedicated feature branch.
 
-## 2. Branch-Namen beschreiben Aufgaben
+## 2. Branch Names Describe Tasks
 
-Branch-Namen enthalten **keine Personennamen**.
+Branch names contain **no personal names**.
 
-Gut:
+Good:
 
 ```text
 feature/contacts
@@ -58,7 +58,7 @@ chore/angular-project-setup
 docs/update-readme
 ```
 
-Nicht gut:
+Not good:
 
 ```text
 feature/contacts-marko
@@ -66,14 +66,14 @@ feature/board-kevin
 feature/login-roger
 ```
 
-Wer an welcher Aufgabe arbeitet, klären wir über Absprache oder
-`docs/task-split.md`, nicht über den Branch-Namen.
+Who works on which task is clarified through coordination or
+`docs/task-split.md`, not through the branch name.
 
-## 3. Feature-Branches und getrennte Bereiche
+## 3. Feature Branches and Separate Areas
 
-Jeder Aufgabenbereich hat eigene Komponenten/Ordner unter `src/app/`.
+Each task area has its own components/folders under `src/app/`.
 
-Beispiele:
+Examples:
 
 ```text
 Contacts:   src/app/pages/contacts/
@@ -83,12 +83,12 @@ Summary:    src/app/pages/summary/
 Layout:     src/app/layout/ (header, navbar, footer, shell)
 ```
 
-So vermeiden wir, dass mehrere Personen gleichzeitig dieselbe Datei ändern.
+This way we avoid multiple people changing the same file at the same time.
 
-## 4. Gemeinsame Dateien nur nach Absprache ändern
+## 4. Only Change Shared Files After Coordination
 
-Diese Dateien betreffen das ganze Projekt und werden nur **koordiniert**
-geändert:
+These files affect the entire project and are only changed in a
+**coordinated** way:
 
 ```text
 package.json
@@ -103,31 +103,31 @@ docs/team-rules.md
 docs/git-workflow.md
 ```
 
-Besonders `package.json`, `package-lock.json` und `angular.json` bitte nur nach
-Absprache anfassen – sonst gibt es schnell Konflikte bei Dependencies und Build.
+Please only touch `package.json`, `package-lock.json`, and `angular.json` after
+coordination in particular – otherwise conflicts with dependencies and the build arise quickly.
 
-## 5. Kleine Pull Requests statt großer Sammeländerungen
+## 5. Small Pull Requests Instead of Large Bundled Changes
 
-Lieber kleine, verständliche Änderungen als riesige Pull Requests.
+Prefer small, understandable changes over huge pull requests.
 
-## 6. Vor dem Merge kurz prüfen
+## 6. Quick Check Before Merging
 
 ```text
-Sind die richtigen Dateien geändert?
-Läuft der Build (npm run build)?
-Gibt es Konflikte?
-Ist die Änderung verständlich beschrieben?
+Are the right files changed?
+Does the build run (npm run build)?
+Are there conflicts?
+Is the change clearly described?
 ```
 
-## 7. Nach dem Merge Branch löschen
+## 7. Delete the Branch After Merging
 
-Wenn ein Pull Request gemerged wurde, wird der zugehörige Branch gelöscht.
-Danach wieder auf `main` wechseln und synchronisieren.
+Once a pull request has been merged, the corresponding branch is deleted.
+Then switch back to `main` and sync.
 
-## Merksatz
+## Key Takeaway
 
 ```text
-Erst abstimmen, dann ändern.
-Erst Branch, dann Commit.
-Erst Pull Request, dann Merge.
+Coordinate first, then change.
+Branch first, then commit.
+Pull request first, then merge.
 ```

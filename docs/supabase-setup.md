@@ -1,22 +1,22 @@
-# Supabase-Setup (Cloud)
+# Supabase Setup (Cloud)
 
-Dieses Dokument beschreibt, wie Join die Supabase **Cloud** nutzt. In diesem
-Sprint wird Supabase nur **strukturell vorbereitet** – es werden noch keine
-echten Keys eingerichtet.
+This document describes how Join uses Supabase **Cloud**. In this
+sprint, Supabase is only **prepared structurally** – no real keys are set up
+yet.
 
-## Grundregeln
+## Basic Rules
 
-- Join nutzt **Supabase Cloud**. Es wird **nichts selbst installiert**.
-- **Keine Secrets ins Repository.** Keine echten Keys, Passwörter oder Tokens
-  committen, keine `.env`-Dateien mit echten Werten.
-- Zugangsdaten (Project URL, anon key) werden lokal/über die Umgebung gehalten
-  und später über die Angular-`environment`-Konfiguration eingebunden.
-- **Gast-Login und eingeloggte User nutzen laut Kursvorgabe denselben
-  Datenbestand.**
+- Join uses **Supabase Cloud**. **Nothing is self-installed.**
+- **No secrets in the repository.** Do not commit real keys, passwords, or tokens,
+  and no `.env` files with real values.
+- Access credentials (Project URL, anon key) are kept locally/via the environment
+  and later integrated through the Angular `environment` configuration.
+- **According to the course requirements, guest login and logged-in users use the
+  same data set.**
 
-## Tabellenentwurf `contacts`
+## Table Design `contacts`
 
-| Spalte       | Typ         | Constraints              |
+| Column       | Type        | Constraints              |
 | ------------ | ----------- | ------------------------ |
 | `id`         | `uuid`      | Primary Key, `default gen_random_uuid()` |
 | `name`       | `text`      | `not null`               |
@@ -24,15 +24,15 @@ echten Keys eingerichtet.
 | `phone`      | `text`      | `not null`               |
 | `color`      | `text`      | `null`                   |
 | `initials`   | `text`      | `null`                   |
-| `created_at` | `timestamp` | Standard: `now()`        |
-| `updated_at` | `timestamp` | Standard: `now()`        |
+| `created_at` | `timestamp` | Default: `now()`         |
+| `updated_at` | `timestamp` | Default: `now()`         |
 
-Das Frontend-Modell dazu liegt unter `src/app/core/models/contact.model.ts`
+The corresponding frontend model is located at `src/app/core/models/contact.model.ts`
 (camelCase: `color` / `initials` / `createdAt` / `updatedAt`).
 
-### Beispiel-SQL
+### Example SQL
 
-Beispiel ohne echte Daten und ohne Secrets:
+Example without real data and without secrets:
 
 ```sql
 create table if not exists contacts (
@@ -47,110 +47,110 @@ create table if not exists contacts (
 );
 ```
 
-## Aktueller Stand
+## Current State
 
-Mit **Orange 4B** ist Supabase für die Contacts-Demo angebunden:
+With **Orange 4B**, Supabase is connected for the contacts demo:
 
-- Der `@supabase/supabase-js`-Client ist installiert.
-- Der `ContactService` bleibt die **zentrale Stelle** für die Contacts-Datenlogik
-  und bietet zusätzlich Supabase-Methoden
+- The `@supabase/supabase-js` client is installed.
+- The `ContactService` remains the **central place** for the contacts data logic
+  and additionally provides Supabase methods
   (`loadContactsFromSupabase`, `addContactToSupabase`, `updateContactInSupabase`,
   `deleteContactFromSupabase`).
-- Die bisherigen Mock-Methoden (`getContacts`, `getContactById`, `addContact`,
-  `updateContact`, `deleteContact`) bleiben als **Fallback** erhalten.
+- The existing mock methods (`getContacts`, `getContactById`, `addContact`,
+  `updateContact`, `deleteContact`) are kept as a **fallback**.
 
-### Angular-Demo: URL + Publishable Key
+### Angular Demo: URL + Publishable Key
 
-Für dieses Developer-Akademie-Demo-Projekt ist entschieden:
+For this Developer Akademie demo project, it has been decided:
 
-- Die **Project URL** und der **Publishable Key** dürfen für die Demo in den
-  Angular-`environment`-Dateien (`src/environments/`) liegen.
-- Es wird **ausschließlich der Publishable Key** verwendet.
-- **Secret Key / Service Role Key niemals im Frontend** ablegen.
-- Die aktuelle Demo-**RLS-Policy** erlaubt **anon-Zugriff** auf `contacts`.
-  Das ist bewusst fürs Schulprojekt gesetzt und **nicht produktionsreif**.
-- Die in Supabase hinterlegten Kontakte sind **Demo-Daten** ohne echte
-  personenbezogene Informationen.
+- The **Project URL** and the **Publishable Key** may be stored for the demo in the
+  Angular `environment` files (`src/environments/`).
+- **Only the Publishable Key** is used.
+- **Never store the Secret Key / Service Role Key in the frontend.**
+- The current demo **RLS policy** allows **anon access** to `contacts`.
+  This is intentionally set for the school project and is **not production-ready**.
+- The contacts stored in Supabase are **demo data** without real
+  personal information.
 
-> Diese Lösung ist demo-tauglich, aber nicht produktionsreif. Später sollten
-> **Auth und RLS gehärtet** werden (siehe „Nächste Schritte“).
+> This solution is demo-suitable but not production-ready. Later,
+> **auth and RLS should be hardened** (see "Next Steps").
 
-## Dummy-Daten
+## Dummy Data
 
-- Für die Sprint-Abgabe mindestens **10 seriöse Kontakte** anlegen.
-- Aktuell liegen 12 Mock-Kontakte im Service `src/app/core/services/contact.service.ts`.
-- Diese Mock-Daten werden später durch echte Supabase-Daten ersetzt.
-- Echte personenbezogene Daten dürfen **nicht** als Demo-Daten verwendet werden.
+- Create at least **10 legitimate contacts** for the sprint submission.
+- There are currently 12 mock contacts in the service `src/app/core/services/contact.service.ts`.
+- This mock data will later be replaced by real Supabase data.
+- Real personal data must **not** be used as demo data.
 
 ## Tasks Setup
 
-Für Sprint 2 (Board & Add Task) wird die Supabase-Struktur für Tasks
-vorbereitet. Die Ausführung erfolgt **manuell über den Supabase SQL Editor** –
-in diesem Schritt gibt es noch **keine** Angular-Supabase-Anbindung für Tasks.
+For Sprint 2 (Board & Add Task), the Supabase structure for tasks is
+being prepared. Execution is done **manually via the Supabase SQL Editor** –
+at this stage there is still **no** Angular-Supabase connection for tasks.
 
-- **SQL-Datei:** `supabase/sql/tasks-setup.sql` (idempotent, mehrfach ausführbar)
-- **Tabellen:** `tasks`, `subtasks`
-  - `tasks.id` ist `text` (z. B. `t1`), konsistent zum Angular-Task-Modell.
-  - `subtasks.task_id` referenziert `tasks(id)` mit `on delete cascade`.
-  - `tasks.assigned_contact_ids` ist `text[]` und referenziert die
-    Contacts-Demo-IDs.
-- **Statuswerte:** `todo`, `inProgress`, `awaitFeedback`, `done`
-- **Prioritäten:** `urgent`, `medium`, `low`
-- **Kategorien:** `Technical Task`, `User Story`
-- **Demo-Daten:** mind. 6 Demo-Tasks inkl. Subtasks, passend zu
-  `src/app/core/data/task-dummy-data.ts`, ohne echte personenbezogene Daten.
-- **Demo-RLS:** Policies für `anon` (select/insert/update/delete) sind **bewusst
-  offen** und **nicht produktionsreif** (analog zur Contacts-Demo).
-- **Keine Secrets:** Weder Secret Key noch Service Role Key oder Passwörter
-  gehören in die SQL-Datei oder ins Repository.
+- **SQL file:** `supabase/sql/tasks-setup.sql` (idempotent, can be run multiple times)
+- **Tables:** `tasks`, `subtasks`
+  - `tasks.id` is `text` (e.g. `t1`), consistent with the Angular task model.
+  - `subtasks.task_id` references `tasks(id)` with `on delete cascade`.
+  - `tasks.assigned_contact_ids` is `text[]` and references the
+    contacts demo IDs.
+- **Status values:** `todo`, `inProgress`, `awaitFeedback`, `done`
+- **Priorities:** `urgent`, `medium`, `low`
+- **Categories:** `Technical Task`, `User Story`
+- **Demo data:** at least 6 demo tasks including subtasks, matching
+  `src/app/core/data/task-dummy-data.ts`, without real personal data.
+- **Demo RLS:** policies for `anon` (select/insert/update/delete) are **intentionally
+  open** and **not production-ready** (analogous to the contacts demo).
+- **No secrets:** Neither the Secret Key nor the Service Role Key or passwords
+  belong in the SQL file or the repository.
 
-> Wie bei Contacts gilt: demo-tauglich, aber nicht produktionsreif. Später
-> sollten **Auth und RLS gehärtet** werden.
+> As with contacts: demo-suitable but not production-ready. Later,
+> **auth and RLS should be hardened**.
 
-## Secret-Regeln
+## Secret Rules
 
-**Nicht ins Repository:**
+**Not in the repository:**
 
-- Supabase URL mit echtem Projektwert
+- Supabase URL with a real project value
 - Supabase Anon Key
 - Supabase Service Role Key
-- `.env`-Dateien mit echten Werten
-- Screenshots mit sichtbaren Keys
+- `.env` files with real values
+- Screenshots with visible keys
 
-**Erlaubt:**
+**Allowed:**
 
-- Platzhalter
-- Beispielnamen ohne echte personenbezogene Daten
-- technische Dokumentation ohne echte Keys
+- Placeholders
+- Example names without real personal data
+- Technical documentation without real keys
 
-## Lokale Konfiguration (später, Orange 4B)
+## Local Configuration (later, Orange 4B)
 
-Für Orange 4B muss festgelegt werden, wie die lokale Konfiguration erfolgt.
-Mögliche Varianten:
+For Orange 4B, it needs to be defined how the local configuration is done.
+Possible options:
 
-- Angular-`environment`-Dateien mit Platzhaltern
-- lokale, **nicht** getrackte Environment-Datei
-- Konfiguration über die Deployment-Umgebung
+- Angular `environment` files with placeholders
+- a local, **untracked** environment file
+- configuration via the deployment environment
 
-In Sprint 1 gilt: **Keine echten Supabase-Zugangsdaten ins Repo.**
+For Sprint 1: **No real Supabase credentials in the repo.**
 
-## Nächste Schritte (noch nicht in diesem Sprint)
+## Next Steps (not yet in this sprint)
 
-1. Supabase-Projekt in der Cloud anlegen (durch das Team koordiniert).
-2. Tabelle `contacts` laut obigem Entwurf erstellen.
-3. Project URL und anon key **außerhalb des Repos** bereitstellen
-   (Angular-`environment`, nicht eingecheckt).
-4. `ContactService` von Mock-Daten auf Supabase-Aufrufe umstellen.
-5. Row Level Security / Policies laut Kursvorgabe prüfen.
+1. Create the Supabase project in the cloud (coordinated by the team).
+2. Create the `contacts` table according to the design above.
+3. Provide the Project URL and anon key **outside the repo**
+   (Angular `environment`, not checked in).
+4. Switch `ContactService` from mock data to Supabase calls.
+5. Review Row Level Security / policies according to the course requirements.
 
-## Verantwortlichkeit
+## Responsibility
 
-**Owner für Supabase-Setup:** Roger
+**Owner for Supabase setup:** Roger
 
-Offene Fragen:
+Open questions:
 
-- Wer legt das Supabase-Projekt final an?
-- Wer erhält Zugriff?
-- Welche URL/Anon-Key-Konfiguration wird lokal genutzt?
-- Welche Row-Level-Security-Regeln werden benötigt?
-- Nutzen Gast-Login und User denselben Datenbestand?
+- Who ultimately creates the Supabase project?
+- Who gets access?
+- Which URL/anon key configuration is used locally?
+- Which Row Level Security rules are needed?
+- Do guest login and users use the same data set?
