@@ -121,42 +121,68 @@ export class AddTask {
   }
 
   /**
-   * Creates a new task and redirects to the board on success.
-   * Aborts if required fields are missing or a save operation is already in progress.
-   */
-  async createTask(): Promise<void> {
-    if (!this.form.title || !this.form.dueDate || !this.form.category || this.isSaving) {
-      return;
-    }
+ * Guards against invalid state before task creation.
+ * Returns `true` if required fields are missing or a save is already in progress.
+ */
+  private isCreationBlocked(): boolean {
+    return !this.form.title || !this.form.dueDate || !this.form.category || this.isSaving;
+  }
 
-    const subtasks: Subtask[] = this.form.subtasks.map((title) => ({
+  /**
+   * Maps the current form's subtask titles to `Subtask` objects
+   * with empty IDs and `done` initialized to `false`.
+   */
+  private buildSubtasks(): Subtask[] {
+    return this.form.subtasks.map((title) => ({
       id: '',
       title,
       done: false,
     }));
+  }
 
-    const newTask: Task = {
+  /**
+   * Assembles a new `Task` object from the current form values.
+   * Trims string fields and falls back to `undefined` for empty descriptions.
+   */
+  private buildTask(): Task {
+    return {
       id: '',
       title: this.form.title.trim(),
       description: this.form.description.trim() || undefined,
       dueDate: this.form.dueDate,
       priority: this.form.priority,
-      category: this.form.category,
+      category: this.form.category as TaskCategory,
       status: 'todo',
       assignedContactIds: [...this.form.assignedTo],
-      subtasks,
+      subtasks: this.buildSubtasks(),
     };
+  }
 
-    this.isSaving = true;
+  /**
+   * Persists the given task via `taskService`, then navigates to `/board`
+   * on success. Logs an error to the console on failure.
+   */
+  private async saveTask(task: Task): Promise<void> {
     try {
       this.clear();
-      await this.taskService.addTask(newTask);
+      await this.taskService.addTask(task);
       this.router.navigate(['/board']);
     } catch (error) {
       console.error('Task could not be created:', error);
     } finally {
       this.isSaving = false;
     }
+  }
+
+  /**
+   * Creates a new task and redirects to the board on success.
+   * Aborts if required fields are missing or a save operation is already in progress.
+   */
+  async createTask(): Promise<void> {
+    if (this.isCreationBlocked()) return;
+
+    this.isSaving = true;
+    await this.saveTask(this.buildTask());
   }
 
   /** Toggles the assignee dropdown (and closes the category dropdown if open). */
