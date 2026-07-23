@@ -50,6 +50,17 @@ const SUMMARY_TASKS: Task[] = [
   },
 ];
 
+/**
+ * Reads a summary card's label whose text is split across fixed line-break
+ * spans (e.g. "Tasks" / "in Board"). Angular strips the whitespace between the
+ * spans, so the spans are joined with a single space to reconstruct the label.
+ */
+function readCardLabel(labelEl: Element): string {
+  return Array.from(labelEl.querySelectorAll('.summary-card__label-line'))
+    .map((line) => line.textContent?.trim() ?? '')
+    .join(' ');
+}
+
 describe('Summary', () => {
   let component: Summary;
   let fixture: ComponentFixture<Summary>;
@@ -107,7 +118,9 @@ describe('Summary', () => {
 
   it('shows the total amount of tasks', () => {
     expect(fixture.nativeElement.textContent).toContain('4');
-    expect(fixture.nativeElement.textContent).toContain('Tasks in Board');
+
+    const [boardLabel] = fixture.nativeElement.querySelectorAll('.summary-card__label');
+    expect(readCardLabel(boardLabel)).toBe('Tasks in Board');
   });
 
   it('counts tasks by board status', () => {
@@ -115,8 +128,10 @@ describe('Summary', () => {
 
     expect(text).toContain('To-do');
     expect(text).toContain('Done');
-    expect(text).toContain('Tasks in Progress');
     expect(text).toContain('Awaiting Feedback');
+
+    const progressLabel = fixture.nativeElement.querySelectorAll('.summary-card__label')[1];
+    expect(readCardLabel(progressLabel)).toBe('Tasks in Progress');
   });
 
 
