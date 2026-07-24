@@ -7,7 +7,6 @@ import { TaskService } from '../../core/services/task.service';
 import { ContactService } from '../../core/services/contact.service';
 import { Task } from '../../core/models/task.model';
 import { Contact } from '../../core/models/contact.model';
-
 /**
  * Test tasks: todo and inProgress contain tasks, while awaitFeedback and done
  * remain empty for the empty-state test.
@@ -113,7 +112,6 @@ describe('Board', () => {
     fixture.detectChanges();
     await fixture.whenStable();
   });
-
   it('should create', () => {
     expect(component).toBeTruthy();
   });
@@ -166,7 +164,6 @@ describe('Board', () => {
 
     component.openTaskDetail(detailedTask);
     fixture.detectChanges();
-
     const assigneeList = fixture.nativeElement.querySelector('.task-detail__assignees');
     const subtaskList = fixture.nativeElement.querySelector('.task-detail__subtasks');
 
