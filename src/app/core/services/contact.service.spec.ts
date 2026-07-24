@@ -1,5 +1,6 @@
 import { ContactService } from './contact.service';
 import { Contact } from '../models/contact.model';
+import { useSupabaseTestClient } from '../../../test-setup';
 
 /**
  * Mocked Supabase client. All query methods are chainable and the builder
@@ -41,16 +42,17 @@ const supabaseMock = vi.hoisted(() => {
   };
 });
 
-vi.mock('@supabase/supabase-js', () => ({
-  createClient: () => supabaseMock.createClient(),
-}));
-
 describe('ContactService', () => {
   let service: ContactService;
 
   // Fresh instance per test: the mock store is mutable, so the tests must not
-  // influence each other through shared state.
+  // influence each other through shared state. The globally mocked Supabase
+  // client (see src/test-setup.ts) is pointed at this spec's builder and reset
+  // before every test so no test depends on the Supabase result configured by a
+  // previous test (or a previous spec).
   beforeEach(() => {
+    useSupabaseTestClient(() => supabaseMock.createClient());
+    supabaseMock.reset();
     service = new ContactService();
   });
 
