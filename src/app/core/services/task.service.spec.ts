@@ -1,5 +1,6 @@
 import { TaskService } from './task.service';
 import { Task } from '../models/task.model';
+import { useSupabaseTestClient } from '../../../test-setup';
 
 /**
  * Mocked Supabase client for tasks/subtasks.
@@ -47,14 +48,14 @@ const supabaseMock = vi.hoisted(() => {
   };
 });
 
-vi.mock('@supabase/supabase-js', () => ({
-  createClient: () => supabaseMock.createClient(),
-}));
-
 describe('TaskService', () => {
   let service: TaskService;
 
+  // Point the globally mocked Supabase client (see src/test-setup.ts) at this
+  // spec's builder and reset it before every test, so no test depends on the
+  // Supabase result configured by a previous test (or a previous spec).
   beforeEach(() => {
+    useSupabaseTestClient(() => supabaseMock.createClient());
     supabaseMock.reset();
     service = new TaskService();
   });

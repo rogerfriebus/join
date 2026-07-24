@@ -3,13 +3,14 @@ import { signal } from '@angular/core';
 
 import { Contacts } from './contacts';
 import { AuthService, AuthUser } from '../../core/services/auth.service';
+import { useSupabaseTestClient } from '../../../test-setup';
 
 /**
  * Mocked Supabase client: in ngOnInit the Contacts page calls loadContacts()
  * via the ContactService facade. With this mock there is NO real network call;
  * loadContacts() returns an empty data set.
  */
-vi.mock('@supabase/supabase-js', () => {
+const supabaseMock = vi.hoisted(() => {
   const builder: Record<string, unknown> = {};
   for (const method of ['from', 'select', 'order', 'insert', 'update', 'delete', 'eq', 'single', 'maybeSingle']) {
     builder[method] = () => builder;
@@ -23,6 +24,13 @@ describe('Contacts', () => {
   let fixture: ComponentFixture<Contacts>;
 
   const user = signal<AuthUser | null>(null);
+
+  // Point the globally mocked Supabase client (see src/test-setup.ts) at this
+  // spec's empty-result builder before every test, so loadContacts() resolves
+  // to an empty set regardless of test/spec execution order.
+  beforeEach(() => {
+    useSupabaseTestClient(() => supabaseMock.createClient());
+  });
 
   async function setup(): Promise<void> {
     await TestBed.configureTestingModule({
